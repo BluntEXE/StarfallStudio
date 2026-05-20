@@ -74,16 +74,18 @@ public class CameraWindow : Window, IDisposable
         ImGui.SameLine();
         var isFreecam = _virtualCameraService.SelectedCameraEntity?.CameraType == CameraType.Free;
         if(ImStarfallStudio.FontIconButton("freecamtoggle", Dalamud.Interface.FontAwesomeIcon.Camera,
-            isFreecam ? "Switch to game camera" : "Toggle free camera"))
+            isFreecam ? "Exit free camera" : "Enter free camera"))
         {
             if(isFreecam)
             {
+                var freecamId = _virtualCameraService.SelectedCameraEntity!.CameraID;
                 var def = _virtualCameraService.GetDefaultCamera();
                 if(def is not null)
                 {
                     _virtualCameraService.SelectedCameraEntity = def;
                     _virtualCameraService.SelectCamera(def.VirtualCamera);
                 }
+                _virtualCameraService.DestroyCamera(freecamId);
             }
             else
             {
