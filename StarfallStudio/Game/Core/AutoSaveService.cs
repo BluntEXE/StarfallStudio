@@ -181,6 +181,8 @@ public class AutoSaveService : IDisposable
     {
         try
         {
+            if(!Directory.Exists(AutoSaveFolder)) return;
+
             var saveFolders = Directory.EnumerateDirectories(AutoSaveFolder)
                                  .Select(d => new DirectoryInfo(d))
                                  .OrderByDescending(d => d.LastWriteTime)
