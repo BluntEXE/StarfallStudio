@@ -240,7 +240,7 @@ public class PenumbraService : StarfallStudioIPC
         await _framework.RunOnFrameworkThread(() =>
         {
             var retAssign = _penumbraAssignTemporaryCollection.Invoke(collName, idx, forceAssignment: true);
-            StarfallStudio.Log.Debug("Assigning Temp Collection {collName} to index {idx}, Success: {ret}", collName, idx, retAssign);
+            StarfallStudio.Log.Info("Assigning Temp Collection {collName} to index {idx}, Result: {ret}", collName, idx, retAssign);
             return collName;
         }).ConfigureAwait(false);
     }
@@ -295,15 +295,35 @@ public class PenumbraService : StarfallStudioIPC
         var redrawType = RedrawType.Redraw;
         if(afterGPose) redrawType = RedrawType.AfterGPose;
 
-        await _framework.RunOnFrameworkThread(() =>
+        var targetIndex = gameObject.ObjectIndex;
+        var tcs = new System.Threading.Tasks.TaskCompletionSource();
+
+        void OnRedraw(int idx)
         {
-            _penumbraRedraw!.Invoke(gameObject.ObjectIndex, setting: redrawType);
-        });
+            if(idx == targetIndex)
+                tcs.TrySetResult();
+        }
+
+        OnPenumbraRedraw += OnRedraw;
+        try
+        {
+            await _framework.RunOnFrameworkThread(() =>
+            {
+                _penumbraRedraw!.Invoke(gameObject.ObjectIndex, setting: redrawType);
+            });
+
+            // Wait for Penumbra to fire GameObjectRedrawn so Glamourer registers the actor
+            await Task.WhenAny(tcs.Task, Task.Delay(2000));
+        }
+        finally
+        {
+            OnPenumbraRedraw -= OnRedraw;
+        }
     }
 
     private void HandlePenumbraRedraw(nint arg1, int arg2)
     {
-        StarfallStudio.Log.Debug("Penumbra redraw event received.");
+        StarfallStudio.Log.Info("Penumbra GameObjectRedrawn: objectIndex={idx}", arg2);
         OnPenumbraRedraw?.Invoke(arg2);
     }
 

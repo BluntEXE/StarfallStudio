@@ -289,8 +289,14 @@ public class MCDFService : IDisposable
         {
             DataApplicationProgress = "Reverting previous Application";
 
+            logger.Information("MCDF: PenumbraRedraw start, objectIndex={idx} objectKind={kind}", tempHandler.GameObject.ObjectIndex, tempHandler.GameObject.ObjectKind);
             await _penumbraService.Redraw(tempHandler.GameObject);
+            logger.Information("MCDF: PenumbraRedraw done");
             await _actorRedrawService.RedrawAndWait(tempHandler.GameObject);
+            logger.Information("MCDF: RedrawAndWait done");
+
+            // Give Glamourer time to process the GameObjectRedrawn event and register the actor
+            await Task.Delay(500, token).ConfigureAwait(false);
 
             _glamourerService.UnlockAndRevertCharacter(tempHandler.GameObject);
             _glamourerService.UnlockAndRevertCharacterByName(tempHandler.Name);
@@ -309,6 +315,9 @@ public class MCDFService : IDisposable
             await _penumbraService.AssignTemporaryCollectionAsync(penumbraCollection, idx).ConfigureAwait(false);
             await _penumbraService.SetTemporaryModsAsync(applicationId, penumbraCollection, modPaths).ConfigureAwait(false);
             await _penumbraService.SetManipulationDataAsync(applicationId, penumbraCollection, manipData ?? string.Empty).ConfigureAwait(false);
+
+            // Wait for Glamourer to process the collection assignment GameObjectRedrawn event
+            await Task.Delay(500, token).ConfigureAwait(false);
 
             DataApplicationProgress = "Applying Glamourer and redrawing Character";
             logger.Debug("{Progress}", DataApplicationProgress);

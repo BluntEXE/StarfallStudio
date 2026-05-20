@@ -204,12 +204,13 @@ public class GlamourerService : StarfallStudioIPC
 
         try
         {
-            StarfallStudio.Log.Debug("[{appid}] Calling on IPC: GlamourerApplyAll", applicationId);
-            _glamourerApplyState.Invoke(customization, character!.ObjectIndex, LockCode);
+            StarfallStudio.Log.Info("[{appid}] Calling GlamourerApplyState on ObjectIndex {idx}", applicationId, character!.ObjectIndex);
+            var result = _glamourerApplyState.Invoke(customization, character!.ObjectIndex, LockCode);
+            StarfallStudio.Log.Info("[{appid}] GlamourerApplyState result: {result}", applicationId, result);
         }
         catch(Exception ex)
         {
-            StarfallStudio.Log.Debug(ex, "[{appid}] Failed to apply Glamourer data", applicationId);
+            StarfallStudio.Log.Info(ex, "[{appid}] Failed to apply Glamourer data", applicationId);
         }
     }
 
