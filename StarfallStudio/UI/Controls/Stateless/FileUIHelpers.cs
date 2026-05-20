@@ -266,7 +266,7 @@ public class FileUIHelpers
 
     public static void ShowExportPoseModal(PosingCapability? capability)
     {
-        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Pose###export_pose", "Pose File (*.pose){.pose}", "brio", ".pose",
+        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Pose###export_pose", "Pose File (*.pose){.pose}", "pose", ".pose",
                 (success, path) =>
                 {
                     if(success)
@@ -346,7 +346,7 @@ public class FileUIHelpers
 
     public static void ShowExportCharacterModal(ActorAppearanceCapability capability)
     {
-        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Character File###export_character_window", "Character File (*.chara){.chara}", "brio", "{.chara}",
+        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Character File###export_character_window", "Character File (*.chara){.chara}", "character", "{.chara}",
                 (success, path) =>
                 {
                     if(success)

@@ -8,7 +8,7 @@ namespace StarfallStudio.Game.Chat;
 
 public class CommandHandlerService : IDisposable
 {
-    private const string StarfallStudioCommandName = "/brio";
+    private const string StarfallStudioCommandName = "/starfall";
     private const string XATCommandName = "/xat";
     private const string MCDFCommandName = "/mcdf";
 

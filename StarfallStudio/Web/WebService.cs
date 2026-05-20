@@ -53,7 +53,7 @@ public class WebService : IDisposable
             var server = new WebServer(o => o
             .WithUrlPrefix(url)
             .WithMode(HttpListenerMode.EmbedIO))
-             .WithWebApi("/brio", m => m.WithController(() => ActivatorUtilities.CreateInstance<ActorWebController>(_serviceProvider))
+             .WithWebApi("/starfall", m => m.WithController(() => ActivatorUtilities.CreateInstance<ActorWebController>(_serviceProvider))
             );
 
             server.Start();
