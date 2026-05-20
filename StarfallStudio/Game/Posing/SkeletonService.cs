@@ -33,6 +33,8 @@ public unsafe class SkeletonService : IDisposable
     private delegate void FinalizeSkeletonsDelegate(nint a1);
     private readonly Hook<FinalizeSkeletonsDelegate> _finalizeSkeletonsHook = null!;
 
+    private readonly PosePreventionHooks _posePreventionHooks;
+
     private readonly EntityManager _entityManager;
     private readonly ObjectMonitorService _monitorService;
     private readonly GPoseService _gPoseService;
@@ -62,6 +64,9 @@ public unsafe class SkeletonService : IDisposable
         var finalizeSkeletonsHook = "40 53 57 41 54 41 55 48 83 EC ?? ?? 48 ?? ?? ?? ?? ?? ?? ?? 4C"; // JMP in Framework.TaskRenderGraphicsRender
         _finalizeSkeletonsHook = hooking.HookFromAddress<FinalizeSkeletonsDelegate>(scanner.ScanText(finalizeSkeletonsHook), FinalizeSkeletonsHook);
         _finalizeSkeletonsHook.Enable();
+
+        _posePreventionHooks = new PosePreventionHooks(scanner, hooking);
+        _gPoseService.OnGPoseStateChange += OnGPoseStateChange;
 
         _monitorService.CharacterBaseMaterialsUpdated += OnCharacterBaseMaterialsUpdate;
         _monitorService.CharacterBaseDestroyed += OnCharacterBaseCleanup;
@@ -377,6 +382,14 @@ public unsafe class SkeletonService : IDisposable
         SkeletonUpdateEnd?.Invoke();
     }
 
+    private void OnGPoseStateChange(bool isGPosing)
+    {
+        if(isGPosing)
+            _posePreventionHooks.Enable();
+        else
+            _posePreventionHooks.Disable();
+    }
+
     private void OnCharacterBaseMaterialsUpdate(StarfallStudioCharacterBase* charaBase)
     {
         try
@@ -430,6 +443,8 @@ public unsafe class SkeletonService : IDisposable
 
     public void Dispose()
     {
+        _posePreventionHooks.Dispose();
+        _gPoseService.OnGPoseStateChange -= OnGPoseStateChange;
         _updateBonePhysicsHook.Dispose();
         _finalizeSkeletonsHook.Dispose();
         _monitorService.CharacterBaseMaterialsUpdated -= OnCharacterBaseMaterialsUpdate;
