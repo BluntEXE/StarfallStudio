@@ -62,6 +62,19 @@ public static class IntExtensions
         return result;
     }
 
+    // Used for actual in-game actor names to maintain Glamourer DB compatibility
+    // with existing Brio users. Glamourer tracks actors by name - using "Brio" prefix
+    // means actors are recognised from prior Brio sessions without one-time setup.
+    public static string ToBrioCompatibleName(this int i)
+    {
+        string result = ToWords(i, " ");
+
+        if(!result.Contains(' '))
+            return "Brio " + result;
+
+        return result;
+    }
+
     public static string ToName(this int i)
     {
         return ToWords(i, " ");

@@ -77,7 +77,7 @@ public static class GameObjectExtensions
 
     public unsafe static void SetName(this IGameObject gameObject, string name) => gameObject.Native()->SetName(name);
 
-    public unsafe static void CalculateAndSetName(this ref StructsObject character, int index) => character.SetName(index.ToStarfallStudioName());
+    public unsafe static void CalculateAndSetName(this ref StructsObject character, int index) => character.SetName(index.ToBrioCompatibleName());
 
     public static unsafe T* GetDrawObject<T>(this IGameObject go) where T : unmanaged
     {
