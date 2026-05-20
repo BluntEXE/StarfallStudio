@@ -684,7 +684,7 @@ public class SettingsWindow : Window
         if(ImGui.Button("Copy Log to Clipboard"))
         {
             var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(StarfallStudio.GetDebugInfo())));
-            StarfallStudio.Log.Warning("BRIOSUPPORT:" + base64);
+            StarfallStudio.Log.Warning("STARFALLSUPPORT:" + base64);
 
             var logPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "XIVLauncher", "dalamud.log");

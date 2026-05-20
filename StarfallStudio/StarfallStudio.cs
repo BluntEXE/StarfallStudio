@@ -43,7 +43,7 @@ public class StarfallStudio : IDalamudPlugin
     public const int MajorAPIVersion = 3;
     public const int MinorAPIVersion = 0;
 
-    public const string Name = "BRIO";
+    public const string Name = "Starfall Studio";
 
     private static ServiceProvider? _services = null;
 
