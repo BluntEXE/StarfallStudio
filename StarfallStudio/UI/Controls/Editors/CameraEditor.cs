@@ -181,150 +181,115 @@ public static class CameraEditor
             {
                 if(camera is not null)
                 {
-
                     var width = -ImGui.CalcTextSize("XXXXXXXXXx").X;
 
                     if(ImStarfallStudio.FontIconButtonRight("reset", FontAwesomeIcon.Undo, 1f, "Reset", camera.IsOverridden))
                         camera.ResetCamera();
 
-                    //
                     ImGui.Separator();
-                    //
 
-                    using(ImRaii.Disabled(capability._entityManager.SelectedEntity is not ActorEntity))
-                        if(ImStarfallStudio.FontIconButton("recenter_on_selected", FontAwesomeIcon.Bullseye, "Recenter on Selected Actor"))
-                        {
-                            var entity = capability._entityManager.SelectedEntity;
-                            if(entity is ActorEntity actor)
-                            {
-                                capability.VirtualCamera.SelectedActorName = $"Selected: [ {actor.FriendlyName} ]";
-                                camera.TargetOffset = (actor.GameObject.GetDrawObject<DrawObject>()->Object.Position - ((GameObject*)actor.GameObject.Address)->Position);
-                            }
-                        }
-
-                    ImGui.SameLine();
-
-                    ImStarfallStudio.CenterNextElementWithPadding(40);
-
-                    if(ImGui.BeginCombo($"###CameraContainerActorsWidget_{capability.Entity.Id}_list", capability.VirtualCamera.SelectedActorName))
+                    // Position (current, read-only) - Ktisis order: position first
                     {
-                        foreach(var value in capability._entityManager.TryGetAllActors())
-                        {
-                            if(ImGui.Selectable($"[ {value.FriendlyName} ]"))
-                            {
-                                capability.VirtualCamera.SelectedActorName = $"Selected: [ {value.FriendlyName} ]";
-                                camera.TargetOffset = (value.GameObject.GetDrawObject<DrawObject>()->Object.Position - ((GameObject*)value.GameObject.Address)->Position);
-                            }
-                        }
-                        ImGui.EndCombo();
-                    }
-
-                    ImGui.SameLine();
-
-                    if(ImStarfallStudio.FontIconButtonRight("reset_selected", FontAwesomeIcon.Undo, 1f, "Reset Selected Actor", camera.IsSelectingActor))
-                    {
-                        camera.TargetOffset = new Vector3(0);
-                        camera.SelectedActorName = "Select an actor to track";
-                    }
-
-                    {
-                        const string offsetText = "Position";
-
                         ImStarfallStudio.Icon(FontAwesomeIcon.ArrowsToCircle);
-
                         ImGui.SameLine();
-
                         ImGui.SetNextItemWidth(width);
                         var position = camera.RealPosition;
                         using(ImRaii.Disabled(true))
-                        {
-                            ImGui.DragFloat3(offsetText, ref position, 0.001f);
-                        }
+                            ImGui.DragFloat3("Position", ref position, 0.001f);
                     }
 
+                    // Offset
                     {
-                        const string offsetText = "Offset";
-
                         ImStarfallStudio.Icon(FontAwesomeIcon.ArrowsUpDownLeftRight);
-
                         ImGui.SameLine();
-
-                        Vector3 pos = camera.PositionOffset;
                         ImGui.SetNextItemWidth(width);
-                        if(ImGui.DragFloat3(offsetText, ref pos, 0.001f))
+                        var pos = camera.PositionOffset;
+                        if(ImGui.DragFloat3("Offset", ref pos, 0.001f))
                             camera.PositionOffset = pos;
-
                         ImGui.SameLine();
-
-                        if(ImStarfallStudio.FontIconButtonRight("resetPosition", FontAwesomeIcon.Undo, 1f, "Reset Position-Offset", camera.PositionOffset != Vector3.Zero))
+                        if(ImStarfallStudio.FontIconButtonRight("resetOffset", FontAwesomeIcon.Undo, 1f, "Reset Offset", camera.PositionOffset != Vector3.Zero))
                             camera.PositionOffset = Vector3.Zero;
                     }
 
                     ImGui.Separator();
 
-                    const string rotationText = "Rotation";
-                    float rotation = camera.PivotRotation;
-                    ImGui.SetNextItemWidth(width);
-                    if(ImStarfallStudio.SliderAngle(rotationText, ref rotation, -180, 180, "%.2f"))
-                        camera.PivotRotation = rotation;
+                    // Angle
+                    {
+                        ImStarfallStudio.Icon(FontAwesomeIcon.ArrowsSpin);
+                        ImGui.SameLine();
+                        ImGui.SetNextItemWidth(width);
+                        var angle = camera.Angle;
+                        if(ImGui.DragFloat2("Angle", ref angle, 0.001f))
+                            camera.Angle = angle;
+                        ImGui.SameLine();
+                        if(ImStarfallStudio.FontIconButtonRight("resetAngle", FontAwesomeIcon.Undo, 1f, "Reset Angle", camera.Angle != Vector2.Zero))
+                            camera.Angle = Vector2.Zero;
+                    }
 
-                    ImGui.SameLine();
+                    // Pan
+                    {
+                        ImStarfallStudio.Icon(FontAwesomeIcon.ArrowsAlt);
+                        ImGui.SameLine();
+                        ImGui.SetNextItemWidth(width);
+                        var pan = camera.Pan;
+                        if(ImGui.DragFloat2("Pan", ref pan, 0.001f))
+                            camera.Pan = pan;
+                        ImGui.SameLine();
+                        if(ImStarfallStudio.FontIconButtonRight("resetPan", FontAwesomeIcon.Undo, 1f, "Reset Pan", camera.Pan != Vector2.Zero))
+                            camera.Pan = Vector2.Zero;
+                    }
 
-                    if(ImStarfallStudio.FontIconButtonRight("resetRotation", FontAwesomeIcon.Undo, 1f, "Reset", rotation != 0))
-                        camera.PivotRotation = 0;
+                    // Rotation (pivot/roll)
+                    {
+                        ImStarfallStudio.Icon(FontAwesomeIcon.CameraRotate);
+                        ImGui.SameLine();
+                        ImGui.SetNextItemWidth(width);
+                        var rotation = camera.PivotRotation;
+                        if(ImStarfallStudio.SliderAngle("Rotation", ref rotation, -180, 180, "%.2f"))
+                            camera.PivotRotation = rotation;
+                        ImGui.SameLine();
+                        if(ImStarfallStudio.FontIconButtonRight("resetRotation", FontAwesomeIcon.Undo, 1f, "Reset", camera.PivotRotation != 0))
+                            camera.PivotRotation = 0;
+                    }
 
-                    const string zoomText = "Zoom";
-                    float zoom = camera.Zoom;
-                    ImGui.SetNextItemWidth(width);
-                    if(ImStarfallStudio.SliderFloat(zoomText, ref zoom, camera.StarfallStudioCamera->Camera.MaxDistance, camera.StarfallStudioCamera->Camera.MinDistance, "%.2f", ImGuiSliderFlags.AlwaysClamp))
-                        camera.Zoom = zoom;
+                    // FoV
+                    {
+                        ImStarfallStudio.Icon(FontAwesomeIcon.Panorama);
+                        ImGui.SameLine();
+                        ImGui.SetNextItemWidth(width);
+                        var fov = camera.FoV;
+                        if(ImStarfallStudio.SliderAngle("FoV", ref fov, -44, 120, "%.2f", ImGuiSliderFlags.AlwaysClamp))
+                            camera.FoV = fov;
+                        ImGui.SameLine();
+                        if(ImStarfallStudio.FontIconButtonRight("resetFoV", FontAwesomeIcon.Undo, 1f, "Reset", fov != 0))
+                            camera.FoV = 0f;
+                    }
 
-                    ImGui.SameLine();
-
-                    if(ImStarfallStudio.FontIconButtonRight("resetZoom", FontAwesomeIcon.Undo, 1f, "Reset", zoom != 2.5))
-                        camera.Zoom = 2.5f;
-
-                    const string fovText = "FoV";
-                    float fov = camera.FoV;
-                    ImGui.SetNextItemWidth(width);
-                    if(ImStarfallStudio.SliderAngle(fovText, ref fov, -44, 120, "%.2f", ImGuiSliderFlags.AlwaysClamp))
-                        camera.FoV = fov;
-
-                    ImGui.SameLine();
-
-                    if(ImStarfallStudio.FontIconButtonRight("resetFoV", FontAwesomeIcon.Undo, 1f, "Reset", fov != 0))
-                        camera.FoV = 0f;
+                    // Distance/Zoom
+                    {
+                        ImStarfallStudio.Icon(FontAwesomeIcon.Moon);
+                        ImGui.SameLine();
+                        ImGui.SetNextItemWidth(width);
+                        var zoom = camera.Zoom;
+                        if(ImStarfallStudio.SliderFloat("Distance", ref zoom, camera.StarfallStudioCamera->Camera.MaxDistance, camera.StarfallStudioCamera->Camera.MinDistance, "%.2f", ImGuiSliderFlags.AlwaysClamp))
+                            camera.Zoom = zoom;
+                        ImGui.SameLine();
+                        if(ImStarfallStudio.FontIconButtonRight("resetZoom", FontAwesomeIcon.Undo, 1f, "Reset", zoom != 2.5))
+                            camera.Zoom = 2.5f;
+                    }
 
                     ImGui.Separator();
 
-                    const string panText = "Pan";
-                    Vector2 pan = camera.Pan;
-                    ImGui.SetNextItemWidth(width);
-                    if(ImGui.DragFloat2(panText, ref pan, 0.001f))
-                        camera.Pan = pan;
+                    // Delimit + Disable collision on same line - matches Ktisis
+                    var delimit = camera.DelimitCamera;
+                    if(ImGui.Checkbox("Delimit camera", ref delimit))
+                        camera.DelimitCamera = delimit;
 
                     ImGui.SameLine();
-
-                    if(ImStarfallStudio.FontIconButtonRight("resetPan", FontAwesomeIcon.Undo, 1f, "Reset", pan != Vector2.Zero))
-                        camera.Pan = Vector2.Zero;
-
-                    const string angleText = "Angle";
-                    Vector2 angle = camera.Angle;
-                    ImGui.SetNextItemWidth(width);
-                    if(ImGui.DragFloat2(angleText, ref angle, 0.001f))
-                        camera.Angle = angle;
-
-                    ImGui.Separator();
 
                     var disable = camera.DisableCollision;
-                    if(ImGui.Checkbox("Disable Collision", ref disable))
+                    if(ImGui.Checkbox("Disable collision", ref disable))
                         camera.DisableCollision = disable;
-
-                    ImGui.SameLine();
-
-                    var delimit = camera.DelimitCamera;
-                    if(ImGui.Checkbox("Delimit Camera", ref delimit))
-                        camera.DelimitCamera = delimit;
                 }
             }
         }

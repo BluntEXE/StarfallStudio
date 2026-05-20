@@ -47,24 +47,49 @@ public class CameraWindow : Window, IDisposable
     {
         ImStarfallStudio.VerticalPadding(2);
 
-        ImGui.Text("Select Camera to Edit:");
-        ImStarfallStudio.CenterNextElementWithPadding(15);
-        using(ImRaii.Disabled(_virtualCameraService.CamerasCount == 0))
-            if(ImGui.BeginCombo("###setCamera"u8, $"{_virtualCameraService.SelectedCameraEntity?.FriendlyName}"))
-            {
-                var list = _virtualCameraService.SpawnedCameraEntities;
-                list.Add(_virtualCameraService.GetDefaultCamera()!);
-                foreach(var value in list)
-                {
-                    if(ImGui.Selectable($"Camera: [ {value.FriendlyName} ] [ {value.CameraType.ToString().ToUpper()} ]"))
-                    {
-                        _virtualCameraService.SelectedCameraEntity = value;
-                    }
-                }
-                ImGui.EndCombo();
-            }
+        // Camera selector row: [dropdown] [+ new] [freecam toggle] - matches Ktisis workflow
+        var avail = ImGui.GetContentRegionAvail().X;
+        var style = ImGui.GetStyle();
+        var iconBtnWidth = ImGui.GetFrameHeight() + style.FramePadding.X * 2;
+        var comboWidth = avail - (iconBtnWidth + style.ItemSpacing.X) * 2;
 
+        ImGui.SetNextItemWidth(comboWidth);
+        if(ImGui.BeginCombo("###setCamera"u8, $"{_virtualCameraService.SelectedCameraEntity?.FriendlyName}"))
+        {
+            var list = _virtualCameraService.SpawnedCameraEntities;
+            list.Add(_virtualCameraService.GetDefaultCamera()!);
+            foreach(var value in list)
+            {
+                if(ImGui.Selectable($"Camera: [ {value.FriendlyName} ] [ {value.CameraType.ToString().ToUpper()} ]"))
+                    _virtualCameraService.SelectedCameraEntity = value;
+            }
+            ImGui.EndCombo();
+        }
         ImStarfallStudio.AttachToolTip("Current Camera");
+
+        ImGui.SameLine();
+        if(ImStarfallStudio.FontIconButton("newgamecam", Dalamud.Interface.FontAwesomeIcon.Plus, "Create new camera"))
+            _virtualCameraService.CreateCamera(CameraType.Game);
+
+        ImGui.SameLine();
+        var isFreecam = _virtualCameraService.SelectedCameraEntity?.CameraType == CameraType.Free;
+        if(ImStarfallStudio.FontIconButton("freecamtoggle", Dalamud.Interface.FontAwesomeIcon.Camera,
+            isFreecam ? "Switch to game camera" : "Toggle free camera"))
+        {
+            if(isFreecam)
+            {
+                var def = _virtualCameraService.GetDefaultCamera();
+                if(def is not null)
+                {
+                    _virtualCameraService.SelectedCameraEntity = def;
+                    _virtualCameraService.SelectCamera(def.VirtualCamera);
+                }
+            }
+            else
+            {
+                _virtualCameraService.CreateCamera(CameraType.Free);
+            }
+        }
 
         ImGui.Separator();
 
