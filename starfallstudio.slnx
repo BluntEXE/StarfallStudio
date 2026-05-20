@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="StarfallStudio/StarfallStudio.csproj" />
+  <Project Path="Libs/StarfallStudio.API/StarfallStudio.API/StarfallStudio.API.csproj" />
+</Solution>

@@ -1,0 +1,38 @@
+﻿using StarfallStudio.Entities;
+using StarfallStudio.Resources;
+
+namespace StarfallStudio.Library.Sources;
+
+public class GameDataMountSource : GameDataAppearanceSourceBase
+{
+    public GameDataMountSource(GameDataProvider lumina, EntityManager entityManager)
+        : base(lumina, entityManager)
+    {
+    }
+
+    public override string Name => "Mounts";
+    public override string Description => "Mounts from FFXIV";
+
+    public override void Scan()
+    {
+        foreach(var mount in Lumina.Mounts)
+        {
+            string rowName = $"Mount {mount.RowId}";
+            string name = Lumina.GetMountName(mount.RowId);
+
+            var entry = new GameDataAppearanceEntry(this, EntityManager, mount.RowId, name, mount.Icon, mount, $"{mount.RowId}");
+            entry.Tags.Add("Mount");
+
+            if(name != rowName)
+                entry.Tags.Add("Named");
+
+            entry.SourceInfo = rowName;
+            Add(entry);
+        }
+    }
+
+    protected override string GetpublicId()
+    {
+        return "Mounts";
+    }
+}

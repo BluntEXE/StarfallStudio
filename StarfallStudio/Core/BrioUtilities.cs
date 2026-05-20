@@ -1,0 +1,37 @@
+﻿using StarfallStudio.Game.Actor.Appearance;
+using StarfallStudio.Game.Actor.Interop;
+
+namespace StarfallStudio.Core;
+
+
+public static class StarfallStudioUtilities
+{
+    // Imports Custom Colors from Chara files into StarfallStudio Shaders
+    public static void ImportShadersFromFile(ref ModelShaderOverride modelShaderOverride, StarfallStudioHuman.ShaderParams shaderParams)
+    {
+        modelShaderOverride.SkinColor = shaderParams.SkinColor;
+        modelShaderOverride.MuscleTone = shaderParams.MuscleTone;
+        modelShaderOverride.MouthColor = shaderParams.MouthColor;
+        modelShaderOverride.HairColor = shaderParams.HairColor;
+        modelShaderOverride.HairHighlight = shaderParams.HairHighlight;
+        modelShaderOverride.LeftEyeColor = shaderParams.LeftEyeColor;
+        modelShaderOverride.RightEyeColor = shaderParams.RightEyeColor;
+        modelShaderOverride.FeatureColor = shaderParams.FeatureColor;
+    }
+
+    public static float DegreesToRadians(float degrees)
+    {
+        if(degrees == 0)
+            return 0;
+
+        return degrees * (float)(System.Math.PI / 180);
+    }
+
+    public static float RadiansToDegrees(float radians)
+    {
+        if(radians == 0)
+            return 0;
+
+        return radians * (float)(180 / System.Math.PI);
+    }
+}

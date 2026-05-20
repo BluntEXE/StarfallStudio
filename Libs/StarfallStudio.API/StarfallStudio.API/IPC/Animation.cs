@@ -1,0 +1,58 @@
+﻿using StarfallStudio.API.Interface;
+using StarfallStudio.API.Helpers;
+using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Plugin;
+
+namespace StarfallStudio.API;
+
+public class SetActorSpeed(IDalamudPluginInterface pi) : FuncSubscriber<IGameObject, float, bool>(pi, Label)
+{
+    /// <summary> The label. </summary>
+    public const string Label = $"StarfallStudio.{nameof(SetActorSpeed)}.V3";
+
+    /// <inheritdoc cref="IAnimation.SetActorSpeed"/>
+    public new bool Invoke(IGameObject gameObject, float speed)
+        => base.Invoke(gameObject, speed);
+
+    public static FuncProvider<IGameObject, float, bool> Provider(IDalamudPluginInterface pi, IAnimation api)
+        => new(pi, Label, api.SetActorSpeed);
+}
+
+public class GetActorSpeed(IDalamudPluginInterface pi) : FuncSubscriber<IGameObject, float>(pi, Label)
+{
+    /// <summary> The label. </summary>
+    public const string Label = $"StarfallStudio.{nameof(GetActorSpeed)}.V3";
+
+    /// <inheritdoc cref="IAnimation.GetActorSpeed"/>
+    public new float Invoke(IGameObject gameObject)
+        => base.Invoke(gameObject);
+
+    public static FuncProvider<IGameObject, float> Provider(IDalamudPluginInterface pi, IAnimation api)
+        => new(pi, Label, api.GetActorSpeed);
+}
+
+public class FreezeActor(IDalamudPluginInterface pi) : FuncSubscriber<IGameObject, bool>(pi, Label)
+{
+    /// <summary> The label. </summary>
+    public const string Label = $"StarfallStudio.{nameof(FreezeActor)}.V3";
+
+    /// <inheritdoc cref="IAnimation.FreezeActor"/>
+    public new bool Invoke(IGameObject gameObject)
+        => base.Invoke(gameObject);
+
+    public static FuncProvider<IGameObject, bool> Provider(IDalamudPluginInterface pi, IAnimation api)
+        => new(pi, Label, api.FreezeActor);
+}
+
+public class UnFreezeActor(IDalamudPluginInterface pi) : FuncSubscriber<IGameObject, bool>(pi, Label)
+{
+    /// <summary> The label. </summary>
+    public const string Label = $"StarfallStudio.{nameof(UnFreezeActor)}.V3";
+
+    /// <inheritdoc cref="IAnimation.UnFreezeActor"/>
+    public new bool Invoke(IGameObject gameObject)
+        => base.Invoke(gameObject);
+
+    public static FuncProvider<IGameObject, bool> Provider(IDalamudPluginInterface pi, IAnimation api)
+        => new(pi, Label, api.UnFreezeActor);
+}

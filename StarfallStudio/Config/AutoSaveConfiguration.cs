@@ -1,0 +1,14 @@
+﻿namespace StarfallStudio.Config;
+
+public class AutoSaveConfiguration
+{
+    public bool AutoSaveSystemEnabled { get; set; } = true;
+
+    public bool AutoSaveIndividualPoses { get; set; } = true;
+
+    public int AutoSaveInterval { get; set; } = 60;
+    public int MaxAutoSaves { get; set; } = 11;
+
+    public bool CleanAutoSaveOnLeavingGpose { get; set; } = false;
+
+}
