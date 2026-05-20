@@ -48,7 +48,7 @@ public class EntityHierarchyView(EntityManager entityManager, GPoseService gPose
 
         using(ImRaii.PushId($"entity_hierarchy_{root.Id}"))
         {
-            foreach(var item in root.Children)
+            foreach(var item in root.Children.ToList())
             {
                 var disable = gPoseService.IsGPosing == false && item.Flags.HasFlag(EntityFlags.AllowOutsideGpose) == false;
                 try
