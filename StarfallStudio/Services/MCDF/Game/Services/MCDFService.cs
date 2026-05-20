@@ -310,6 +310,13 @@ public class MCDFService : IDisposable
             await _penumbraService.SetTemporaryModsAsync(applicationId, penumbraCollection, modPaths).ConfigureAwait(false);
             await _penumbraService.SetManipulationDataAsync(applicationId, penumbraCollection, manipData ?? string.Empty).ConfigureAwait(false);
 
+            // Wait N framework ticks for Glamourer to process GameObjectRedrawn and register
+            // the actor. RunOnTick is safe unlike Task.Delay - runs on the framework thread
+            // so the native actor pointer stays valid.
+            var glamourerReadyTcs = new System.Threading.Tasks.TaskCompletionSource();
+            _framework.RunOnTick(() => glamourerReadyTcs.TrySetResult(), delayTicks: 10);
+            await glamourerReadyTcs.Task.ConfigureAwait(false);
+
             DataApplicationProgress = "Applying Glamourer and redrawing Character";
             logger.Debug("{Progress}", DataApplicationProgress);
 
