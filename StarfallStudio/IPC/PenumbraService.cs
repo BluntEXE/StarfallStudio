@@ -240,7 +240,7 @@ public class PenumbraService : StarfallStudioIPC
         await _framework.RunOnFrameworkThread(() =>
         {
             var retAssign = _penumbraAssignTemporaryCollection.Invoke(collName, idx, forceAssignment: true);
-            StarfallStudio.Log.Info("Assigning Temp Collection {collName} to index {idx}, Result: {ret}", collName, idx, retAssign);
+            StarfallStudio.Log.Debug("Assigning Temp Collection {collName} to index {idx}, Success: {ret}", collName, idx, retAssign);
             return collName;
         }).ConfigureAwait(false);
     }
