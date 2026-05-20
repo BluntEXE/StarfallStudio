@@ -310,9 +310,6 @@ public class MCDFService : IDisposable
             await _penumbraService.SetTemporaryModsAsync(applicationId, penumbraCollection, modPaths).ConfigureAwait(false);
             await _penumbraService.SetManipulationDataAsync(applicationId, penumbraCollection, manipData ?? string.Empty).ConfigureAwait(false);
 
-            // Wait for Glamourer to process the GameObjectRedrawn triggered by collection assignment
-            await Task.Delay(1000, token).ConfigureAwait(false);
-
             DataApplicationProgress = "Applying Glamourer and redrawing Character";
             logger.Debug("{Progress}", DataApplicationProgress);
 
