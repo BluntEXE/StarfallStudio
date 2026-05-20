@@ -185,7 +185,7 @@ public class EntityHierarchyView(EntityManager entityManager, GPoseService gPose
 
         if(hasChildren)
         {
-            foreach(var child in entity.Children)
+            foreach(var child in entity.Children.ToList())
             {
                 DrawEntity(child, selectedEntityId, lastOffset == 0 ? 3 : lastOffset);
             }
