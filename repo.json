@@ -16,7 +16,7 @@
       "camera",
       "photography"
     ],
-    "IconUrl": "https://raw.githubusercontent.com/BluntEXE/StarfallStudio/main/StarfallStudio/Resources/Images/StarfallStudioIcon.png",
+    "IconUrl": "https://raw.githubusercontent.com/BluntEXE/StarfallStudio/main/images/icon.png",
     "DownloadLinkInstall": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.1.0/StarfallStudio.zip",
     "DownloadLinkUpdate": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.1.0/StarfallStudio.zip",
     "DownloadLinkTesting": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.1.0/StarfallStudio.zip"
