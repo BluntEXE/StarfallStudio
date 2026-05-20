@@ -295,35 +295,14 @@ public class PenumbraService : StarfallStudioIPC
         var redrawType = RedrawType.Redraw;
         if(afterGPose) redrawType = RedrawType.AfterGPose;
 
-        var targetIndex = gameObject.ObjectIndex;
-        var tcs = new System.Threading.Tasks.TaskCompletionSource();
-
-        void OnRedraw(int idx)
+        await _framework.RunOnFrameworkThread(() =>
         {
-            if(idx == targetIndex)
-                tcs.TrySetResult();
-        }
-
-        OnPenumbraRedraw += OnRedraw;
-        try
-        {
-            await _framework.RunOnFrameworkThread(() =>
-            {
-                _penumbraRedraw!.Invoke(gameObject.ObjectIndex, setting: redrawType);
-            });
-
-            // Wait for Penumbra to fire GameObjectRedrawn so Glamourer registers the actor
-            await Task.WhenAny(tcs.Task, Task.Delay(2000));
-        }
-        finally
-        {
-            OnPenumbraRedraw -= OnRedraw;
-        }
+            _penumbraRedraw!.Invoke(gameObject.ObjectIndex, setting: redrawType);
+        });
     }
 
     private void HandlePenumbraRedraw(nint arg1, int arg2)
     {
-        StarfallStudio.Log.Info("Penumbra GameObjectRedrawn: objectIndex={idx}", arg2);
         OnPenumbraRedraw?.Invoke(arg2);
     }
 
