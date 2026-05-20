@@ -139,7 +139,8 @@ public unsafe class CameraService : IDisposable
                 if(cameraEntity.TryGetCapability<CameraContainerCapability>(out var cameraCapability))
                 {
                     if(cameraCapability.CurrentCamera is not null && cameraCapability.IsAllowed && cameraCapability.CurrentCamera.IsFreeCamera == false)
-                        if(cameraCapability.CurrentCamera.DisableCollision && cameraCapability.CurrentCamera.IsActiveCamera)
+                        if(cameraCapability.CurrentCamera.IsActiveCamera &&
+                           (cameraCapability.CurrentCamera.DisableCollision || cameraCapability.CurrentCamera.DelimitCamera))
                         {
                             camera->Collide = new Vector2(camera->Camera.MaxDistance);
                             return 0;
