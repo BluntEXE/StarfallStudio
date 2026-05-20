@@ -519,6 +519,13 @@ public class SettingsWindow : Window
                 _configurationService.ApplyChange();
             }
 
+            bool showBoneCircles = _configurationService.Configuration.Posing.ShowBoneCircles;
+            if(ImGui.Checkbox("Show Bone Circles", ref showBoneCircles))
+            {
+                _configurationService.Configuration.Posing.ShowBoneCircles = showBoneCircles;
+                _configurationService.ApplyChange();
+            }
+
             bool skeletonLineToCircle = _configurationService.Configuration.Posing.SkeletonLineToCircle;
             if(ImGui.Checkbox("Draw skeleton line to edge of bone circle", ref skeletonLineToCircle))
             {

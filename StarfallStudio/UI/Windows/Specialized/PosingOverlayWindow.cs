@@ -1182,7 +1182,7 @@ public class PosingOverlayWindow : Window, IDisposable
         public bool AnyClickableClicked = false;
 
         public bool DrawSkeletonLines => !UserHidingOverlay && configuration.ShowSkeletonLines && (!UsingGizmo || !configuration.HideSkeletonWhenGizmoActive);
-        public bool DrawSkeletonDots => !UserHidingOverlay && (!UsingGizmo || !configuration.HideSkeletonWhenGizmoActive);
+        public bool DrawSkeletonDots => !UserHidingOverlay && configuration.ShowBoneCircles && (!UsingGizmo || !configuration.HideSkeletonWhenGizmoActive);
         public bool SkeletonLinesEnabled => !PopupOpen && !UsingGizmo && !UserDisablingSkeleton;
         public bool SkeletonDotsEnabled => !PopupOpen && !UsingGizmo && !UserDisablingSkeleton;
         public bool SkeletonInputEnabled => !AnythingBusy && DrawSkeletonDots && SkeletonDotsEnabled;
