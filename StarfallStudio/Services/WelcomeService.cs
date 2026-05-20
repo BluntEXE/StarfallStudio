@@ -13,14 +13,9 @@ public class WelcomeService : IDisposable
     {
         _gPoseService = gPoseService;
 
-        if(configService.Configuration.PopupKey == -1) // New User
+        // Mark popup as seen without showing it - changelog auto-popup disabled
+        if(configService.Configuration.PopupKey != Configuration.CurrentPopupKey)
         {
-            updateWindow.IsOpen = true;
-            configService.Configuration.PopupKey = Configuration.CurrentPopupKey;
-        }
-        else if(configService.Configuration.PopupKey != Configuration.CurrentPopupKey)
-        {
-            updateWindow.IsOpen = true;
             configService.Configuration.PopupKey = Configuration.CurrentPopupKey;
         }
 
@@ -47,8 +42,6 @@ public class WelcomeService : IDisposable
 
         if(configService.Configuration.Version <= 2)
         {
-            updateWindow.IsOpen = true;
-
             configService.Configuration.Version = Configuration.CurrentVersion;
         }
 

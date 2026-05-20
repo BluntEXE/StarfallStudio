@@ -30,13 +30,13 @@ public class UpdateWindow : Window
     private readonly List<string> _contributors = [];
     private readonly ChangelogFile _changelogFile;
 
-    public UpdateWindow() : base($"   {StarfallStudio.Name} CHANGLOG [{ConfigurationService.Instance.Version}]###brio_welcomewindow", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoDecoration)
+    public UpdateWindow() : base($"★ {StarfallStudio.Name} - Changelog [{ConfigurationService.Instance.Version}]###brio_welcomewindow", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking)
     {
         Namespace = "brio_welcomewindow_namespace";
 
         Size = new Vector2(710, 745);
 
-        ShowCloseButton = false;
+        ShowCloseButton = true;
         AllowClickthrough = false;
         AllowPinning = false;
 
@@ -195,7 +195,7 @@ public class UpdateWindow : Window
             DrawSupporters();
         }
 
-        ImGui.SetCursorPosX((ImGui.GetWindowSize().Y - _closeButtonWidth) / 2);
+        ImGui.SetCursorPosX((ImGui.GetWindowSize().X - _closeButtonWidth) / 2);
         if(ImStarfallStudio.Button("Close", FontAwesomeIcon.SquareXmark, new Vector2(_closeButtonWidth, 0), centerTest: true, tooltip: "To open this window again click the `Information` button on the StarfallStudio Scene Manager!"))
         {
             IsOpen = false;
