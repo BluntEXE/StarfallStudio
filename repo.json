@@ -1,0 +1,24 @@
+[
+  {
+    "Author": "Ehno",
+    "Name": "Starfall Studio",
+    "InternalName": "StarfallStudio",
+    "AssemblyVersion": "0.1.0.0",
+    "Description": "Starfall Studio - combined GPose toolkit for actor posing, animation control, camera editing, and scene building.\n- Actor list with click-to-select\n- World-space transform gizmo\n- Animation control and pause\n- Advanced appearance and wetness editing\n- Camera editor\n- Bone manipulation with bone tree\n- MCDF actor import\n- NPC/overworld actor import\n- Pose import",
+    "ApplicableVersion": "any",
+    "RepoUrl": "https://github.com/BluntEXE/StarfallStudio",
+    "Tags": ["gpose", "posing", "animation", "camera"],
+    "DalamudApiLevel": 15,
+    "LoadRequiredState": 0,
+    "LoadSync": false,
+    "CanUnloadAsync": false,
+    "LoadPriority": 0,
+    "IconUrl": "https://raw.githubusercontent.com/BluntEXE/StarfallStudio/main/StarfallStudio/Resources/Images/StarfallStudioIcon.png",
+    "DownloadLink": "https://github.com/BluntEXE/StarfallStudio/releases/latest/download/StarfallStudio.zip",
+    "Punchline": "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin.",
+    "Changelog": "",
+    "IsHide": false,
+    "IsTestingExclusive": false,
+    "AcceptsFeedback": false
+  }
+]
