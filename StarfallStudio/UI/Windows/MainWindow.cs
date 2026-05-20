@@ -49,7 +49,7 @@ public class MainWindow : Window, IDisposable
         AutoSaveService autoSaveService,
         MCDFService mCDFService
         )
-        : base($" {StarfallStudio.Name} [{configService.Version}]###brio_main_window", ImGuiWindowFlags.AlwaysAutoResize)
+        : base($"★ {StarfallStudio.Name} [{configService.Version}]###brio_main_window", ImGuiWindowFlags.AlwaysAutoResize)
     {
         Namespace = "brio_main_namespace";
 

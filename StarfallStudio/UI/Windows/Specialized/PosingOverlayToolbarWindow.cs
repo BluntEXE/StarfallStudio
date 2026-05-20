@@ -44,7 +44,7 @@ public class PosingOverlayToolbarWindow : Window
 
     private const string _boneFilterPopupName = "bone_filter_popup";
 
-    public PosingOverlayToolbarWindow(PosingOverlayWindow overlayWindow, IFramework framework, LightWindow lightWindow, LightingService lightingService, HistoryService groupedUndoService, GameInputService gameInputService, EntityManager entityManager, PosingTransformWindow overlayTransformWindow, PosingService posingService, ConfigurationService configurationService) : base($"{StarfallStudio.Name} OVERLAY###brio_posing_overlay_toolbar_window", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
+    public PosingOverlayToolbarWindow(PosingOverlayWindow overlayWindow, IFramework framework, LightWindow lightWindow, LightingService lightingService, HistoryService groupedUndoService, GameInputService gameInputService, EntityManager entityManager, PosingTransformWindow overlayTransformWindow, PosingService posingService, ConfigurationService configurationService) : base($"★ {StarfallStudio.Name}###brio_posing_overlay_toolbar_window", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
     {
         Namespace = "brio_posing_overlay_toolbar_namespace";
 
@@ -263,7 +263,7 @@ public class PosingOverlayToolbarWindow : Window
         {
             using(ImRaii.PushFont(UiBuilder.IconFont))
             {
-                if(ImGui.Button($"{FontAwesomeIcon.ArrowsSpin.ToIconString()}###select_rotate", button3XSizeVector2) || InputManagerService.ActionKeysPressed(InputAction.Posing_Rotate))
+                if(ImGui.Button($"{FontAwesomeIcon.Sync.ToIconString()}###select_rotate", button3XSizeVector2) || InputManagerService.ActionKeysPressed(InputAction.Posing_Rotate))
                     _lightingService.Operation = LightGizmoOperation.Rotate;
             }
         }
@@ -275,7 +275,7 @@ public class PosingOverlayToolbarWindow : Window
         {
             using(ImRaii.PushFont(UiBuilder.IconFont))
             {
-                if(ImGui.Button($"{FontAwesomeIcon.Cubes.ToIconString()}###select_universal", button3XSizeVector2) || InputManagerService.ActionKeysPressed(InputAction.Posing_Universal))
+                if(ImGui.Button($"{FontAwesomeIcon.Star.ToIconString()}###select_universal", button3XSizeVector2) || InputManagerService.ActionKeysPressed(InputAction.Posing_Universal))
                 {
                     _lightingService.Operation = LightGizmoOperation.Universal;
                 }
@@ -442,7 +442,7 @@ public class PosingOverlayToolbarWindow : Window
         {
             using(ImRaii.PushFont(UiBuilder.IconFont))
             {
-                if(ImGui.Button($"{FontAwesomeIcon.ArrowsSpin.ToIconString()}###select_rotate", new Vector2(button4XSize)) || InputManagerService.ActionKeysPressed(InputAction.Posing_Rotate))
+                if(ImGui.Button($"{FontAwesomeIcon.Sync.ToIconString()}###select_rotate", new Vector2(button4XSize)) || InputManagerService.ActionKeysPressed(InputAction.Posing_Rotate))
                     _posingService.Operation = PosingOperation.Rotate;
             }
         }
@@ -466,7 +466,7 @@ public class PosingOverlayToolbarWindow : Window
         {
             using(ImRaii.PushFont(UiBuilder.IconFont))
             {
-                if(ImGui.Button($"{FontAwesomeIcon.Cubes.ToIconString()}###select_universal", new Vector2(button4XSize)) || InputManagerService.ActionKeysPressed(InputAction.Posing_Universal))
+                if(ImGui.Button($"{FontAwesomeIcon.Star.ToIconString()}###select_universal", new Vector2(button4XSize)) || InputManagerService.ActionKeysPressed(InputAction.Posing_Universal))
                 {
                     _posingService.Operation = PosingOperation.Universal;
                 }
