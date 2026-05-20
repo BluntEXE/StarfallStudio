@@ -26,6 +26,23 @@ public class ActorAppearanceWidget(ActorAppearanceCapability capability) : Widge
     private const ActorEquipSlot _propSlots = ActorEquipSlot.Prop;
     private Vector2 IconSize => new(ImGui.GetTextLineHeight() * 3.9f);
 
+    // Import mode - matches Ktisis's per-actor Import & Export checkboxes
+    private bool _importCustomize = true;
+    private bool _importEquipment = true;
+    private bool _importWeapons = false;
+
+    private AppearanceImportOptions ImportOptions
+    {
+        get
+        {
+            var opts = AppearanceImportOptions.ExtendedAppearance;
+            if(_importCustomize) opts |= AppearanceImportOptions.Customize;
+            if(_importEquipment) opts |= AppearanceImportOptions.Equipment;
+            if(_importWeapons) opts |= AppearanceImportOptions.Weapon;
+            return opts;
+        }
+    }
+
     public override void DrawBody()
     {
         if(Capability.Actor.IsProp)
@@ -175,21 +192,9 @@ public class ActorAppearanceWidget(ActorAppearanceCapability capability) : Widge
 
     private void DrawLoadAppearance()
     {
-        if(ImStarfallStudio.FontIconButton("load_npc", FontAwesomeIcon.PersonArrowDownToLine, "Load NPC Appearance"))
-        {
-            AppearanceEditorCommon.ResetNPCSelector();
-            ImGui.OpenPopup("widget_npc_selector");
-        }
-
-        ImGui.SameLine();
-
-        if(ImStarfallStudio.FontIconButton("import_charafile", FontAwesomeIcon.FileDownload, "Import Character"))
-            FileUIHelpers.ShowImportCharacterModal(Capability, AppearanceImportOptions.All);
-
-        ImGui.SameLine();
-
-        if(ImStarfallStudio.FontIconButton("export_charafile", FontAwesomeIcon.Save, "Save Character File"))
-            FileUIHelpers.ShowExportCharacterModal(Capability);
+        // Advanced appearance editor + MCDF + Reset - always visible
+        if(ImStarfallStudio.FontIconButton("advanced_appearance", FontAwesomeIcon.UserEdit, "Advanced Appearance"))
+            ToggleAdvancedWindow();
 
         ImGui.SameLine();
 
@@ -198,9 +203,7 @@ public class ActorAppearanceWidget(ActorAppearanceCapability capability) : Widge
             using(ImRaii.Disabled(Capability.IsSelf || Capability.IsAnyMCDFLoading))
             {
                 if(ImStarfallStudio.FontIconButton("load_mcdf", FontAwesomeIcon.CloudDownloadAlt, "Load MCDF"))
-                {
                     FileUIHelpers.ShowImportMCDFModal(Capability);
-                }
                 ImGui.SameLine();
             }
             if(Capability.IsSelf)
@@ -211,28 +214,66 @@ public class ActorAppearanceWidget(ActorAppearanceCapability capability) : Widge
             using(ImRaii.Disabled(Capability.HasMCDF))
             {
                 if(ImStarfallStudio.FontIconButton("save_mcdf", FontAwesomeIcon.CloudUploadAlt, "Save MCDF"))
-                {
                     FileUIHelpers.ShowExportMCDFModal(Capability);
-                }
                 ImGui.SameLine();
             }
             if(Capability.HasMCDF)
                 ImStarfallStudio.AttachToolTip("Can not save a MCDF of a Actor that has a MCDF loaded. Reset this Actor to save a MCDF.");
         }
 
-        if(ImStarfallStudio.FontIconButton("advanced_appearance", FontAwesomeIcon.UserEdit, "Advanced"))
-            ToggleAdvancedWindow();
-
-        ImGui.SameLine();
-
         if(ImStarfallStudio.FontIconButtonRight("reset_appearance", FontAwesomeIcon.Undo, 1, "Reset", Capability.IsAppearanceOverridden))
             _ = Capability.ResetAppearance();
+
+        // Import & Export - collapsing, matches Ktisis workflow
+        if(ImGui.CollapsingHeader("Import & Export"))
+        {
+            ImGui.Spacing();
+
+            // Mode checkboxes - two groups like Ktisis
+            ImGui.BeginGroup();
+            ImGui.Text("Appearance");
+            ImGui.Checkbox("Customize##imp", ref _importCustomize);
+            ImGui.EndGroup();
+
+            ImGui.SameLine();
+
+            ImGui.BeginGroup();
+            ImGui.Text("Equipment");
+            ImGui.Checkbox("Gear##imp", ref _importEquipment);
+            ImGui.SameLine();
+            ImGui.Checkbox("Weapons##imp", ref _importWeapons);
+            ImGui.EndGroup();
+
+            ImGui.Spacing();
+            ImGui.Separator();
+            ImGui.Spacing();
+
+            // .chara import / export
+            if(ImGui.Button("Import##chara"))
+                FileUIHelpers.ShowImportCharacterModal(Capability, ImportOptions);
+
+            ImGui.SameLine();
+
+            if(ImGui.Button("Export##chara"))
+                FileUIHelpers.ShowExportCharacterModal(Capability);
+
+            ImGui.Spacing();
+
+            // NPC import - uses same mode options, matches Ktisis "Import NPC" button
+            if(ImGui.Button("Import NPC"))
+            {
+                AppearanceEditorCommon.ResetNPCSelector();
+                ImGui.OpenPopup("widget_npc_selector");
+            }
+
+            ImGui.Spacing();
+        }
 
         using(var popup = ImRaii.Popup("widget_npc_selector"))
         {
             if(popup.Success)
             {
-                if(AppearanceEditorCommon.DrawNPCSelector(Capability, AppearanceImportOptions.Default))
+                if(AppearanceEditorCommon.DrawNPCSelector(Capability, ImportOptions))
                     ImGui.CloseCurrentPopup();
             }
         }
