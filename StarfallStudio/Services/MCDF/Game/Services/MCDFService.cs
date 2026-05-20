@@ -321,15 +321,22 @@ public class MCDFService : IDisposable
 
             DataApplicationProgress = "Applying Customize+ data";
 
-            if(!string.IsNullOrEmpty(customizeData))
+            try
             {
-                logger.Debug("{Progress}", DataApplicationProgress);
-                cPlusId = await _customizePlusService.SetBodyScaleAsync(tempHandler.GameObject, customizeData).ConfigureAwait(false);
+                if(!string.IsNullOrEmpty(customizeData))
+                {
+                    logger.Debug("{Progress}", DataApplicationProgress);
+                    cPlusId = await _customizePlusService.SetBodyScaleAsync(tempHandler.GameObject, customizeData).ConfigureAwait(false);
+                }
+                else
+                {
+                    logger.Debug("{Progress} IsNullOrEmpty", DataApplicationProgress);
+                    cPlusId = await _customizePlusService.SetBodyScaleAsync(tempHandler.GameObject, Convert.ToBase64String(Encoding.UTF8.GetBytes("{}"))).ConfigureAwait(false);
+                }
             }
-            else
+            catch(Exception ex)
             {
-                logger.Debug("{Progress} IsNullOrEmpty", DataApplicationProgress);
-                cPlusId = await _customizePlusService.SetBodyScaleAsync(tempHandler.GameObject, Convert.ToBase64String(Encoding.UTF8.GetBytes("{}"))).ConfigureAwait(false);
+                logger.Warning(ex, "CustomizePlus profile could not be applied - skipping C+ step");
             }
 
             _characterHandlerService.CharacterHandler.Add(new CharacterHolder(tempHandler.GameObject, cPlusId, tempHandler.Name));
