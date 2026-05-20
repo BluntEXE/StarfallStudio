@@ -1,9 +1,11 @@
-﻿using Dalamud.Bindings.ImGui;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 using System.Numerics;
 
 namespace StarfallStudio.UI;
 
+// Midnight Starfall - gothic dark with amethyst + antique gold
+// Deep purples = gothic darkness | Gold accents = starlight/celestial
 public static class StarfallStudioStyle
 {
     public static bool EnableStyle { get; set; }
@@ -12,110 +14,160 @@ public static class StarfallStudioStyle
     static bool _hasPushed = false;
     static bool _hasPushedColor = false;
 
+    // Amethyst accent
+    static readonly Vector4 Amethyst       = new(115, 55, 160, 255);
+    static readonly Vector4 AmethystHover  = new(92, 42, 130, 255);
+    static readonly Vector4 AmethystActive = new(75, 34, 106, 255);
+    static readonly Vector4 AmethystDim    = new(115, 55, 160, 140);
+
+    // Star gold accent
+    static readonly Vector4 Gold           = new(185, 142, 48, 255);
+    static readonly Vector4 GoldDim        = new(155, 118, 38, 200);
+
+    // Dark purple-tinted backgrounds (night sky)
+    static readonly Vector4 BgWindow  = new(22, 17, 28, 248);
+    static readonly Vector4 BgChild   = new(22, 17, 28, 60);
+    static readonly Vector4 BgPopup   = new(28, 21, 36, 252);
+    static readonly Vector4 BgFrame   = new(34, 25, 44, 255);
+    static readonly Vector4 BgFrameH  = new(52, 38, 65, 255);
+    static readonly Vector4 BgFrameA  = new(40, 29, 52, 255);
+
+    // Title bars - deep gothic purple
+    static readonly Vector4 TitleBg   = new(28, 17, 38, 232);
+    static readonly Vector4 TitleBgA  = new(45, 24, 62, 255);
+    static readonly Vector4 TitleBgC  = new(24, 14, 33, 255);
+
+    // Borders - purple-tinted
+    static readonly Vector4 Border     = new(58, 40, 72, 255);
+    static readonly Vector4 BorderShad = new(0,  0,  0, 100);
+
+    // Scrollbar
+    static readonly Vector4 ScrollBg   = new(0, 0, 0, 0);
+    static readonly Vector4 ScrollG    = new(72, 46, 92, 255);
+    static readonly Vector4 ScrollGH   = new(92, 58, 118, 255);
+    static readonly Vector4 ScrollGA   = new(108, 68, 138, 255);
+
+    // Headers (collapsing sections)
+    static readonly Vector4 Header  = new(45, 30, 60, 65);
+    static readonly Vector4 HeaderH = new(68, 44, 90, 85);
+    static readonly Vector4 HeaderA = new(88, 55, 115, 110);
+
+    // Separators - subtle purple, glows on hover
+    static readonly Vector4 Sep  = new(68, 46, 85, 105);
+    static readonly Vector4 SepH = new(95, 60, 128, 200);
+
+    // Tabs
+    static readonly Vector4 Tab    = new(36, 24, 48, 255);
+    static readonly Vector4 TabH   = new(72, 46, 102, 255);
+    static readonly Vector4 TabUF  = new(33, 22, 44, 255);
+    static readonly Vector4 TabUFA = new(85, 50, 120, 255);
+
     public static void PushStyle()
     {
         if(EnableStyle == false)
-        {
             return;
-        }
+
         _hasPushed = true;
 
         if(EnableColor)
         {
             _hasPushedColor = true;
 
-            PushStyleColor(ImGuiCol.Text, new Vector4(255, 255, 255, 255));
-            PushStyleColor(ImGuiCol.TextDisabled, new Vector4(128, 128, 128, 255));
+            PushStyleColor(ImGuiCol.Text,         new(255, 255, 255, 255));
+            PushStyleColor(ImGuiCol.TextDisabled,  new(140, 118, 158, 255));
 
-            PushStyleColor(ImGuiCol.WindowBg, new Vector4(25, 25, 25, 248));
-            PushStyleColor(ImGuiCol.ChildBg, new Vector4(25, 25, 25, 66));
-            PushStyleColor(ImGuiCol.PopupBg, new Vector4(25, 25, 25, 248));
+            PushStyleColor(ImGuiCol.WindowBg,  BgWindow);
+            PushStyleColor(ImGuiCol.ChildBg,   BgChild);
+            PushStyleColor(ImGuiCol.PopupBg,   BgPopup);
 
-            PushStyleColor(ImGuiCol.Border, new Vector4(44, 44, 44, 255));
-            PushStyleColor(ImGuiCol.BorderShadow, new Vector4(0, 0, 0, 128));
+            PushStyleColor(ImGuiCol.Border,       Border);
+            PushStyleColor(ImGuiCol.BorderShadow, BorderShad);
 
-            PushStyleColor(ImGuiCol.FrameBg, new Vector4(36, 36, 36, 255));
-            PushStyleColor(ImGuiCol.FrameBgHovered, new Vector4(57, 57, 57, 255));
-            PushStyleColor(ImGuiCol.FrameBgActive, new Vector4(33, 33, 3, 255));
+            PushStyleColor(ImGuiCol.FrameBg,        BgFrame);
+            PushStyleColor(ImGuiCol.FrameBgHovered, BgFrameH);
+            PushStyleColor(ImGuiCol.FrameBgActive,  BgFrameA);
 
-            PushStyleColor(ImGuiCol.TitleBg, new Vector4(27, 27, 27, 232));
-            PushStyleColor(ImGuiCol.TitleBgActive, new Vector4(33, 33, 33, 255));
-            PushStyleColor(ImGuiCol.TitleBgCollapsed, new Vector4(30, 30, 30, 255));
+            PushStyleColor(ImGuiCol.TitleBg,          TitleBg);
+            PushStyleColor(ImGuiCol.TitleBgActive,    TitleBgA);
+            PushStyleColor(ImGuiCol.TitleBgCollapsed, TitleBgC);
 
-            PushStyleColor(ImGuiCol.MenuBarBg, new Vector4(36, 36, 36, 255));
-            PushStyleColor(ImGuiCol.ScrollbarBg, new Vector4(0, 0, 0, 0));
-            PushStyleColor(ImGuiCol.ScrollbarGrab, new Vector4(62, 62, 62, 255));
-            PushStyleColor(ImGuiCol.ScrollbarGrabHovered, new Vector4(70, 70, 70, 255));
-            PushStyleColor(ImGuiCol.ScrollbarGrabActive, new Vector4(70, 70, 70, 255));
+            PushStyleColor(ImGuiCol.MenuBarBg,         new(32, 22, 42, 255));
+            PushStyleColor(ImGuiCol.ScrollbarBg,       ScrollBg);
+            PushStyleColor(ImGuiCol.ScrollbarGrab,        ScrollG);
+            PushStyleColor(ImGuiCol.ScrollbarGrabHovered, ScrollGH);
+            PushStyleColor(ImGuiCol.ScrollbarGrabActive,  ScrollGA);
 
-            PushStyleColor(ImGuiCol.CheckMark, new Vector4(98, 75, 224, 255));
+            // Gold checkmark = starlight on dark
+            PushStyleColor(ImGuiCol.CheckMark, Gold);
 
-            PushStyleColor(ImGuiCol.SliderGrab, new Vector4(101, 101, 101, 255));
-            PushStyleColor(ImGuiCol.SliderGrabActive, new Vector4(123, 123, 123, 255));
+            // Amethyst slider, gold when active
+            PushStyleColor(ImGuiCol.SliderGrab,       new(108, 68, 145, 255));
+            PushStyleColor(ImGuiCol.SliderGrabActive, GoldDim);
 
-            PushStyleColor(ImGuiCol.Button, new Vector4(255, 255, 255, 31));
-            PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(74, 56, 170, 255));
-            PushStyleColor(ImGuiCol.ButtonActive, new Vector4(54, 42, 122, 255));
+            PushStyleColor(ImGuiCol.Button,        new(255, 255, 255, 18));
+            PushStyleColor(ImGuiCol.ButtonHovered, AmethystHover);
+            PushStyleColor(ImGuiCol.ButtonActive,  AmethystActive);
 
-            PushStyleColor(ImGuiCol.Header, new Vector4(0, 0, 0, 60));
-            PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(0, 0, 0, 90));
-            PushStyleColor(ImGuiCol.HeaderActive, new Vector4(0, 0, 0, 120));
+            PushStyleColor(ImGuiCol.Header,        Header);
+            PushStyleColor(ImGuiCol.HeaderHovered, HeaderH);
+            PushStyleColor(ImGuiCol.HeaderActive,  HeaderA);
 
-            PushStyleColor(ImGuiCol.Separator, new Vector4(75, 75, 75, 121));
-            PushStyleColor(ImGuiCol.SeparatorHovered, new Vector4(37, 25, 98, 255));
-            PushStyleColor(ImGuiCol.SeparatorActive, new Vector4(98, 75, 224, 255));
+            PushStyleColor(ImGuiCol.Separator,        Sep);
+            PushStyleColor(ImGuiCol.SeparatorHovered, SepH);
+            PushStyleColor(ImGuiCol.SeparatorActive,  Amethyst);
 
-            PushStyleColor(ImGuiCol.ResizeGrip, new Vector4(0, 0, 0, 0));
-            PushStyleColor(ImGuiCol.ResizeGripHovered, new Vector4(0, 0, 0, 0));
-            PushStyleColor(ImGuiCol.ResizeGripActive, new Vector4(98, 75, 224, 255));
+            PushStyleColor(ImGuiCol.ResizeGrip,        new(0, 0, 0, 0));
+            PushStyleColor(ImGuiCol.ResizeGripHovered, new(0, 0, 0, 0));
+            PushStyleColor(ImGuiCol.ResizeGripActive,  Amethyst);
 
-            PushStyleColor(ImGuiCol.Tab, new Vector4(41, 41, 41, 255));
-            PushStyleColor(ImGuiCol.TabHovered, new Vector4(42, 29, 113, 255));
-            PushStyleColor(ImGuiCol.TabActive, new Vector4(98, 75, 224, 255));
-            PushStyleColor(ImGuiCol.TabUnfocused, new Vector4(41, 39, 41, 255));
-            PushStyleColor(ImGuiCol.TabUnfocusedActive, new Vector4(73, 48, 205, 255));
+            PushStyleColor(ImGuiCol.Tab,                Tab);
+            PushStyleColor(ImGuiCol.TabHovered,         TabH);
+            PushStyleColor(ImGuiCol.TabActive,          Amethyst);
+            PushStyleColor(ImGuiCol.TabUnfocused,       TabUF);
+            PushStyleColor(ImGuiCol.TabUnfocusedActive, TabUFA);
 
-            PushStyleColor(ImGuiCol.DockingPreview, new Vector4(91, 70, 208, 105));
-            PushStyleColor(ImGuiCol.DockingEmptyBg, new Vector4(51, 51, 51, 255));
+            PushStyleColor(ImGuiCol.DockingPreview,  AmethystDim);
+            PushStyleColor(ImGuiCol.DockingEmptyBg,  new(28, 20, 36, 255));
 
-            PushStyleColor(ImGuiCol.PlotLines, new Vector4(156, 156, 156, 255));
+            PushStyleColor(ImGuiCol.PlotLines, new(155, 120, 185, 255));
 
-            PushStyleColor(ImGuiCol.TableHeaderBg, new Vector4(48, 48, 48, 255));
-            PushStyleColor(ImGuiCol.TableBorderStrong, new Vector4(79, 79, 89, 255));
-            PushStyleColor(ImGuiCol.TableBorderLight, new Vector4(59, 59, 64, 255));
-            PushStyleColor(ImGuiCol.TableRowBg, new Vector4(0, 0, 0, 0));
-            PushStyleColor(ImGuiCol.TableRowBgAlt, new Vector4(255, 255, 255, 15));
+            PushStyleColor(ImGuiCol.TableHeaderBg,     new(42, 26, 55, 255));
+            PushStyleColor(ImGuiCol.TableBorderStrong, new(72, 46, 88, 255));
+            PushStyleColor(ImGuiCol.TableBorderLight,  new(55, 34, 68, 255));
+            PushStyleColor(ImGuiCol.TableRowBg,    new(0, 0, 0, 0));
+            PushStyleColor(ImGuiCol.TableRowBgAlt, new(255, 255, 255, 10));
 
-            PushStyleColor(ImGuiCol.TextSelectedBg, new Vector4(98, 75, 224, 255));
-            PushStyleColor(ImGuiCol.DragDropTarget, new Vector4(98, 75, 224, 255));
+            // Gold selection = star highlight
+            PushStyleColor(ImGuiCol.TextSelectedBg, AmethystDim);
+            PushStyleColor(ImGuiCol.DragDropTarget, Gold);
 
-            PushStyleColor(ImGuiCol.NavHighlight, new Vector4(98, 75, 224, 179));
-            PushStyleColor(ImGuiCol.NavWindowingDimBg, new Vector4(204, 204, 204, 51));
-            PushStyleColor(ImGuiCol.NavWindowingHighlight, new Vector4(204, 204, 204, 89));
+            PushStyleColor(ImGuiCol.NavHighlight,          AmethystDim);
+            PushStyleColor(ImGuiCol.NavWindowingDimBg,     new(204, 204, 204, 51));
+            PushStyleColor(ImGuiCol.NavWindowingHighlight, new(204, 204, 204, 89));
         }
 
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(6, 6));
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, new Vector2(4, 3));
-        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding, new Vector2(4, 4));
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(4, 4));
-        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing, new Vector2(4, 4));
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding,     new Vector2(6, 6));
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding,      new Vector2(4, 3));
+        ImGui.PushStyleVar(ImGuiStyleVar.CellPadding,       new Vector2(4, 4));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing,       new Vector2(4, 4));
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemInnerSpacing,  new Vector2(4, 4));
 
         ImGui.PushStyleVar(ImGuiStyleVar.IndentSpacing, 21.0f);
-        ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize, 9.0f);
-        ImGui.PushStyleVar(ImGuiStyleVar.GrabMinSize, 20.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarSize,  9.0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.GrabMinSize,   20.0f);
 
         ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 1f);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize, 1f);
-        ImGui.PushStyleVar(ImGuiStyleVar.PopupBorderSize, 1f);
-        ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize, 0f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildBorderSize,  1f);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupBorderSize,  1f);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameBorderSize,  0.5f);  // subtle frame definition
 
-        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 7f);
-        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding, 4f * ImGuiHelpers.GlobalScale);
-        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 4f);
-        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding, 4f);
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding,   8f);
+        ImGui.PushStyleVar(ImGuiStyleVar.ChildRounding,    4f * ImGuiHelpers.GlobalScale);
+        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding,    4f);
+        ImGui.PushStyleVar(ImGuiStyleVar.PopupRounding,    5f);
         ImGui.PushStyleVar(ImGuiStyleVar.ScrollbarRounding, 4f);
-        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding, 4f * ImGuiHelpers.GlobalScale);
-        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding, 4f);
+        ImGui.PushStyleVar(ImGuiStyleVar.GrabRounding,      4f * ImGuiHelpers.GlobalScale);
+        ImGui.PushStyleVar(ImGuiStyleVar.TabRounding,       4f);
     }
 
     static void PushStyleColor(ImGuiCol imGuiCol, Vector4 colorVector)

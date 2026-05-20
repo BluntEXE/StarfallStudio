@@ -11,19 +11,19 @@ public static class ThemeManager
     {
         CurrentTheme = new Theme
         {
-            Name = "Default",
+            Name = "Midnight Starfall",
             Accent = new ThemeAccent
             {
-                AccentColor = SetColor(new Vector4(98, 75, 224, 255)),
-                AccentColorLight = SetColor(new Vector4(98, 75, 224, 255)),
-                AccentColorStrong = SetColor(new Vector4(98, 75, 224, 255)),
-                AccentColorDim = SetColor(new Vector4(98, 75, 224, 255)),
+                AccentColor        = SetColor(new Vector4(115, 55, 160, 255)),  // amethyst
+                AccentColorLight   = SetColor(new Vector4(145, 80, 195, 255)),
+                AccentColorStrong  = SetColor(new Vector4(185, 142, 48, 255)), // gold
+                AccentColorDim     = SetColor(new Vector4(115, 55, 160, 140)),
 
-                AccentCheckMark = SetColor(new Vector4(98, 75, 224, 255)),
-                AccentButtonHovered = SetColor(new Vector4(74, 56, 170, 255)),
+                AccentCheckMark     = SetColor(new Vector4(185, 142, 48, 255)), // gold checkmark
+                AccentButtonHovered = SetColor(new Vector4(92, 42, 130, 255)),
 
-                AccentTabActive = SetColor(new Vector4(98, 75, 224, 255)),
-                AccentTabUnfocusedActive = SetColor(new Vector4(73, 48, 205, 255)),
+                AccentTabActive          = SetColor(new Vector4(115, 55, 160, 255)),
+                AccentTabUnfocusedActive = SetColor(new Vector4(85, 50, 120, 255)),
             },
             Core = new ThemeCore
             {

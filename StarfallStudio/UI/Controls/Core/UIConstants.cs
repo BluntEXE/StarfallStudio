@@ -3,8 +3,8 @@ namespace StarfallStudio.UI.Controls.Core;
 
 public static class UIConstants
 {
-    public const uint ToggleButtonInactive = 0xFFFFFFFF;
-    public const uint ToggleButtonActive = 0xFF0050FF;
+    public const uint ToggleButtonInactive = 0xFFCCAEE0;  // soft lavender
+    public const uint ToggleButtonActive   = 0xFFA037B3;  // deep amethyst
     public const uint Transparent = 0x00000000;
 
     public const uint SlightGrey = 0xFF999999;
