@@ -147,8 +147,11 @@ public class ActorContainerCapability : Capability
 
     public void AddOverworldActorToGPose(ICharacter character)
     {
-        // Just target the actor - no GPose registration needed for existing actors.
-        // AddCharacterToGPose is only for newly spawned slots.
-        _targetService.GPoseTarget = character;
+        // Clone the overworld actor into a new GPose slot - copies appearance + position.
+        // CloneCharacter handles AddCharacterToGPose on the NEW slot, which is safe.
+        if(_actorSpawnService.CloneCharacter(character, out var cloned, SpawnFlags.Default))
+        {
+            _entityManager.SetSelectedEntity(cloned);
+        }
     }
 }
