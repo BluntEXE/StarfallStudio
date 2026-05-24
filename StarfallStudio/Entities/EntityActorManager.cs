@@ -3,6 +3,7 @@ using StarfallStudio.Entities.Core;
 using StarfallStudio.Game.Actor;
 using StarfallStudio.Game.Actor.Extensions;
 using StarfallStudio.Game.Core;
+using StarfallStudio.Game.GPose;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
@@ -22,8 +23,9 @@ public unsafe class EntityActorManager : IDisposable
 
     private readonly ActorContainerEntity _actorContainerEntity;
     private readonly ActorSpawnService _actorSpawnService;
+    private readonly GPoseService _gPoseService;
 
-    public EntityActorManager(EntityManager entityManager, ActorSpawnService actorSpawnService, IServiceProvider serviceProvider, ObjectMonitorService monitorService, IObjectTable objects, IFramework framework)
+    public EntityActorManager(EntityManager entityManager, ActorSpawnService actorSpawnService, IServiceProvider serviceProvider, ObjectMonitorService monitorService, IObjectTable objects, IFramework framework, GPoseService gPoseService)
     {
         _entityManager = entityManager;
         _serviceProvider = serviceProvider;
@@ -31,9 +33,11 @@ public unsafe class EntityActorManager : IDisposable
         _objects = objects;
         _framework = framework;
         _actorSpawnService = actorSpawnService;
+        _gPoseService = gPoseService;
 
         _monitorService.CharacterInitialized += OnCharacterInitialized;
         _monitorService.CharacterDestroyed += OnCharacterDestroyed;
+        _gPoseService.OnGPoseStateChange += OnGPoseStateChanged;
 
         _actorContainerEntity = ActivatorUtilities.CreateInstance<ActorContainerEntity>(_serviceProvider);
     }
@@ -154,10 +158,22 @@ public unsafe class EntityActorManager : IDisposable
         });
     }
 
+    private void OnGPoseStateChanged(bool isGPosing)
+    {
+        if(!isGPosing)
+            return;
+
+        // In open world (e.g. Limsa), FFXIV populates GPose slots by copying
+        // pre-allocated Character structs without calling Initialize. CharacterInitialized
+        // never fires for those actors, so we re-scan the object table a few frames
+        // after GPose starts to pick them all up.
+        _framework.RunOnTick(PopulateExistingActors, delayTicks: 3);
+    }
 
     public void Dispose()
     {
         _monitorService.CharacterInitialized -= OnCharacterInitialized;
         _monitorService.CharacterDestroyed -= OnCharacterDestroyed;
+        _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
     }
 }
