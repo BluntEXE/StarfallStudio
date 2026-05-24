@@ -6,6 +6,7 @@ using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using System;
 using System.Numerics;
 
 namespace StarfallStudio.UI.Widgets.Actor;
@@ -27,6 +28,7 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
     }
 
     private ActorEntity? _selectedActor;
+    private string _actorSearch = string.Empty;
 
     public override void DrawQuickIcons()
     {
@@ -92,12 +94,44 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
 
     public override void DrawBody()
     {
+        // Search box: empty = managed-only view; text = search all GPose actors
+        ImGui.SetNextItemWidth(-1);
+        ImGui.InputTextWithHint($"###actorcontainerwidget_{Capability.Entity.Id}_search", "Search all actors...", ref _actorSearch, 128);
+
+        bool searchActive = _actorSearch.Length > 0;
+
         if(ImGui.BeginListBox($"###actorcontainerwidget_{Capability.Entity.Id}_list", new Vector2(-1, 150 * ImGuiHelpers.GlobalScale)))
         {
             foreach(var child in Capability.Entity.Children)
             {
                 if(child is ActorEntity actorEntity)
                 {
+                    bool isManaged = Capability.IsManaged(actorEntity);
+
+                    if(!searchActive && !isManaged)
+                        continue;
+
+                    if(searchActive && !child.FriendlyName.Contains(_actorSearch, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // In search mode: show pin/unpin button before the actor name
+                    if(searchActive)
+                    {
+                        var pinLabel = isManaged
+                            ? $"-###actorcontainerwidget_{Capability.Entity.Id}_unpin_{actorEntity.Id}"
+                            : $"+###actorcontainerwidget_{Capability.Entity.Id}_pin_{actorEntity.Id}";
+                        var pinTooltip = isManaged ? "Remove from managed list" : "Add to managed list";
+
+                        if(ImGui.SmallButton(pinLabel))
+                        {
+                            if(isManaged) Capability.UnpinActor(actorEntity);
+                            else Capability.PinActor(actorEntity);
+                        }
+                        if(ImGui.IsItemHovered())
+                            ImGui.SetTooltip(pinTooltip);
+                        ImGui.SameLine();
+                    }
+
                     bool isSelected = actorEntity.Equals(_selectedActor);
                     if(ImGui.Selectable($"{child.FriendlyName}###actorcontainerwidget_{Capability.Entity.Id}_item_{actorEntity.Id}", isSelected, ImGuiSelectableFlags.AllowDoubleClick))
                     {

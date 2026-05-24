@@ -26,6 +26,9 @@ public class ActorContainerCapability : Capability
 
     public bool CanControlCharacters => _gPoseService.IsGPosing;
 
+    // Tracks actors the user explicitly spawned or pinned - shown in the default (managed-only) view.
+    private readonly HashSet<ushort> _managedActorIndices = [];
+
     public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService, IObjectTable objectTable) : base(parent)
     {
         _entityManager = entityManager;
@@ -35,6 +38,15 @@ public class ActorContainerCapability : Capability
         _objectTable = objectTable;
         Widget = new ActorContainerWidget(this);
     }
+
+    public bool IsManaged(ActorEntity actor) =>
+        _managedActorIndices.Contains((ushort)actor.GameObject.ObjectIndex);
+
+    public void PinActor(ActorEntity actor) =>
+        _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
+
+    public void UnpinActor(ActorEntity actor) =>
+        _managedActorIndices.Remove((ushort)actor.GameObject.ObjectIndex);
 
     public void SelectActorInHierarchy(ActorEntity entity)
     {
@@ -49,6 +61,7 @@ public class ActorContainerCapability : Capability
 
         if(_actorSpawnService.CreateCharacter(out var chara, flags, disableSpawnCompanion: forceSpawnActorWithoutCompanion))
         {
+            _managedActorIndices.Add((ushort)chara.ObjectIndex);
             EntityId characterId = new EntityId(chara);
             if(targetNewInHierarchy)
             {
@@ -64,6 +77,7 @@ public class ActorContainerCapability : Capability
     {
         if(_actorSpawnService.SpawnNewProp(out ICharacter? character))
         {
+            _managedActorIndices.Add((ushort)character!.ObjectIndex);
             EntityId characterId = new EntityId(character!);
             if(selectInHierarchy)
             {
@@ -79,6 +93,7 @@ public class ActorContainerCapability : Capability
     {
         if(_actorSpawnService.SpawnNewProp(out ICharacter? character))
         {
+            _managedActorIndices.Add((ushort)character!.ObjectIndex);
             if(selectInHierarchy)
             {
                 _entityManager.SetSelectedEntity(character!);
@@ -88,6 +103,7 @@ public class ActorContainerCapability : Capability
 
     public void DestroyCharacter(ActorEntity entity)
     {
+        _managedActorIndices.Remove((ushort)entity.GameObject.ObjectIndex);
         _actorSpawnService.DestroyObject(entity.GameObject);
     }
 
@@ -97,6 +113,7 @@ public class ActorContainerCapability : Capability
         {
             if(_actorSpawnService.CloneCharacter(character, out var chara))
             {
+                _managedActorIndices.Add((ushort)chara.ObjectIndex);
                 if(targetNewInHierarchy)
                 {
                     _entityManager.SetSelectedEntity(chara);
