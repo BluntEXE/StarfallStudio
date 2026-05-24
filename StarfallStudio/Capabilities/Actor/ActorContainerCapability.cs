@@ -45,10 +45,34 @@ public class ActorContainerCapability : Capability
     public bool IsManaged(ActorEntity actor) =>
         _managedActorIndices.Contains((ushort)actor.GameObject.ObjectIndex);
 
-    public void PinActor(ActorEntity actor)
+    // Called by ActorEntity.OnAttached - auto-manages the local player's own actor.
+    public void CheckAutoManage(ActorEntity actor)
+    {
+        var localPlayer = _objectTable.LocalPlayer;
+        if(localPlayer != null &&
+           actor.GameObject.Name.TextValue == localPlayer.Name.TextValue)
+        {
+            _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
+        }
+    }
+
+    public unsafe void PinActor(ActorEntity actor)
     {
         _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
-        // Hide() sets Transparency=1 (visible). Show() sets Transparency=0 (invisible).
+
+        // Move to local player's position so they appear at the shoot location.
+        var localPlayer = _objectTable.LocalPlayer;
+        if(localPlayer != null && actor.GameObject is ICharacter)
+        {
+            var playerNative = localPlayer.Native();
+            var actorNative = actor.GameObject.Native();
+            actorNative->Position = playerNative->Position;
+            actorNative->DefaultPosition = playerNative->Position;
+            actorNative->Rotation = playerNative->Rotation;
+            actorNative->DefaultRotation = playerNative->Rotation;
+        }
+
+        // Restore visibility if previously hidden. Hide() sets Transparency=1 (visible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && aac.IsHidden)
             _ = aac.Hide();
     }
@@ -56,15 +80,8 @@ public class ActorContainerCapability : Capability
     public void UnpinActor(ActorEntity actor)
     {
         _managedActorIndices.Remove((ushort)actor.GameObject.ObjectIndex);
+        // Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
-            _ = aac.Show();
-    }
-
-    // Called by ActorEntity.OnAttached to hide newly attached ambient actors.
-    // Show() sets Transparency=0 which IsHidden treats as invisible.
-    public void HideIfAmbient(ActorEntity actor)
-    {
-        if(!IsManaged(actor) && actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
             _ = aac.Show();
     }
 
