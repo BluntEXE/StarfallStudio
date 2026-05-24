@@ -48,22 +48,24 @@ public class ActorContainerCapability : Capability
     public void PinActor(ActorEntity actor)
     {
         _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
+        // Hide() sets Transparency=1 (visible). Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && aac.IsHidden)
-            _ = aac.Show();
+            _ = aac.Hide();
     }
 
     public void UnpinActor(ActorEntity actor)
     {
         _managedActorIndices.Remove((ushort)actor.GameObject.ObjectIndex);
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
-            _ = aac.Hide();
+            _ = aac.Show();
     }
 
     // Called by ActorEntity.OnAttached to hide newly attached ambient actors.
+    // Show() sets Transparency=0 which IsHidden treats as invisible.
     public void HideIfAmbient(ActorEntity actor)
     {
         if(!IsManaged(actor) && actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
-            _ = aac.Hide();
+            _ = aac.Show();
     }
 
     public void SelectActorInHierarchy(ActorEntity entity)
