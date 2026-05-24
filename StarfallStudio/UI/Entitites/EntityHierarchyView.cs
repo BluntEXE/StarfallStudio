@@ -66,6 +66,9 @@ public class EntityHierarchyView(EntityManager entityManager, GPoseService gPose
 
     private void DrawEntity(Entity entity, EntityId? selectedEntityId, float lastOffset = 0)
     {
+        if(!entity.ShowInHierarchy)
+            return;
+
         bool isSelected = false;
         bool hasChildren = false;
         bool hasOffset = false;

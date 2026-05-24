@@ -41,6 +41,7 @@ public abstract class Entity : IDisposable
 
     public virtual FontAwesomeIcon Icon => FontAwesomeIcon.Question;
     public virtual bool IsVisible => true;
+    public virtual bool ShowInHierarchy => true;
     public virtual bool IsAttached => Parent != null;
     public virtual EntityFlags Flags => EntityFlags.DefaultOpen;
 

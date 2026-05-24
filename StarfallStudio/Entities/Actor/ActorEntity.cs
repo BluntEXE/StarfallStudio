@@ -13,6 +13,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility.Raii;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace StarfallStudio.Entities.Actor;
 
@@ -42,6 +43,19 @@ public class ActorEntity(IGameObject gameObject, IServiceProvider provider) : En
     public override FontAwesomeIcon Icon => IsProp ? FontAwesomeIcon.Cube : GameObject.GetFriendlyIcon();
 
     public override bool IsVisible => true;
+
+    // Only show in hierarchy if the parent container considers this actor managed.
+    // Sub-children (companions etc.) have an ActorEntity parent, not a container, so they always pass.
+    public override bool ShowInHierarchy
+    {
+        get
+        {
+            if(Parent is ActorContainerEntity container &&
+               container.TryGetCapability<ActorContainerCapability>(out var cap))
+                return cap.IsManaged(this);
+            return true;
+        }
+    }
 
     public override EntityFlags Flags => EntityFlags.AllowDoubleClick | EntityFlags.HasContextButton | EntityFlags.DefaultOpen | EntityFlags.AllowMultiSelect;
 
