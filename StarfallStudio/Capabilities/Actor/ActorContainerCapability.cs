@@ -13,7 +13,6 @@ using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace StarfallStudio.Capabilities.Actor;
 
@@ -24,26 +23,21 @@ public class ActorContainerCapability : Capability
     private readonly TargetService _targetService;
     private readonly GPoseService _gPoseService;
     private readonly IObjectTable _objectTable;
-    private readonly IFramework _framework;
-    private readonly ObjectMonitorService _monitorService;
 
     public bool CanControlCharacters => _gPoseService.IsGPosing;
 
     // Tracks actors the user explicitly spawned or pinned - shown in hierarchy, visible in-world.
     private readonly HashSet<ushort> _managedActorIndices = [];
 
-    public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService, IObjectTable objectTable, IFramework framework, ObjectMonitorService monitorService) : base(parent)
+    public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService, IObjectTable objectTable) : base(parent)
     {
         _entityManager = entityManager;
         _actorSpawnService = actorSpawnService;
         _targetService = targetService;
         _gPoseService = gPoseService;
         _objectTable = objectTable;
-        _framework = framework;
-        _monitorService = monitorService;
 
         _gPoseService.OnGPoseStateChange += OnGPoseStateChanged;
-        SubscribeCharacterEvents();
 
         Widget = new ActorContainerWidget(this);
     }
@@ -62,6 +56,13 @@ public class ActorContainerCapability : Capability
     {
         _managedActorIndices.Remove((ushort)actor.GameObject.ObjectIndex);
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
+            _ = aac.Hide();
+    }
+
+    // Called by ActorEntity.OnAttached to hide newly attached ambient actors.
+    public void HideIfAmbient(ActorEntity actor)
+    {
+        if(!IsManaged(actor) && actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
             _ = aac.Hide();
     }
 
@@ -194,76 +195,15 @@ public class ActorContainerCapability : Capability
         _targetService.GPoseTarget = character;
     }
 
-    // ── Ambient actor hiding ────────────────────────────────────────────────
-
     private void OnGPoseStateChanged(bool isGPosing)
     {
-        if(isGPosing)
-        {
-            // Wait one tick: EntityActorManager.PopulateExistingActors runs synchronously but
-            // ActorAppearanceCapability is set up in OnAttached - ensure everything is ready.
-            _framework.RunOnTick(HideAllAmbientActors);
-        }
-        else
-        {
-            // GPose ending - all GPose objects will be destroyed by the game.
-            // Clear our managed set so the next session starts clean.
+        if(!isGPosing)
             _managedActorIndices.Clear();
-        }
-    }
-
-    private unsafe void SubscribeCharacterEvents() =>
-        _monitorService.CharacterInitialized += OnCharacterInitialized;
-
-    private unsafe void UnsubscribeCharacterEvents() =>
-        _monitorService.CharacterInitialized -= OnCharacterInitialized;
-
-    private unsafe void OnCharacterInitialized(NativeCharacter* chara)
-    {
-        if(!_gPoseService.IsGPosing)
-            return;
-
-        // Capture as nint so the lambda doesn't need an unsafe context.
-        nint charaPtr = (nint)chara;
-
-        // Mirror EntityActorManager's one-tick delay so the entity is fully attached.
-        _framework.RunOnTick(() =>
-        {
-            var go = _objectTable.CreateObjectReference(charaPtr);
-            if(go == null) return;
-
-            foreach(var child in Entity.Children)
-            {
-                if(child is ActorEntity actorEntity &&
-                   actorEntity.GameObject.ObjectIndex == go.ObjectIndex &&
-                   !IsManaged(actorEntity))
-                {
-                    HideActor(actorEntity);
-                    break;
-                }
-            }
-        });
-    }
-
-    private void HideAllAmbientActors()
-    {
-        foreach(var child in Entity.Children)
-        {
-            if(child is ActorEntity actorEntity && !IsManaged(actorEntity))
-                HideActor(actorEntity);
-        }
-    }
-
-    private static void HideActor(ActorEntity actor)
-    {
-        if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
-            _ = aac.Hide();
     }
 
     public override void Dispose()
     {
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
-        UnsubscribeCharacterEvents();
         base.Dispose();
     }
 }

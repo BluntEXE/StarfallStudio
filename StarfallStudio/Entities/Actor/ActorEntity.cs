@@ -120,5 +120,10 @@ public class ActorEntity(IGameObject gameObject, IServiceProvider provider) : En
         }
 
         AddCapability(ActivatorUtilities.CreateInstance<ActorDebugCapability>(_serviceProvider, this));
+
+        // After all capabilities are ready, let the container hide ambient (non-managed) actors.
+        if(Parent is ActorContainerEntity container &&
+           container.TryGetCapability<ActorContainerCapability>(out var cap))
+            cap.HideIfAmbient(this);
     }
 }
