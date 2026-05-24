@@ -145,13 +145,18 @@ public class ActorContainerCapability : Capability
             .ToList();
     }
 
-    public void AddOverworldActorToGPose(ICharacter character)
+    public unsafe void AddOverworldActorToGPose(ICharacter character)
     {
-        // Clone the overworld actor into a new GPose slot - copies appearance + position.
-        // CloneCharacter handles AddCharacterToGPose on the NEW slot, which is safe.
-        if(_actorSpawnService.CloneCharacter(character, out var cloned, SpawnFlags.Default))
+        var localPlayer = _objectTable.LocalPlayer;
+        if(localPlayer != null)
         {
-            _entityManager.SetSelectedEntity(cloned);
+            var playerNative = localPlayer.Native();
+            var characterNative = character.Native();
+            characterNative->Position = playerNative->Position;
+            characterNative->DefaultPosition = playerNative->Position;
+            characterNative->Rotation = playerNative->Rotation;
+            characterNative->DefaultRotation = playerNative->Rotation;
         }
+        _targetService.GPoseTarget = character;
     }
 }
