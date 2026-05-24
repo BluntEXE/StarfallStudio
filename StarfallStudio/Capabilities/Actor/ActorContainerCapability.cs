@@ -6,10 +6,13 @@ using StarfallStudio.Game.Actor;
 using StarfallStudio.Game.Core;
 using StarfallStudio.Game.GPose;
 using StarfallStudio.UI.Widgets.Actor;
+using StarfallStudio.Game.Actor.Extensions;
+using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StarfallStudio.Capabilities.Actor;
 
@@ -117,21 +120,35 @@ public class ActorContainerCapability : Capability
         _entityManager.SetSelectedEntity(entity);
     }
 
-    public List<ICharacter> GetOverworldActors()
+    private static readonly HashSet<ObjectKind> _validOverworldKinds = [
+        ObjectKind.Pc,
+        ObjectKind.BattleNpc,
+        ObjectKind.EventNpc,
+        ObjectKind.Mount,
+        ObjectKind.Companion,
+    ];
+
+    public unsafe List<ICharacter> GetOverworldActors()
     {
-        var result = new List<ICharacter>();
-        for(int i = ActorTableHelpers.OverworldStart; i <= ActorTableHelpers.OverworldEnd; i++)
-        {
-            var obj = _objectTable[i];
-            if(obj is ICharacter character && obj.IsValid())
-                result.Add(character);
-        }
-        return result;
+        return _objectTable
+            .Where(o =>
+                o.IsValid()
+                && o is ICharacter
+                && o.ObjectIndex != 200                        // skip GPose special slot
+                && _validOverworldKinds.Contains(o.ObjectKind)
+                && o.Native()->DrawObject != null)             // must have a loaded model
+            // for players: prefer GPose copy (index >= 200) over the overworld duplicate
+            .GroupBy(o => o.ObjectKind == ObjectKind.Pc ? o.Name.TextValue : o.Name.TextValue + "_" + o.ObjectIndex)
+            .Select(g => g.OrderByDescending(o => o.ObjectIndex >= ActorTableHelpers.GPoseStart).First())
+            .OfType<ICharacter>()
+            .OrderBy(o => o.YalmDistanceX * o.YalmDistanceX + o.YalmDistanceZ * o.YalmDistanceZ)
+            .ToList();
     }
 
     public void AddOverworldActorToGPose(ICharacter character)
     {
-        _gPoseService.AddCharacterToGPose(character);
-        _entityManager.SetSelectedEntity(character);
+        // Just target the actor - no GPose registration needed for existing actors.
+        // AddCharacterToGPose is only for newly spawned slots.
+        _targetService.GPoseTarget = character;
     }
 }
