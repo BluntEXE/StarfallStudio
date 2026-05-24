@@ -42,6 +42,33 @@ public class ActorEditor
                 {
                     actorContainerCapability.CreateProp(true);
                 }
+
+                ImGui.Separator();
+
+                if(ImGui.BeginMenu("Add Overworld Actor"u8))
+                {
+                    var overworldActors = actorContainerCapability.GetOverworldActors();
+                    if(overworldActors.Count == 0)
+                    {
+                        ImGui.TextDisabled("No overworld actors found");
+                    }
+                    else
+                    {
+                        foreach(var actor in overworldActors)
+                        {
+                            var label = string.IsNullOrWhiteSpace(actor.Name.TextValue)
+                                ? $"Actor {actor.ObjectIndex}"
+                                : actor.Name.TextValue;
+
+                            if(ImGui.MenuItem(label))
+                            {
+                                actorContainerCapability.AddOverworldActorToGPose(actor);
+                                ImGui.CloseCurrentPopup();
+                            }
+                        }
+                    }
+                    ImGui.EndMenu();
+                }
             }
         }
     }

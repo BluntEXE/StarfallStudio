@@ -7,7 +7,9 @@ using StarfallStudio.Game.Core;
 using StarfallStudio.Game.GPose;
 using StarfallStudio.UI.Widgets.Actor;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Plugin.Services;
 using System;
+using System.Collections.Generic;
 
 namespace StarfallStudio.Capabilities.Actor;
 
@@ -17,15 +19,17 @@ public class ActorContainerCapability : Capability
     private readonly ActorSpawnService _actorSpawnService;
     private readonly TargetService _targetService;
     private readonly GPoseService _gPoseService;
+    private readonly IObjectTable _objectTable;
 
     public bool CanControlCharacters => _gPoseService.IsGPosing;
 
-    public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService) : base(parent)
+    public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService, IObjectTable objectTable) : base(parent)
     {
         _entityManager = entityManager;
         _actorSpawnService = actorSpawnService;
         _targetService = targetService;
         _gPoseService = gPoseService;
+        _objectTable = objectTable;
         Widget = new ActorContainerWidget(this);
     }
 
@@ -111,5 +115,23 @@ public class ActorContainerCapability : Capability
     public void SelectInHierarchy(ActorEntity entity)
     {
         _entityManager.SetSelectedEntity(entity);
+    }
+
+    public List<ICharacter> GetOverworldActors()
+    {
+        var result = new List<ICharacter>();
+        for(int i = ActorTableHelpers.OverworldStart; i <= ActorTableHelpers.OverworldEnd; i++)
+        {
+            var obj = _objectTable[i];
+            if(obj is ICharacter character && obj.IsValid())
+                result.Add(character);
+        }
+        return result;
+    }
+
+    public void AddOverworldActorToGPose(ICharacter character)
+    {
+        _gPoseService.AddCharacterToGPose(character);
+        _entityManager.SetSelectedEntity(character);
     }
 }

@@ -99,25 +99,10 @@ public class MainWindow : Window, IDisposable
 
         DrawHeaderButtons();
 
-        if(_gPoseService.IsInRealGPose == false)
+        if(_gPoseService.IsGPosing == false)
         {
-            if(_gPoseService.FakeGPose)
-            {
-                using(ImRaii.PushColor(ImGuiCol.Button, UIConstants.GizmoGreen))
-                using(ImRaii.PushColor(ImGuiCol.ButtonHovered, UIConstants.GizmoGreen))
-                {
-                    if(ImGui.Button("Exit Overworld Mode###overworld_toggle", new(-1, 0)))
-                        _gPoseService.FakeGPose = false;
-                }
-            }
-            else
-            {
-                using(ImRaii.PushColor(ImGuiCol.Text, UIConstants.GizmoRed))
-                    ImGui.Text("Open GPose to use StarfallStudio!");
-
-                if(ImGui.Button("Enter Overworld Mode###overworld_toggle", new(-1, 0)))
-                    _gPoseService.FakeGPose = true;
-            }
+            using(ImRaii.PushColor(ImGuiCol.Text, UIConstants.GizmoRed))
+                ImGui.Text("Open GPose to use StarfallStudio!");
         }
 
         var rootEntity = _entityManager.RootEntity;

@@ -16,7 +16,6 @@ namespace StarfallStudio.Game.GPose;
 public unsafe class GPoseService : IDisposable
 {
     public bool IsGPosing => _isInFakeGPose || _isInGPose;
-    public bool IsInRealGPose => _isInGPose;
 
     public delegate void OnGPoseStateDelegate(bool newState);
     public event OnGPoseStateDelegate? OnGPoseStateChange;
@@ -111,11 +110,6 @@ public unsafe class GPoseService : IDisposable
     public void AddCharacterToGPose(NativeCharacter* chara)
     {
         if(!IsGPosing)
-            return;
-
-        // EventGPoseController.AddCharacterToGPose is only safe in real GPose.
-        // In FakeGPose (overworld mode) actors are drawn via ActorRedrawService instead.
-        if(!_isInGPose)
             return;
 
         var ef = EventFramework.Instance();
