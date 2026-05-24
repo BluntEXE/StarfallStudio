@@ -121,9 +121,9 @@ public class ActorEntity(IGameObject gameObject, IServiceProvider provider) : En
 
         AddCapability(ActivatorUtilities.CreateInstance<ActorDebugCapability>(_serviceProvider, this));
 
-        // After all capabilities are ready, auto-manage the local player's own actor.
+        // After all capabilities are ready: auto-manage local player, hide everyone else.
         if(Parent is ActorContainerEntity container &&
            container.TryGetCapability<ActorContainerCapability>(out var cap))
-            cap.CheckAutoManage(this);
+            cap.OnActorAttached(this);
     }
 }

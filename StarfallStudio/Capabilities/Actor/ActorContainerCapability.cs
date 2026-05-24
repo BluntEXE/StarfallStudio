@@ -13,6 +13,7 @@ using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace StarfallStudio.Capabilities.Actor;
 
@@ -26,8 +27,11 @@ public class ActorContainerCapability : Capability
 
     public bool CanControlCharacters => _gPoseService.IsGPosing;
 
-    // Tracks actors the user explicitly spawned or pinned - shown in hierarchy, visible in-world.
+    // Actors shown in hierarchy and visible in-world.
     private readonly HashSet<ushort> _managedActorIndices = [];
+
+    // Original positions captured at pin-time so we can restore on unpin.
+    private readonly Dictionary<ushort, (Vector3 Position, float Rotation)> _originalPositions = [];
 
     public ActorContainerCapability(ActorContainerEntity parent, EntityManager entityManager, ActorSpawnService actorSpawnService, TargetService targetService, GPoseService gPoseService, IObjectTable objectTable) : base(parent)
     {
@@ -45,42 +49,65 @@ public class ActorContainerCapability : Capability
     public bool IsManaged(ActorEntity actor) =>
         _managedActorIndices.Contains((ushort)actor.GameObject.ObjectIndex);
 
-    // Called by ActorEntity.OnAttached - auto-manages the local player's own actor.
-    public void CheckAutoManage(ActorEntity actor)
+    // Called by ActorEntity.OnAttached.
+    // Auto-manages the local player's own actor; hides everyone else.
+    public void OnActorAttached(ActorEntity actor)
     {
         var localPlayer = _objectTable.LocalPlayer;
-        if(localPlayer != null &&
-           actor.GameObject.Name.TextValue == localPlayer.Name.TextValue)
+        if(localPlayer != null && actor.GameObject.Name.TextValue == localPlayer.Name.TextValue)
         {
             _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
+            return;
         }
+
+        // All other ambient actors start hidden. Show() sets Transparency=0 (invisible).
+        if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
+            _ = aac.Show();
     }
 
     public unsafe void PinActor(ActorEntity actor)
     {
-        _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
+        var index = (ushort)actor.GameObject.ObjectIndex;
 
-        // Move to local player's position so they appear at the shoot location.
+        // Capture current position before moving so we can restore it on unpin.
+        var actorNative = actor.GameObject.Native();
+        _originalPositions[index] = (actorNative->Position, actorNative->Rotation);
+
+        _managedActorIndices.Add(index);
+
+        // Move to local player's position.
         var localPlayer = _objectTable.LocalPlayer;
-        if(localPlayer != null && actor.GameObject is ICharacter)
+        if(localPlayer != null)
         {
             var playerNative = localPlayer.Native();
-            var actorNative = actor.GameObject.Native();
             actorNative->Position = playerNative->Position;
             actorNative->DefaultPosition = playerNative->Position;
             actorNative->Rotation = playerNative->Rotation;
             actorNative->DefaultRotation = playerNative->Rotation;
         }
 
-        // Restore visibility if previously hidden. Hide() sets Transparency=1 (visible).
+        // Make visible. Hide() sets Transparency=1 (visible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && aac.IsHidden)
             _ = aac.Hide();
     }
 
-    public void UnpinActor(ActorEntity actor)
+    public unsafe void UnpinActor(ActorEntity actor)
     {
-        _managedActorIndices.Remove((ushort)actor.GameObject.ObjectIndex);
-        // Show() sets Transparency=0 (invisible).
+        var index = (ushort)actor.GameObject.ObjectIndex;
+        _managedActorIndices.Remove(index);
+
+        // Restore original position if we recorded one.
+        if(_originalPositions.TryGetValue(index, out var orig))
+        {
+            var actorNative = actor.GameObject.Native();
+            actorNative->Position = orig.Position;
+            actorNative->DefaultPosition = orig.Position;
+            actorNative->Rotation = orig.Rotation;
+            actorNative->DefaultRotation = orig.Rotation;
+            _originalPositions.Remove(index);
+        }
+
+        // Hide. Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
             _ = aac.Show();
     }
@@ -101,9 +128,7 @@ public class ActorContainerCapability : Capability
             _managedActorIndices.Add((ushort)chara.ObjectIndex);
             EntityId characterId = new EntityId(chara);
             if(targetNewInHierarchy)
-            {
                 _entityManager.SetSelectedEntity(characterId);
-            }
             return (characterId, chara);
         }
 
@@ -117,9 +142,7 @@ public class ActorContainerCapability : Capability
             _managedActorIndices.Add((ushort)character!.ObjectIndex);
             EntityId characterId = new EntityId(character!);
             if(selectInHierarchy)
-            {
                 _entityManager.SetSelectedEntity(character!);
-            }
             return (characterId, character!);
         }
 
@@ -132,15 +155,14 @@ public class ActorContainerCapability : Capability
         {
             _managedActorIndices.Add((ushort)character!.ObjectIndex);
             if(selectInHierarchy)
-            {
                 _entityManager.SetSelectedEntity(character!);
-            }
         }
     }
 
     public void DestroyCharacter(ActorEntity entity)
     {
         _managedActorIndices.Remove((ushort)entity.GameObject.ObjectIndex);
+        _originalPositions.Remove((ushort)entity.GameObject.ObjectIndex);
         _actorSpawnService.DestroyObject(entity.GameObject);
     }
 
@@ -152,9 +174,7 @@ public class ActorContainerCapability : Capability
             {
                 _managedActorIndices.Add((ushort)chara.ObjectIndex);
                 if(targetNewInHierarchy)
-                {
                     _entityManager.SetSelectedEntity(chara);
-                }
             }
         }
     }
@@ -188,10 +208,9 @@ public class ActorContainerCapability : Capability
             .Where(o =>
                 o.IsValid()
                 && o is ICharacter
-                && o.ObjectIndex != 200                        // skip GPose special slot
+                && o.ObjectIndex != 200
                 && _validOverworldKinds.Contains(o.ObjectKind)
-                && o.Native()->DrawObject != null)             // must have a loaded model
-            // for players: prefer GPose copy (index >= 200) over the overworld duplicate
+                && o.Native()->DrawObject != null)
             .GroupBy(o => o.ObjectKind == ObjectKind.Pc ? o.Name.TextValue : o.Name.TextValue + "_" + o.ObjectIndex)
             .Select(g => g.OrderByDescending(o => o.ObjectIndex >= ActorTableHelpers.GPoseStart).First())
             .OfType<ICharacter>()
@@ -217,7 +236,10 @@ public class ActorContainerCapability : Capability
     private void OnGPoseStateChanged(bool isGPosing)
     {
         if(!isGPosing)
+        {
             _managedActorIndices.Clear();
+            _originalPositions.Clear();
+        }
     }
 
     public override void Dispose()
