@@ -94,11 +94,8 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
 
     public override void DrawBody()
     {
-        // Search box: empty = managed-only view; text = search all GPose actors
         ImGui.SetNextItemWidth(-1);
-        ImGui.InputTextWithHint($"###actorcontainerwidget_{Capability.Entity.Id}_search", "Search all actors...", ref _actorSearch, 128);
-
-        bool searchActive = _actorSearch.Length > 0;
+        ImGui.InputTextWithHint($"###actorcontainerwidget_{Capability.Entity.Id}_search", "Filter actors...", ref _actorSearch, 128);
 
         if(ImGui.BeginListBox($"###actorcontainerwidget_{Capability.Entity.Id}_list", new Vector2(-1, 150 * ImGuiHelpers.GlobalScale)))
         {
@@ -106,16 +103,11 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
             {
                 if(child is ActorEntity actorEntity)
                 {
+                    if(_actorSearch.Length > 0 && !child.FriendlyName.Contains(_actorSearch, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
                     bool isManaged = Capability.IsManaged(actorEntity);
 
-                    if(!searchActive && !isManaged)
-                        continue;
-
-                    if(searchActive && !child.FriendlyName.Contains(_actorSearch, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    // In search mode: show pin/unpin button before the actor name
-                    if(searchActive)
                     {
                         var pinLabel = isManaged
                             ? $"-###actorcontainerwidget_{Capability.Entity.Id}_unpin_{actorEntity.Id}"
