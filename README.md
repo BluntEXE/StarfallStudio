@@ -1,6 +1,6 @@
-# ★ Starfall Studio
+# Starfall Studio
 
-A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.com/Etheirys/Brio) and [Ktisis](https://github.com/ktisis-tools/Ktisis) into a single cohesive plugin designed for venue photography and scene building.
+A GPose toolkit for FFXIV combining [Brio](https://github.com/Etheirys/Brio) and [Ktisis](https://github.com/ktisis-tools/Ktisis) into a single plugin built for venue photography and scene work.
 
 ![Starfall Studio](Resources/Images/StarfallStudioIcon.png)
 
@@ -9,7 +9,7 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 ## Features
 
 ### Posing
-- Bone tree list (hierarchical, Ktisis-style) with ancestor highlighting
+- Bone tree with ancestor highlighting (Ktisis-style)
 - Bone category filters
 - Pose import / export
 - Mirror pose
@@ -17,48 +17,48 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 - Undo / redo per bone
 
 ### Camera
-- Full camera editor — angle, pan, rotation, FoV, distance
-- Delimit camera (remove zoom limits)
-- Freecam with WASD movement + mouse look
+- Camera editor: angle, pan, rotation, FoV, distance
+- Delimit camera (removes zoom limits)
+- Freecam with WASD + mouse look
 - Multiple cameras
 
 ### Actors
 - Actor list with click-to-select
-- Spawn additional actors
-- Clone actors
+- Spawn, clone, and destroy actors
 - Hide / show actors
-- Model transform gizmo (world-space repositioning)
-- **NPC / overworld actor import** — add real NPCs and other players to your scene in open-world GPose; ambient actors are hidden automatically, selected actors teleport to your position
+- World-space transform gizmo
+- **NPC / overworld actor import**: add real NPCs and other players to your scene in open-world GPose. Ambient actors are hidden automatically; selected actors teleport to your position.
 
 ### Appearance
-- Import & Export with per-section checkboxes (Customize / Gear / Weapons)
+- Import / export with per-section toggles (Customize / Gear / Weapons)
 - Import NPC appearance
 - MCDF import (requires Penumbra + Glamourer)
 - Wetness / Wetness Depth editor
 
 ### Animation
-- Animation control with timeline
+- Animation control with timeline scrub
 - Freeze physics
 - Speed multiplier
 - Animation search and blend
 
 ### World
-- Weather control
-- Time of day
+- Weather and time of day control
+- Sky, cloud, and star editor
 - Lighting editor
 - Festival flags
+- Environment effects (particles, fog, wind, rain)
 
 ---
 
 ## Documentation
 
-**[Full User Guide](GUIDE.md)** — covers every panel and feature with a quick-navigation index.
+**[Full User Guide](GUIDE.md)** covers every panel and feature with a quick-navigation index.
 
 ---
 
 ## Installation
 
-> **This is a custom plugin — it is not in the official Dalamud plugin list.**
+> **Custom plugin - not in the official Dalamud list.**
 
 1. Open **Dalamud Settings** → **Experimental** tab
 2. Under **Custom Plugin Repositories**, add:
@@ -66,12 +66,12 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
    https://raw.githubusercontent.com/BluntEXE/StarfallStudio/main/repo.json
    ```
 3. Click **Save & Close**
-4. Open `/xlplugins` → search for **Starfall Studio** → Install
+4. Open `/xlplugins`, search for **Starfall Studio**, and install
 
 ### Requirements
-- [Penumbra](https://github.com/xivdev/Penumbra) — required for MCDF
-- [Glamourer](https://github.com/Ottermandias/Glamourer) — required for MCDF appearance application
-- Customize+ — optional, used for MCDF body scaling
+- [Penumbra](https://github.com/xivdev/Penumbra) - required for MCDF
+- [Glamourer](https://github.com/Ottermandias/Glamourer) - required for MCDF appearance application
+- Customize+ - optional, used for MCDF body scaling
 
 ---
 
@@ -79,7 +79,7 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 
 | Command | Action |
 |---|---|
-| `/starfall` | Toggle the main Starfall Studio window |
+| `/starfall` | Toggle the main window |
 | `/starfall window` | Open the main window |
 | `/starfall settings` | Open settings |
 | `/mcdf` | Toggle the MCDF window |
@@ -89,24 +89,24 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 ## Notes
 
 ### MCDF
-MCDF import requires Penumbra and Glamourer to be installed and active. The plugin will show a warning if either is unavailable.
+Requires Penumbra and Glamourer to be installed and active. The plugin shows a warning if either is missing.
 
 ### Pose Import
-Pose files use Brio's `.pose` format (JSON). Files from Brio are fully compatible.
+Pose files use Brio's `.pose` format. Files from Brio are fully compatible.
 
 ---
 
 ## Credits
 
-Starfall Studio is built on top of the excellent work by:
+Built on top of:
 
-- **[Brio](https://github.com/Etheirys/Brio)** by Minmoose, Asgard and Contributors — the foundation of this plugin
-- **[Ktisis](https://github.com/ktisis-tools/Ktisis)** by the Ktisis team — camera editor workflow and bone tree inspiration
+- **[Brio](https://github.com/Etheirys/Brio)** by Minmoose, Asgard and Contributors
+- **[Ktisis](https://github.com/ktisis-tools/Ktisis)** by the Ktisis team
 
-Please support the original projects if you use them.
+Please support the original projects.
 
 ---
 
 ## License
 
-This project inherits the license terms of Brio. See [LICENSE](LICENSE) for details.
+Inherits the license terms of Brio. See [LICENSE](LICENSE) for details.
