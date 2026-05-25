@@ -11,6 +11,7 @@ using Dalamud.Plugin.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using NativeCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 namespace StarfallStudio.Entities;
@@ -95,26 +96,26 @@ public unsafe class EntityActorManager : IDisposable
             var playerPos = localPlayer.Position;
             var playerRot = localPlayer.Rotation;
 
-            StarfallStudio.Log.Information(
-                $"[EntityActorManager] Overworld actor added: {character.Name} idx={character.ObjectIndex} " +
-                $"current pos={character.Position} → player pos={playerPos}");
+            // Spawn 1.5 yalms in front of player so actor doesn't overlap with player model.
+            var forward = new Vector3(MathF.Sin(playerRot), 0, MathF.Cos(playerRot));
+            var spawnPos = playerPos + forward * 1.5f;
 
             var charNative = character.Native();
-            charNative->Position = playerPos;
-            charNative->DefaultPosition = playerPos;
+            charNative->Position = spawnPos;
+            charNative->DefaultPosition = spawnPos;
             charNative->Rotation = playerRot;
             charNative->DefaultRotation = playerRot;
+            charNative->Alpha = 1f;
 
-            // Deferred write on next framework tick — beats any per-frame AI position reset.
+            // Deferred write on next framework tick — ensures position sticks after
+            // any same-tick engine reset.
             _framework.RunOnTick(() =>
             {
-                charNative->Position = playerPos;
-                charNative->DefaultPosition = playerPos;
+                charNative->Position = spawnPos;
+                charNative->DefaultPosition = spawnPos;
                 charNative->Rotation = playerRot;
                 charNative->DefaultRotation = playerRot;
                 charNative->Alpha = 1f;
-                StarfallStudio.Log.Information(
-                    $"[EntityActorManager] Deferred position write done: {character.Name} now at {character.Position}");
             });
         }
         else

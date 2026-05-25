@@ -68,6 +68,12 @@ public class ActorContainerCapability : Capability
             return;
         }
 
+        // Overworld actors (0-199): visibility + position handled by direct Alpha write in
+        // EntityActorManager. Skip the appearance system — it triggers a game redraw which
+        // causes Glamourer IPC failures for unknown NPCs and resets actor position on timeout.
+        if(actor.GameObject.IsOverworld())
+            return;
+
         StarfallStudio.Log.Debug($"[ActorContainerCapability] OnActorAttached: hiding ambient actor — {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
         // All other ambient actors start hidden. Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
@@ -86,16 +92,25 @@ public class ActorContainerCapability : Capability
 
         _managedActorIndices.Add(index);
 
-        // Move to local player's position.
+        // Move to local player's position (1.5 yalms in front so actor doesn't overlap).
         var localPlayer = _objectTable.LocalPlayer;
         if(localPlayer != null)
         {
-            var playerNative = localPlayer.Native();
-            actorNative->Position = playerNative->Position;
-            actorNative->DefaultPosition = playerNative->Position;
-            actorNative->Rotation = playerNative->Rotation;
-            actorNative->DefaultRotation = playerNative->Rotation;
+            var playerPos = localPlayer.Position;
+            var playerRot = localPlayer.Rotation;
+            var forward = new System.Numerics.Vector3(MathF.Sin(playerRot), 0, MathF.Cos(playerRot));
+            var spawnPos = playerPos + forward * 1.5f;
+
+            actorNative->Position = spawnPos;
+            actorNative->DefaultPosition = spawnPos;
+            actorNative->Rotation = playerRot;
+            actorNative->DefaultRotation = playerRot;
         }
+
+        // Overworld actors: visibility handled by direct Alpha=1f write in EntityActorManager.
+        // Skipping appearance system avoids triggering DrawWhenReady (redraw resets position).
+        if(actor.GameObject.IsOverworld())
+            return;
 
         // Make visible. Hide() sets Transparency=1 (visible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && aac.IsHidden)

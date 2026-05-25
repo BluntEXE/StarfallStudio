@@ -8,6 +8,8 @@ using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace StarfallStudio.UI.Widgets.Actor;
@@ -104,7 +106,7 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
 
         if(ImGui.BeginListBox($"###actorcontainerwidget_{Capability.Entity.Id}_list", new Vector2(-1, 150 * ImGuiHelpers.GlobalScale)))
         {
-            foreach(var child in Capability.Entity.Children)
+            foreach(var child in Capability.Entity.Children.ToList())
             {
                 if(child is ActorEntity actorEntity)
                 {
