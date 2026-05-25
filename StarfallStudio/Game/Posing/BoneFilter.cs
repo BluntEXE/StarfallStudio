@@ -34,8 +34,14 @@ public class BoneFilter
     {
         _posingService = posingService;
 
-        // Add "n_throw" to excluded bone by default
+        // Always excluded - bones owned by the face tracking system.
+        // These drive iris position and gaze direction; importing them from pose files
+        // compounds with the tracker's writes to j_f_eye_l/r and causes drift.
+        // Excluded globally so Snapshot re-imports and IPC imports can't clobber them either.
         _excludedPrefixes.Add("n_throw");
+        _excludedPrefixes.Add("j_f_irisprm_");
+        _excludedPrefixes.Add("j_f_eyeprm_");
+        _excludedPrefixes.Add("j_f_eyeprmroll_");
 
         foreach(var category in _posingService.BoneCategories.Categories)
         {
