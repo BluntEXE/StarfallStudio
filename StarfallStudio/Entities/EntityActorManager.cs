@@ -164,11 +164,14 @@ public unsafe class EntityActorManager : IDisposable
         });
     }
 
+    private bool _didLogDiagnostics = false;
+
     private void OnGPoseStateChanged(bool isGPosing)
     {
         if(!isGPosing)
         {
             _gPoseScanFramesRemaining = 0;
+            _didLogDiagnostics = false;
             return;
         }
 
@@ -196,7 +199,28 @@ public unsafe class EntityActorManager : IDisposable
     private void EnforceAmbientHide()
     {
         if(!_actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap))
+        {
+            StarfallStudio.Log.Warning("[EntityActorManager] EnforceAmbientHide: cap null");
             return;
+        }
+
+        // One-time diagnostic dump on first enforcement after GPose entry
+        if(!_didLogDiagnostics)
+        {
+            _didLogDiagnostics = true;
+            int total = 0, gposeChar = 0;
+            foreach(var go in _objects)
+            {
+                total++;
+                if(!go.IsGPose()) continue;
+                if(go is not ICharacter ch) continue;
+                gposeChar++;
+                bool drawObjOk = go.Native()->DrawObject != null;
+                StarfallStudio.Log.Information(
+                    $"[Diag] GPose actor: '{go.Name}' idx={go.ObjectIndex} kind={go.ObjectKind} alpha={ch.Native()->Alpha} draw={drawObjOk} managed={cap.IsIndexManaged((ushort)go.ObjectIndex)}");
+            }
+            StarfallStudio.Log.Information($"[Diag] Object table: {total} total, {gposeChar} GPose characters");
+        }
 
         foreach(var go in _objects)
         {
@@ -213,7 +237,7 @@ public unsafe class EntityActorManager : IDisposable
             // Direct native write every frame — beats any FFXIV alpha reset
             if(chara.Native()->Alpha != 0f)
             {
-                StarfallStudio.Log.Information($"[EntityActorManager] Hiding ambient actor: {go.Name} idx={go.ObjectIndex} (alpha was {chara.Native()->Alpha})");
+                StarfallStudio.Log.Information($"[EntityActorManager] Hiding: {go.Name} idx={go.ObjectIndex} alpha={chara.Native()->Alpha}");
                 chara.Native()->Alpha = 0f;
             }
         }
