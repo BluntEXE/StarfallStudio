@@ -2,7 +2,7 @@
 
 A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.com/Etheirys/Brio) and [Ktisis](https://github.com/ktisis-tools/Ktisis) into a single cohesive plugin designed for venue photography and scene building.
 
-![Starfall Studio](StarfallStudio/Resources/Images/StarfallStudioIcon.png)
+![Starfall Studio](Resources/Images/StarfallStudioIcon.png)
 
 ---
 
