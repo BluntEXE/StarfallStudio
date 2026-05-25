@@ -625,7 +625,7 @@ Core features (posing, animation, camera, world, overworld actors) work without 
 
 - **Open-world vs instanced GPose:** the plugin detects the mode automatically. Overworld actor importing only works in open-world GPose (cities, housing, field areas).
 - **Modded appearances:** the plugin does not trigger the appearance system for overworld actors, so any modded gear or visuals active on those actors are left untouched.
-- **Pose files** use Brio's `.pose` format. Files from Brio are fully compatible.
+- **Pose files** use the `.pose` format. Files from other tools using this format are fully compatible.
 - **Companion slots:** to attach a mount, minion, or ornament to a spawned actor, use **Spawn with Companion**. Plain **Spawn** does not reserve a companion slot.
 - **Props** share the same actor slots as characters. Appearance editing on props is limited.
 - **Undo** is per-bone. There is no global scene undo - be careful with Destroy All.
