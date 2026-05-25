@@ -102,17 +102,19 @@ public class UpdateWindow : Window
 
         var image = ResourceProvider.Instance.GetResourceImage($"Images.StarfallStudioIcon.png");
 
-        // Calculate scaling to fill width and maintain aspect ratio
-        var imageAspect = (float)(image.Width / image.Height);
-        var scaledWidth = headerWidth / 1.4f * ImGuiHelpers.GlobalScale;
-        var scaledHeight = scaledWidth / imageAspect;
+        // Cap height so the image doesn't consume the whole window
+        var imageAspect = (float)image.Width / image.Height;
+        var scaledHeight = 120f * ImGuiHelpers.GlobalScale;
+        var scaledWidth = scaledHeight * imageAspect;
 
-        var imagePos = headerStart;
+        // Center horizontally
+        var windowWidth = ImGui.GetWindowSize().X;
+        var imagePos = new Vector2(windowPos.X + (windowWidth - scaledWidth) / 2f, headerStart.Y + 4);
 
         var drawList = ImGui.GetWindowDrawList();
         drawList.AddImage(image.Handle, imagePos, imagePos + new Vector2(scaledWidth, scaledHeight));
 
-        headerStart = new Vector2(headerStart.X, headerStart.Y + scaledHeight);
+        headerStart = new Vector2(headerStart.X, headerStart.Y + scaledHeight + 8);
         var headerEnd = headerStart + new Vector2(headerWidth, headerHeight);
 
         // Background
