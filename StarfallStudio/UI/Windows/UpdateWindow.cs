@@ -185,7 +185,11 @@ public class UpdateWindow : Window
         }
         else
         {
-            DrawAbout();
+            using(ImRaii.PushColor(ImGuiCol.ChildBg, 0))
+            using(var c = ImRaii.Child("###brio_about", new Vector2(ImGui.GetWindowHeight() - 55 * ImGuiHelpers.GlobalScale, ImStarfallStudio.GetRemainingHeight() - 44), false,
+                Flags = ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse))
+                if(c.Success)
+                    DrawAbout();
         }
 
         ImGui.SetCursorPosX((ImGui.GetWindowSize().X - _closeButtonWidth) / 2);
@@ -264,6 +268,21 @@ public class UpdateWindow : Window
         {
             ImGui.BulletText(item);
         }
+
+        ImStarfallStudio.VerticalPadding(10);
+        ImGui.Separator();
+        ImStarfallStudio.VerticalPadding(10);
+
+        ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Ktisis Contributors:");
+        ImStarfallStudio.VerticalPadding(4);
+        ImGui.BulletText("Ashadow700");
+        ImGui.BulletText("BobTheBob9");
+        ImGui.BulletText("Fayti1703");
+        ImGui.BulletText("perchbirdd");
+        ImGui.BulletText("Emyka");
+        ImGui.BulletText("sudojunior");
+        ImGui.BulletText("hackmud-dtr");
+        ImGui.BulletText("Caraxi");
     }
 
     //
