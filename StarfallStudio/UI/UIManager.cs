@@ -13,6 +13,7 @@ using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StarfallStudio.UI;
 
@@ -151,6 +152,16 @@ public class UIManager : IDisposable
         _pluginInterface.UiBuilder.OpenMainUi += ShowMainWindow;
 
         ApplySettings();
+        CheckForConflictingPlugins();
+    }
+
+    private void CheckForConflictingPlugins()
+    {
+        bool brioActive = _pluginInterface.InstalledPlugins
+            .Any(p => p.InternalName == "Brio" && p.IsLoaded);
+
+        if(brioActive)
+            _toastGui.ShowError("Starfall Studio: Brio is also active. Please disable Brio to avoid conflicts.");
     }
 
     public void ToggleAppearanceWindow()
