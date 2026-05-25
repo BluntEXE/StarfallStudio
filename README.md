@@ -25,8 +25,10 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 ### Actors
 - Actor list with click-to-select
 - Spawn additional actors
+- Clone actors
 - Hide / show actors
 - Model transform gizmo (world-space repositioning)
+- **NPC / overworld actor import** — add real NPCs and other players to your scene in open-world GPose; ambient actors are hidden automatically, selected actors teleport to your position
 
 ### Appearance
 - Import & Export with per-section checkboxes (Customize / Gear / Weapons)
