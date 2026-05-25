@@ -35,6 +35,7 @@ public class PosingService
 
         DefaultImporterOptions = new PoseImporterOptions(new BoneFilter(this), TransformComponents.Rotation | TransformComponents.Scale, false);
         DefaultImporterOptions.BoneFilter.DisableCategory("weapon");
+        DefaultImporterOptions.BoneFilter.DisableCategory("ex");
 
         DefaultIPCImporterOptions = new PoseImporterOptions(new BoneFilter(this), TransformComponents.All, false);
 
