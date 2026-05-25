@@ -1,4 +1,6 @@
 using StarfallStudio.Capabilities.Core;
+using StarfallStudio.Capabilities.Posing;
+using StarfallStudio.Core;
 using StarfallStudio.Entities;
 using StarfallStudio.Entities.Actor;
 using StarfallStudio.Entities.Core;
@@ -106,10 +108,23 @@ public class ActorContainerCapability : Capability
             actorNative->Rotation = playerRot;
             actorNative->DefaultRotation = playerRot;
 
-            // Also write DrawObject visual position — FFXIV GPose doesn't sync DrawObject
-            // from GameObject.Position for ambient actors, so we must write both.
-            if(actorNative->DrawObject != null)
+            // Set via ModelPosingCapability so the SetPosition hook maintains the position
+            // against the game's per-frame movement system for overworld 0-199 actors.
+            // Without this, FFXIV overrides DrawObject.Position back on every tick.
+            if(actor.TryGetCapability<ModelPosingCapability>(out var mpc))
+            {
+                var current = mpc.Transform;
+                mpc.Transform = new Transform
+                {
+                    Position = spawnPos,
+                    Rotation = Quaternion.CreateFromYawPitchRoll(playerRot, 0, 0),
+                    Scale = current.Scale == Vector3.Zero ? Vector3.One : current.Scale,
+                };
+            }
+            else if(actorNative->DrawObject != null)
+            {
                 actorNative->DrawObject->Object.Position = spawnPos;
+            }
         }
 
         // Overworld actors: visibility handled by direct Alpha=1f write in EntityActorManager.
@@ -305,6 +320,15 @@ public class ActorContainerCapability : Capability
                     // Restore DrawObject visual position if still loaded.
                     if(native->GameObject.DrawObject != null)
                         native->GameObject.DrawObject->Object.Position = orig.Position;
+
+                    // Clear the ModelPosingCapability override so it doesn't
+                    // persist into the next GPose session for this actor.
+                    if(_entityManager.TryGetEntity(new EntityId(chara), out var entity)
+                        && entity is ActorEntity actorEntity
+                        && actorEntity.TryGetCapability<ModelPosingCapability>(out var mpc))
+                    {
+                        mpc.ResetTransform();
+                    }
                 }
             }
 
