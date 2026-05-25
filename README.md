@@ -50,6 +50,12 @@ A combined GPose toolkit for FFXIV, merging the best of [Brio](https://github.co
 
 ---
 
+## Documentation
+
+**[Full User Guide](GUIDE.md)** — covers every panel and feature with a quick-navigation index.
+
+---
+
 ## Installation
 
 > **This is a custom plugin — it is not in the official Dalamud plugin list.**
