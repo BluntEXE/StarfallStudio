@@ -121,7 +121,12 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
 
                         if(ImGui.SmallButton(pinLabel))
                         {
-                            if(isManaged) Capability.UnpinActor(actorEntity);
+                            if(isManaged)
+                            {
+                                Capability.UnpinActor(actorEntity);
+                                if(actorEntity.Equals(_selectedActor))
+                                    _selectedActor = null;
+                            }
                             else Capability.PinActor(actorEntity);
                         }
                         if(ImGui.IsItemHovered())

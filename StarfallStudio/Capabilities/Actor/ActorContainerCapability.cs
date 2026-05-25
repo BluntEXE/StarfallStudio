@@ -118,7 +118,16 @@ public class ActorContainerCapability : Capability
             _originalPositions.Remove(index);
         }
 
-        // Hide. Show() sets Transparency=0 (invisible).
+        if(actor.GameObject.IsOverworld())
+        {
+            // Overworld actors: detach from hierarchy so the list stays clean.
+            // The enforce loop hides them next frame. Re-add via 'Add Overworld Actor'.
+            _entityManager.DetachEntity(actor, true);
+            return;
+        }
+
+        // Spawned actors: hide in-place (stay in list, cheap to re-pin).
+        // Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
             _ = aac.Show();
     }
