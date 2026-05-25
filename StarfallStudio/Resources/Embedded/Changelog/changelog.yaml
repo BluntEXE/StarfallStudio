@@ -1,19 +1,62 @@
-
-tagline: "Starfall Studio v0.1.0 - Initial Release"
+tagline: "Starfall Studio v0.2.25"
 subline: "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin"
 changelog:
 
-  - name: v0.1.0
-    tagline: Initial Release
+  - name: "v0.2.18 - v0.2.25"
+    tagline: Face Tracking & Pose Import Fixes
     date: "May 2026"
     isCurrent: true
     versions:
-      - number: "0.1.0"
+      - number: "v0.2.18 - v0.2.25"
         icon: ""
         items:
-          - "Combined Brio + Ktisis feature set into a single plugin"
+          - "Protect dynamic face tracking from pose stack overrides"
+          - "Globally exclude tracker-owned gaze bones from all pose imports"
+          - "Protect irisprm bones from expression import to prevent face desync"
+          - "Fix expression import - scale bones and legacy/ex category pass"
+          - "Warn on startup if Brio is active alongside Starfall Studio"
+          - "Restore ex bone exclusion in default import options"
+
+  - name: "v0.2.2 - v0.2.17"
+    tagline: Open World GPose & Actor Positioning
+    date: "May 2026"
+    isCurrent: false
+    versions:
+      - number: "v0.2.2 - v0.2.17"
+        icon: ""
+        items:
+          - "Overworld actor import - bring NPCs and open-world actors into GPose"
+          - "Actor teleport via ModelPosingCapability hook"
+          - "Overworld actor position write and GPose exit position restore"
+          - "Camera snap fix and safe release for overworld actors"
+          - "Overworld actors appear in list and become visible on selection"
+          - "Actors detach cleanly on unpin, list stays consistent"
+          - "Fix log spam and actor selection in open world GPose"
+
+  - name: "v0.1.8 - v0.2.1"
+    tagline: Actor System & Ambient Hiding
+    date: "May 2026"
+    isCurrent: false
+    versions:
+      - number: "v0.1.8 - v0.2.1"
+        icon: ""
+        items:
+          - "Actor panel shows all actors by default with search filtering"
+          - "Ambient actor hiding on GPose entry, auto-reset on GPose exit"
+          - "Continuous ambient hide via direct native write each frame"
+          - "Open world GPose actor hide timing fixed"
+          - "Managed actor rework and Hide/Show method fixes"
+
+  - name: "v0.1.0"
+    tagline: Initial Release
+    date: "May 2026"
+    isCurrent: false
+    versions:
+      - number: "v0.1.0"
+        icon: ""
+        items:
+          - "Combined Brio and Ktisis feature sets into a single plugin"
           - "Ktisis-style camera editor workflow"
           - "Ktisis-style pose tab with bone tree and categories"
-          - "Ktisis-style Import & Export with mode checkboxes"
-          - "Ktisis pose hooks for reliable pose import"
+          - "Ktisis-style import and export with mode checkboxes"
           - "Brio actor management, animation control, MCDF, and world tools preserved"

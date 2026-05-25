@@ -154,7 +154,7 @@ public class UpdateWindow : Window
         ImStarfallStudio.VerticalPadding(10);
 
         // Selector
-        ImStarfallStudio.ButtonSelectorStrip("brio_changelog_selector", new Vector2(ImStarfallStudio.GetRemainingWidth(), ImStarfallStudio.GetLineHeight()), ref selected, [" Changelog ", "Supporters & Contributors"]);
+        ImStarfallStudio.ButtonSelectorStrip("brio_changelog_selector", new Vector2(ImStarfallStudio.GetRemainingWidth(), ImStarfallStudio.GetLineHeight()), ref selected, [" Changelog ", " About "]);
 
         if(selected == 0)
         {
@@ -185,11 +185,7 @@ public class UpdateWindow : Window
         }
         else
         {
-            ImStarfallStudio.VerticalPadding(5);
-            ImGui.Text("Maintained & Developed by: Minmoose. Originally Developed by: Asgard. Happy Posing!");
-            ImStarfallStudio.VerticalPadding(10);
-
-            DrawSupporters();
+            DrawAbout();
         }
 
         ImGui.SetCursorPosX((ImGui.GetWindowSize().X - _closeButtonWidth) / 2);
@@ -236,43 +232,37 @@ public class UpdateWindow : Window
         }
     }
 
-    public void DrawSupporters()
+    public void DrawAbout()
     {
-        var slotSizes = ImGui.GetContentRegionAvail() / new Vector2(2, .8f);
-        slotSizes.Y -= 144 * ImGuiHelpers.GlobalScale;
+        ImStarfallStudio.VerticalPadding(8);
 
-        using(var leftGearGroup = ImRaii.Child("leftGroup", slotSizes))
-        {
-            if(leftGearGroup.Success)
-            {
-                ImGui.Text("An enormous thank you to the following,");
-                ImGui.Text("people for their support on KoFi / Patreon!");
-
-                ImStarfallStudio.VerticalPadding(5);
-
-                foreach(var item in _supporters)
-                {
-                    ImGui.BulletText(item);
-                }
-            }
-        }
-
+        ImGui.TextColored(new Vector4(0.85f, 0.85f, 1.0f, 1.0f), "Starfall Studio");
         ImGui.SameLine();
+        ImGui.TextColored(new Vector4(0.6f, 0.6f, 0.7f, 1.0f), $"v{ConfigurationService.Instance.Version}  -  by Ehno");
 
-        using(var rightGearGroup = ImRaii.Child("rightGroup", slotSizes))
+        ImStarfallStudio.VerticalPadding(6);
+
+        ImGui.TextWrapped("A combined GPose toolkit built on the foundations of Brio and Ktisis.");
+
+        ImStarfallStudio.VerticalPadding(10);
+        ImGui.Separator();
+        ImStarfallStudio.VerticalPadding(10);
+
+        ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Built on:");
+        ImStarfallStudio.VerticalPadding(4);
+        ImGui.BulletText("Brio by Minmoose (AsgardXIV)");
+        ImGui.BulletText("Ktisis by Ashadow700");
+
+        ImStarfallStudio.VerticalPadding(10);
+        ImGui.Separator();
+        ImStarfallStudio.VerticalPadding(10);
+
+        ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Brio Contributors:");
+        ImStarfallStudio.VerticalPadding(4);
+
+        foreach(var item in _contributors)
         {
-            if(rightGearGroup.Success)
-            {
-                ImGui.Text("And another enormous thank you to the following,");
-                ImGui.Text("people for their contributions to StarfallStudio!");
-
-                ImStarfallStudio.VerticalPadding(5);
-
-                foreach(var item in _contributors)
-                {
-                    ImGui.BulletText(item);
-                }
-            }
+            ImGui.BulletText(item);
         }
     }
 
