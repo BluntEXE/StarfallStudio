@@ -1,6 +1,7 @@
 using StarfallStudio.Capabilities.Posing;
 using StarfallStudio.Core;
 using StarfallStudio.Entities;
+using StarfallStudio.Game.Actor;
 using StarfallStudio.Game.Actor.Extensions;
 using StarfallStudio.Game.Actor.Interop;
 using StarfallStudio.Game.Core;
@@ -38,6 +39,7 @@ public unsafe class SkeletonService : IDisposable
     private readonly GPoseService _gPoseService;
     private readonly IKService _ikService;
     private readonly IFramework _framework;
+    private readonly ActorLookAtService _actorLookAtService;
 
     private readonly List<Skeleton> _skeletons = [];
     private readonly Dictionary<Skeleton, SkeletonPosingCapability> _skeletonToPosingCapability = [];
@@ -47,13 +49,14 @@ public unsafe class SkeletonService : IDisposable
     private const int PoseCount = 4;
 
 
-    public SkeletonService(EntityManager entityManager, ObjectMonitorService monitorService, GPoseService gPoseService, IKService ikService, IObjectTable gameObjects, IFramework framework, ISigScanner scanner, IGameInteropProvider hooking)
+    public SkeletonService(EntityManager entityManager, ObjectMonitorService monitorService, GPoseService gPoseService, IKService ikService, IObjectTable gameObjects, IFramework framework, ISigScanner scanner, IGameInteropProvider hooking, ActorLookAtService actorLookAtService)
     {
         _entityManager = entityManager;
         _monitorService = monitorService;
         _gPoseService = gPoseService;
         _ikService = ikService;
         _framework = framework;
+        _actorLookAtService = actorLookAtService;
 
         var updateBonePhysicsAddress = "48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 54 41 56 48 83 EC ?? 48 8B 59 ?? 45 33 E4";
         _updateBonePhysicsHook = hooking.HookFromAddress<UpdateBonePhysicsDelegate>(scanner.ScanText(updateBonePhysicsAddress), UpdateBonePhysicsDetour);
@@ -247,6 +250,11 @@ public unsafe class SkeletonService : IDisposable
         {
             ReparentAttachments(skeleton);
         }
+
+        // Re-apply look-at after all plugin stacks are written.
+        // _actorLookAtLoop fires before UpdateBonePhysics, so stacks would otherwise
+        // override the tracker every frame. Calling here gives look-at the final word.
+        _actorLookAtService.ApplyAllLookAts();
     }
 
     private void FinalizeSkeletonUpdate()

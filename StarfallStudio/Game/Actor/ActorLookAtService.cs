@@ -216,6 +216,52 @@ public unsafe class ActorLookAtService : IDisposable
         }
     }
 
+    // Called from SkeletonService after plugin stacks are applied each frame.
+    // Re-applies look-at so it always wins over pose-import bone stacks.
+    public void ApplyAllLookAts()
+    {
+        if(!_gPoseService.IsGPosing)
+            return;
+
+        var camera = _virtualCameraManager?.CurrentCamera;
+
+        foreach(var gameObj in _objectTable)
+        {
+            if(gameObj is not ICharacter actor || !actor.IsValid() || !actor.IsGPose())
+                continue;
+
+            if(!_lookAtHandles.TryGetValue(actor.GameObjectId, out var lookAtDataHolder))
+                continue;
+
+            if(lookAtDataHolder.TargetMode == LookAtTargetMode.None)
+                continue;
+
+            LookAtSource lookAt = lookAtDataHolder.Target;
+
+            if(lookAtDataHolder.TargetMode == LookAtTargetMode.Camera)
+            {
+                if(camera is null)
+                    continue;
+
+                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes) && !lookAtDataHolder.EyesTargetLock)
+                    lookAt.Eyes.LookAtTarget.Position = camera.RealPosition;
+                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body) && !lookAtDataHolder.BodyTargetLock)
+                    lookAt.Body.LookAtTarget.Position = camera.RealPosition;
+                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head) && !lookAtDataHolder.HeadTargetLock)
+                    lookAt.Head.LookAtTarget.Position = camera.RealPosition;
+            }
+
+            var lookAtController = &((Character*)actor.Address)->LookAt.Controller;
+
+            if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body))
+                _updateLookAt(lookAtController, &lookAt.Body.LookAtTarget, 0, 0);
+            if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head))
+                _updateLookAt(lookAtController, &lookAt.Head.LookAtTarget, 1, 0);
+            if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes))
+                _updateLookAt(lookAtController, &lookAt.Eyes.LookAtTarget, 2, 0);
+        }
+    }
+
     public void Dispose()
     {
         _actorLookAtLoop.Dispose();
