@@ -125,29 +125,24 @@ public class UpdateWindow : Window
         ImGui.Separator();
 
         // Buttons
-        var segmentSize = ImGui.GetWindowSize().X / 4.15f;
+        var segmentSize = ImGui.GetWindowSize().X / 3.15f;
         var buttonSize = new Vector2(segmentSize, ImGui.GetTextLineHeight() * 1.7f);
 
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 10);
 
         using(ImRaii.PushColor(ImGuiCol.Button, new Vector4(0, 224, 148, 200) / 255))
-            if(ImGui.Button("Support on KoFi", buttonSize))
-                Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/minmoosexiv", UseShellExecute = true });
-        ImGui.SameLine();
-
-        using(ImRaii.PushColor(ImGuiCol.Button, new Vector4(65, 90, 240, 200) / 255))
-            if(ImGui.Button("StarfallStudio Community Discord", buttonSize))
-                Process.Start(new ProcessStartInfo { FileName = "https://discord.gg/GCb4srgEaH ", UseShellExecute = true });
-        ImGui.SameLine();
-
-        using(ImRaii.PushColor(ImGuiCol.Button, new Vector4(96, 108, 246, 200) / 255))
-            if(ImGui.Button("Aetherworks Discord", buttonSize))
-                Process.Start(new ProcessStartInfo { FileName = "https://discord.gg/KvGJCCnG8t", UseShellExecute = true });
+            if(ImGui.Button("Support on Ko-fi", buttonSize))
+                Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/ehnocure", UseShellExecute = true });
         ImGui.SameLine();
 
         using(ImRaii.PushColor(ImGuiCol.Button, new Vector4(29, 161, 242, 200) / 255))
-            if(ImGui.Button("More Links", buttonSize))
-                Process.Start(new ProcessStartInfo { FileName = "https://etheirystools.carrd.co", UseShellExecute = true });
+            if(ImGui.Button("View on GitHub", buttonSize))
+                Process.Start(new ProcessStartInfo { FileName = "https://github.com/BluntEXE/StarfallStudio", UseShellExecute = true });
+        ImGui.SameLine();
+
+        using(ImRaii.PushColor(ImGuiCol.Button, new Vector4(200, 80, 80, 200) / 255))
+            if(ImGui.Button("Submit Feedback", buttonSize))
+                Process.Start(new ProcessStartInfo { FileName = "https://github.com/BluntEXE/StarfallStudio/issues/new", UseShellExecute = true });
 
         // Tagline Test
         ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 10);
