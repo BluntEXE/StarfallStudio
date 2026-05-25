@@ -105,6 +105,11 @@ public class ActorContainerCapability : Capability
             actorNative->DefaultPosition = spawnPos;
             actorNative->Rotation = playerRot;
             actorNative->DefaultRotation = playerRot;
+
+            // Also write DrawObject visual position — FFXIV GPose doesn't sync DrawObject
+            // from GameObject.Position for ambient actors, so we must write both.
+            if(actorNative->DrawObject != null)
+                actorNative->DrawObject->Object.Position = spawnPos;
         }
 
         // Overworld actors: visibility handled by direct Alpha=1f write in EntityActorManager.
@@ -281,10 +286,28 @@ public class ActorContainerCapability : Capability
         // User can target manually via the bullseye button.
     }
 
-    private void OnGPoseStateChanged(bool isGPosing)
+    private unsafe void OnGPoseStateChanged(bool isGPosing)
     {
         if(!isGPosing)
         {
+            // Restore positions for all pinned actors before clearing state.
+            // Without this, any actor moved by PinActor stays displaced in the open world.
+            foreach(var (index, orig) in _originalPositions)
+            {
+                var go = _objectTable[index];
+                if(go is ICharacter chara)
+                {
+                    var native = chara.Native();
+                    native->Position = orig.Position;
+                    native->DefaultPosition = orig.Position;
+                    native->Rotation = orig.Rotation;
+                    native->DefaultRotation = orig.Rotation;
+                    // Restore DrawObject visual position if still loaded.
+                    if(native->GameObject.DrawObject != null)
+                        native->GameObject.DrawObject->Object.Position = orig.Position;
+                }
+            }
+
             _managedActorIndices.Clear();
             _originalPositions.Clear();
         }

@@ -106,6 +106,10 @@ public unsafe class EntityActorManager : IDisposable
             charNative->Rotation = playerRot;
             charNative->DefaultRotation = playerRot;
             charNative->Alpha = 1f;
+            // DrawObject visual position — GPose doesn't sync from GameObject.Position
+            // for ambient 0-199 actors, so write both coordinate layers.
+            if(charNative->GameObject.DrawObject != null)
+                charNative->GameObject.DrawObject->Object.Position = spawnPos;
 
             // Deferred write on next framework tick — ensures position sticks after
             // any same-tick engine reset.
@@ -116,6 +120,8 @@ public unsafe class EntityActorManager : IDisposable
                 charNative->Rotation = playerRot;
                 charNative->DefaultRotation = playerRot;
                 charNative->Alpha = 1f;
+                if(charNative->GameObject.DrawObject != null)
+                    charNative->GameObject.DrawObject->Object.Position = spawnPos;
             });
         }
         else
