@@ -9,7 +9,7 @@ A GPose toolkit for FFXIV combining [Brio](https://github.com/Etheirys/Brio) and
 ## Features
 
 ### Posing
-- Bone tree with ancestor highlighting (Ktisis-style)
+- Bone tree with ancestor highlighting
 - Bone category filters
 - Pose import / export
 - Mirror pose
