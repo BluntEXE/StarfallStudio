@@ -76,14 +76,52 @@ public unsafe class EntityActorManager : IDisposable
         _entityManager.AttachEntity(entity, _actorContainerEntity, true);
         HandleCompanions(entity, true);
 
-        // Pin immediately so actor is visible + in managed set (enforce loop will skip it).
+        // Pin immediately so actor is in managed set (enforce loop will skip it).
         if(_actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap)
             && entity is ActorEntity actorEntity)
         {
             cap.PinActor(actorEntity);
         }
+
         // Direct alpha write — SetCharacterAppearance is async; belt-and-suspenders.
         character.Native()->Alpha = 1f;
+
+        // Move to player position. Use managed Dalamud .Position/.Rotation (guaranteed
+        // correct read) and write via ICharacter.Native() (StructsCharacter*, most specific).
+        // PinActor also writes position via StructsObject*, but do it again here to be sure.
+        var localPlayer = _objects.LocalPlayer;
+        if(localPlayer != null)
+        {
+            var playerPos = localPlayer.Position;
+            var playerRot = localPlayer.Rotation;
+
+            StarfallStudio.Log.Information(
+                $"[EntityActorManager] Overworld actor added: {character.Name} idx={character.ObjectIndex} " +
+                $"current pos={character.Position} → player pos={playerPos}");
+
+            var charNative = character.Native();
+            charNative->Position = playerPos;
+            charNative->DefaultPosition = playerPos;
+            charNative->Rotation = playerRot;
+            charNative->DefaultRotation = playerRot;
+
+            // Deferred write on next framework tick — beats any per-frame AI position reset.
+            _framework.RunOnTick(() =>
+            {
+                charNative->Position = playerPos;
+                charNative->DefaultPosition = playerPos;
+                charNative->Rotation = playerRot;
+                charNative->DefaultRotation = playerRot;
+                charNative->Alpha = 1f;
+                StarfallStudio.Log.Information(
+                    $"[EntityActorManager] Deferred position write done: {character.Name} now at {character.Position}");
+            });
+        }
+        else
+        {
+            StarfallStudio.Log.Warning(
+                $"[EntityActorManager] LocalPlayer is null — cannot move {character.Name} to player position");
+        }
     }
 
     private void PopulateExistingActors()

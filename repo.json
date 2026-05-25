@@ -5,8 +5,8 @@
     "Punchline": "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin.",
     "Description": "Starfall Studio - combined GPose toolkit for actor posing, animation control, camera editing, and scene building.\n- Actor list with click-to-select\n- World-space transform gizmo\n- Animation control and pause\n- Advanced appearance and wetness editing\n- Camera editor (Ktisis-style workflow)\n- Bone manipulation with bone tree\n- MCDF actor import\n- NPC/overworld actor import\n- Pose import and export",
     "InternalName": "StarfallStudio",
-    "AssemblyVersion": "0.2.13",
-    "TestingAssemblyVersion": "0.2.13",
+    "AssemblyVersion": "0.2.14",
+    "TestingAssemblyVersion": "0.2.14",
     "RepoUrl": "https://github.com/BluntEXE/StarfallStudio",
     "ApplicableVersion": "any",
     "Tags": [
@@ -17,8 +17,8 @@
       "photography"
     ],
     "IconUrl": "https://raw.githubusercontent.com/BluntEXE/StarfallStudio/main/images/icon.png",
-    "DownloadLinkInstall": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.13/StarfallStudio.zip",
-    "DownloadLinkUpdate": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.13/StarfallStudio.zip",
-    "DownloadLinkTesting": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.13/StarfallStudio.zip"
+    "DownloadLinkInstall": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.14/StarfallStudio.zip",
+    "DownloadLinkUpdate": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.14/StarfallStudio.zip",
+    "DownloadLinkTesting": "https://github.com/BluntEXE/StarfallStudio/releases/download/v0.2.14/StarfallStudio.zip"
   }
 ]
