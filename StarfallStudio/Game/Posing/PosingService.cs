@@ -64,6 +64,7 @@ public class PosingService
         ExpressionOptions.BoneFilter.EnableCategory("jaw");
         ExpressionOptions.BoneFilter.EnableCategory("legacy");
         ExpressionOptions.BoneFilter.EnableCategory("ex");
+        ExpressionOptions.BoneFilter.AddExcludedPrefix("j_f_irisprm_"); // tracker-owned: drives iris gaze direction, must not be overwritten by imports
 
         ExpressionOptions2 = new PoseImporterOptions(new BoneFilter(this), TransformComponents.All, false);
         ExpressionOptions2.BoneFilter.DisableAll();
