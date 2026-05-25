@@ -6,16 +6,23 @@
 > - [Actors Panel](#actors-panel)
 > - [Adding Overworld / NPC Actors](#adding-overworld--npc-actors)
 > - [Appearance](#appearance)
+> - [Extended Appearance](#extended-appearance)
+> - [Companion / Mount / Minion / Ornament](#companion--mount--minion--ornament)
 > - [Posing & Bone Editing](#posing--bone-editing)
 > - [Animation Control](#animation-control)
 > - [Dynamic Face Control](#dynamic-face-control)
 > - [Camera](#camera)
 > - [World — Time & Weather](#world--time--weather)
+> - [World — Sky Editor](#world--sky-editor)
 > - [World — Environment](#world--environment)
+> - [World — Advanced](#world--advanced)
 > - [World — Festivals](#world--festivals)
 > - [Lighting](#lighting)
 > - [Status Effects](#status-effects)
+> - [Library](#library)
+> - [Projects](#projects)
 > - [MCDF Import](#mcdf-import)
+> - [Settings](#settings)
 > - [Commands Reference](#commands-reference)
 > - [Requirements](#requirements)
 > - [Tips & Caveats](#tips--caveats)
@@ -359,6 +366,148 @@ The **Status Effects** panel lets you apply and remove visual status effect VFX 
 
 ---
 
+## Extended Appearance
+
+Opened via the **Advanced Appearance** button in the Appearance panel, or the pop-out icon on the panel header.
+
+### Transparency
+
+- **Alpha** slider (0.0 – 1.0) — make the actor fully transparent (0) to fully opaque (1). Useful for ghost/spirit effects.
+
+### Wetness
+
+| Control | Range | Effect |
+|---|---|---|
+| Wet | 0.0 – 1.0 | How wet the skin/clothing surface appears |
+| Wet Depth | 0.0 – 3.0 | Depth of the wetness effect (how far it penetrates) |
+
+### Tints
+
+Per-slot colour tints for skin, hair, and equipment pieces. Click a colour swatch to open the colour picker.
+
+### Model Shader controls
+
+Accessible under **Advanced Appearance** → shader tabs:
+
+| Tab | Controls |
+|---|---|
+| Muscle | Muscle definition intensity |
+| Body | Body shader parameters (skin specularity, etc.) |
+| Hair | Hair shader (gloss, specularity) |
+| Other | Miscellaneous shader parameters |
+
+**Reset Extended (↺)** — reverts all extended appearance changes at once.
+
+---
+
+## Companion / Mount / Minion / Ornament
+
+The **Companion** panel appears under a selected actor if they have a companion slot reserved (spawned with **Spawn with Companion**).
+
+- Shows the current companion type: **Mount**, **Minion**, or **Ornament**.
+- Right-click the panel header → **Destroy Companion** to remove the companion from this actor.
+- Companion appearance and posing can be controlled by selecting the companion entry in the hierarchy (it appears as a child of the parent actor).
+
+> To have a companion available, spawn the actor using **Spawn with Companion** (or the `+□` button in the Actors panel). Plain **Spawn** does not reserve a companion slot.
+
+---
+
+## World — Sky Editor
+
+The **Sky** panel controls the sky dome, stars, moon, clouds, and ambient scene lighting. Tabs: **Sky**, **Stars**, **Clouds**.
+
+### Stars tab
+
+| Control | Range | Description |
+|---|---|---|
+| Star Count | 0 – 20 | Number of stars visible |
+| Star Intensity | 0 – 2.5 | Brightness of stars |
+| Moon Color | colour picker | Tint of the moon |
+| Moon Brightness | 0 – 1.0 | Brightness of the moon |
+| Constellation Count | 0 – 10 | Number of constellation lines |
+| Constellation Intensity | 0 – 2.5 | Brightness of constellations |
+| Galaxy Intensity | 0 – 10 | Milky Way/galaxy band brightness |
+
+### Sky tab
+
+| Control | Description |
+|---|---|
+| Sky Texture | Click the preview to open the sky texture selector |
+| Sky Texture ID | Enter a texture ID directly |
+| Sun Visibility (fog) | How much the sun shows through fog |
+| Ambient Temperature | -2.5 to 2.5 — warm/cool colour shift on ambient light |
+| Ambient Saturation | 0 – 5 — colour saturation of ambient lighting |
+| Ambient Color | RGB picker for overall ambient light colour |
+| Sunlight Color | Colour of direct sunlight |
+| Moonlight Color | Colour of moonlight |
+
+### Clouds tab
+
+- Cloud texture selector (click preview to browse).
+- Cloud side texture selector.
+- Cloud density and movement sliders (zone-dependent).
+
+Each tab has an individual **Reset (↺)** button.
+
+---
+
+## World — Advanced
+
+Located in the World panel under the **Advanced** collapsing header.
+
+| Control | Description |
+|---|---|
+| Freeze Water | Stops water surface animation — useful for still-water reflection shots |
+
+---
+
+## Library
+
+The **Library** is a file browser for poses, appearances, and character files stored on your disk. Open it via the library icon in the main toolbar or from the Appearance / Posing import dialogs.
+
+### Browsing
+
+- Files are grouped by type: **Poses**, **Characters**, **Scenes**, and any custom sources you have added.
+- Use the **search box** to filter by filename or tag.
+- Press **TAB** to filter by a tag shown in the suggestion bar.
+- Click a file to preview it; double-click or press **Import** to apply it to the selected actor.
+
+### Favourites
+
+Click the star icon on any file to add it to favourites. Favourites appear at the top of the list.
+
+### Import options
+
+Click the **cog** icon next to Import to open per-section import options (Body / Face / Hands / Weapons / Expression toggles for poses).
+
+### Adding sources
+
+Go to **Settings → Library** to add custom folder paths as library sources. Click **Scan** (refresh icon) to re-index after adding files.
+
+---
+
+## Projects
+
+> **Beta** — projects saved in the current version may be incompatible with future versions.
+
+The **Project** system saves and restores a full scene: actor positions, appearances, and poses together.
+
+### Saving a project
+
+1. Open the Project window from the main toolbar.
+2. Switch to the **Save** tab.
+3. Enter a **Project Name** and **Description**.
+4. Click **Save Project**.
+
+### Loading a project
+
+1. Open the Project window → **Load** tab.
+2. Select a project from the list — name, description, and creation date are shown.
+3. Click **Load** to restore the scene.
+4. Click **Delete** to permanently remove a project.
+
+---
+
 ## MCDF Import
 
 MCDF is a mod pack format that bundles a Penumbra mod with a Glamourer appearance profile.
@@ -377,6 +526,84 @@ Type `/mcdf` or use the **Load MCDF** button in the Appearance panel.
 4. Use **Save MCDF** to export the current actor's appearance + active Penumbra mods into a new `.mcdf` file.
 
 > Note: spawned actors are internally named for Glamourer compatibility. If you see a Glamourer error about an unknown actor, try re-loading the MCDF after the actor has fully initialised.
+
+---
+
+## Settings
+
+Open via `/starfall settings`. Seven tabs:
+
+### General
+
+| Setting | Description |
+|---|---|
+| Use Library when importing | Opens the Library browser automatically on Import |
+| Open Library to last location | Remembers your last library folder |
+| Use filename as Actor Name | Sets the actor's display name from the loaded filename |
+| Censor Actor Names | Replaces real player names with pseudonyms across the UI |
+| Hide Name in Group Pose Settings window | Hides character names in FFXIV's built-in GPose window |
+| Enable StarfallStudio Color | Applies the plugin's custom UI colour theme |
+| Enable StarfallStudio Scale | Applies custom UI scaling |
+| Transform Slider Speed | Default speed for bone transform sliders (Position / Rotation / Scale) |
+| Open StarfallStudio behaviour | When the plugin window opens automatically (GPose entry, manual, etc.) |
+
+### IPC
+
+| Setting | Description |
+|---|---|
+| Enable StarfallStudio IPC | Enables the plugin's inter-plugin API for other plugins to connect |
+| Enable StarfallStudio API | Enables the local HTTP API (for external tools) |
+| Allow Penumbra Integration | Enable/disable Penumbra IPC (required for MCDF) |
+| Allow Glamourer Integration | Enable/disable Glamourer IPC (required for MCDF) |
+| Allow Customize+ Integration | Enable/disable Customize+ IPC (body scaling) |
+
+Each third-party integration shows its current status and has a **Refresh** button.
+
+### Posing
+
+| Setting | Description |
+|---|---|
+| Show in GPose | Show plugin window when entering GPose |
+| Show in Cutscenes | Show plugin window during cutscenes |
+| Show when UI Hidden | Keep plugin visible when FFXIV UI is hidden |
+| Disable GPose Mouse Select | Prevent FFXIV's click-to-target from stealing focus |
+| StarfallStudio Target changes with GPose Target | Sync hierarchy selection to GPose camera target |
+| GPose Target changes with StarfallStudio Target | Sync GPose camera target to hierarchy selection |
+| Select Model Transform on Entity Select | Auto-select the root bone when you click an actor |
+
+### Posing — Overlay
+
+| Setting | Description |
+|---|---|
+| Overlay Defaults On | Bone overlay visible by default when GPose is entered |
+| Make Model Transform bone stand out | Highlights the root/origin bone in the overlay |
+| Allow Gizmo Axis Flip | Allows gizmo axes to flip when dragged past centre |
+| Hide Gizmo while Advanced Posing | Hides the world gizmo when the bone editor is open |
+| Hide Toolbar while Advanced Posing | Hides the posing toolbar when the bone editor is open |
+| Show Skeleton Lines | Draws lines between bones in the overlay |
+| Show Bone Circles | Draws clickable circles on bones in the overlay |
+| Draw skeleton line to edge of bone circle | Extends skeleton lines to the circle edge |
+| Hide Skeleton when Gizmo Active | Hides skeleton overlay while dragging the gizmo |
+| Overlay Colors | Per-category colour pickers for the bone overlay |
+
+### Library
+
+Configure library source folders — add or remove disk paths that the Library browser scans for pose and character files.
+
+### Auto-Save
+
+| Setting | Description |
+|---|---|
+| Auto-Save Enabled | Periodically saves the current scene automatically |
+| Save Individual Poses | Also saves each actor's pose as a separate `.pose` file |
+
+### Input
+
+Key binding configuration — assign keyboard shortcuts to posing actions (toggle link mode, select all bones, etc.).
+
+### Advanced
+
+Developer and diagnostic options. Not required for normal use.
 
 ---
 
