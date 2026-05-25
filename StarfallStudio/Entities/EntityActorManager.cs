@@ -26,12 +26,10 @@ public unsafe class EntityActorManager : IDisposable
     private readonly ActorSpawnService _actorSpawnService;
     private readonly GPoseService _gPoseService;
 
-    // After GPose entry, scan every frame for N frames to catch actors that
-    // FFXIV populates across multiple frames (open-world GPose copies structs
-    // without calling Character::Initialize, so our CharacterInitialized hook
-    // never fires for them).
+    // Scan for new actors for N frames after GPose entry (FFXIV populates GPose
+    // slots across multiple frames without calling Character::Initialize).
     private int _gPoseScanFramesRemaining = 0;
-    private const int GPoseScanWindowFrames = 90; // ~1.5 s at 60 fps
+    private const int GPoseScanWindowFrames = 120; // ~2s at 60fps
 
     public EntityActorManager(EntityManager entityManager, ActorSpawnService actorSpawnService, IServiceProvider serviceProvider, ObjectMonitorService monitorService, IObjectTable objects, IFramework framework, GPoseService gPoseService)
     {
@@ -60,19 +58,10 @@ public unsafe class EntityActorManager : IDisposable
 
     private void PopulateExistingActors()
     {
-        int newActors = 0;
         foreach(var go in _objects)
         {
-            // Only count actors that aren't already registered — AttachActor
-            // returns early for already-tracked objects, so the inner loop is cheap.
-            bool wasKnown = _entityManager.TryGetEntity(new EntityId(go), out _);
             AttachActor(go, _actorContainerEntity);
-            if(!wasKnown && _entityManager.TryGetEntity(new EntityId(go), out _))
-                newActors++;
         }
-
-        if(newActors > 0)
-            StarfallStudio.Log.Debug($"[EntityActorManager] PopulateExistingActors: attached {newActors} new actor(s)");
     }
 
     private void AttachActor(IGameObject go, Entity parent)
@@ -95,13 +84,11 @@ public unsafe class EntityActorManager : IDisposable
             if(!go.IsGPose())
                 return;
 
-            StarfallStudio.Log.Debug($"[EntityActorManager] Attaching new GPose actor: {go.Name} idx={go.ObjectIndex}");
             entity = ActivatorUtilities.CreateInstance<ActorEntity>(_serviceProvider, go);
         }
         entity.SetSpawnFlags(_actorSpawnService.GetSpawnFlagsByIndex((ushort)(go.ObjectIndex - 200)));
 
         _entityManager.AttachEntity(entity, parent, true);
-
 
         // This is ew, but we need to handle companions here for now.
         // This would be a stack overflow but the parenting check above prevents it.
@@ -185,25 +172,25 @@ public unsafe class EntityActorManager : IDisposable
             return;
         }
 
-        // In open world (e.g. Limsa), FFXIV populates GPose slots by copying
-        // pre-allocated Character structs without calling Initialize.
-        // CharacterInitialized never fires for those actors. We open a scan window
-        // and pick them up on the IFramework.Update loop until they appear.
-        StarfallStudio.Log.Debug($"[EntityActorManager] GPose entered — opening {GPoseScanWindowFrames}-frame actor scan window");
+        // Open a scan + enforce window on GPose entry.
+        // EnforceAmbientHide also runs continuously while IsGPosing (see below).
+        StarfallStudio.Log.Information("[EntityActorManager] GPose entered — ambient hide active");
         _gPoseScanFramesRemaining = GPoseScanWindowFrames;
     }
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if(_gPoseScanFramesRemaining <= 0)
-            return;
+        // Always enforce while in GPose (not just the scan window) — FFXIV can
+        // reset Character.Alpha at any point during its initialization sequence.
+        if(_gPoseService.IsGPosing)
+            EnforceAmbientHide();
 
-        _gPoseScanFramesRemaining--;
-        PopulateExistingActors();
-
-        // FFXIV's GPose initialization resets actor alpha after we set it.
-        // Re-enforce alpha=0 every frame for the duration of the scan window.
-        EnforceAmbientHide();
+        // Scan for new actors during the window after GPose entry
+        if(_gPoseScanFramesRemaining > 0)
+        {
+            _gPoseScanFramesRemaining--;
+            PopulateExistingActors();
+        }
     }
 
     private void EnforceAmbientHide()
@@ -216,17 +203,17 @@ public unsafe class EntityActorManager : IDisposable
             if(!go.IsGPose()) continue;
             if(go.ObjectKind == ObjectKind.Ornament) continue;
 
-            // Native() on ICharacter returns StructsCharacter* which has Alpha.
-            // Native() on IGameObject returns StructsObject* (base) which does not.
+            // ICharacter.Native() returns StructsCharacter* which has Alpha.
+            // IGameObject.Native() returns StructsObject* (base) which does not.
             if(go is not ICharacter chara) continue;
 
-            // Leave pinned/managed actors alone (player and any user-pinned actors)
+            // Skip managed actors (local player copy + user-pinned actors)
             if(cap.IsIndexManaged((ushort)go.ObjectIndex)) continue;
 
-            // Direct native write — no async, no diff-check, beats any FFXIV reset
+            // Direct native write every frame — beats any FFXIV alpha reset
             if(chara.Native()->Alpha != 0f)
             {
-                StarfallStudio.Log.Debug($"[EntityActorManager] EnforceAmbientHide: hiding {go.Name} idx={go.ObjectIndex} alpha was {chara.Native()->Alpha}");
+                StarfallStudio.Log.Information($"[EntityActorManager] Hiding ambient actor: {go.Name} idx={go.ObjectIndex} (alpha was {chara.Native()->Alpha})");
                 chara.Native()->Alpha = 0f;
             }
         }
