@@ -107,7 +107,7 @@ In open-world GPose (venues, cities, housing areas), ambient NPCs and other play
 - **Overworld actors cannot be destroyed** - they are real game characters. The **Release** button removes them from your scene; the game restores them normally.
 - **Unpinning** an overworld actor hides it and returns it to its original world position.
 - **On GPose exit**, all actors return to their original world positions. Nothing stays displaced.
-- Mare Synchronos modded appearances are preserved because the appearance system is not triggered for overworld actors.
+- Modded appearances on overworld actors are preserved. The plugin does not trigger the appearance system for overworld actors, so any active mods are left untouched.
 
 ---
 
@@ -624,7 +624,7 @@ Core features (posing, animation, camera, world, overworld actors) work without 
 ## Tips & Caveats
 
 - **Open-world vs instanced GPose:** the plugin detects the mode automatically. Overworld actor importing only works in open-world GPose (cities, housing, field areas).
-- **Mare Synchronos:** other players' modded appearances sync via Mare at actor load time, independently of this plugin. The appearance system is not triggered for overworld actors, so Mare-synced mods are preserved.
+- **Modded appearances:** the plugin does not trigger the appearance system for overworld actors, so any modded gear or visuals active on those actors are left untouched.
 - **Pose files** use Brio's `.pose` format. Files from Brio are fully compatible.
 - **Companion slots:** to attach a mount, minion, or ornament to a spawned actor, use **Spawn with Companion**. Plain **Spawn** does not reserve a companion slot.
 - **Props** share the same actor slots as characters. Appearance editing on props is limited.
