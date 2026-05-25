@@ -386,6 +386,7 @@ public class ActorAppearanceCapability : ActorCharacterCapability
     public Task Show()
     {
         var appearance = _actorAppearanceService.GetActorAppearance(Character);
+        StarfallStudio.Log.Debug($"[ActorAppearanceCapability] Show(): actor {Character.ObjectIndex} currentTransparency={appearance.ExtendedAppearance.Transparency} → setting to 0");
         appearance.ExtendedAppearance.Transparency = 0f;
         return SetAppearance(appearance, AppearanceImportOptions.ExtendedAppearance);
     }

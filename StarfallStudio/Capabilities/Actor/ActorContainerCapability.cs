@@ -49,6 +49,9 @@ public class ActorContainerCapability : Capability
     public bool IsManaged(ActorEntity actor) =>
         _managedActorIndices.Contains((ushort)actor.GameObject.ObjectIndex);
 
+    public bool IsIndexManaged(ushort index) =>
+        _managedActorIndices.Contains(index);
+
     // Called by ActorEntity.OnAttached.
     // Auto-manages the local player's own actor; hides everyone else.
     public void OnActorAttached(ActorEntity actor)
@@ -56,13 +59,17 @@ public class ActorContainerCapability : Capability
         var localPlayer = _objectTable.LocalPlayer;
         if(localPlayer != null && actor.GameObject.Name.TextValue == localPlayer.Name.TextValue)
         {
+            StarfallStudio.Log.Debug($"[ActorContainerCapability] OnActorAttached: keeping player actor visible — {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
             _managedActorIndices.Add((ushort)actor.GameObject.ObjectIndex);
             return;
         }
 
+        StarfallStudio.Log.Debug($"[ActorContainerCapability] OnActorAttached: hiding ambient actor — {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
         // All other ambient actors start hidden. Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
             _ = aac.Show();
+        else
+            StarfallStudio.Log.Warning($"[ActorContainerCapability] OnActorAttached: no ActorAppearanceCapability on {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
     }
 
     public unsafe void PinActor(ActorEntity actor)
