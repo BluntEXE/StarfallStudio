@@ -46,6 +46,10 @@ public class ActorContainerCapability : Capability
         Widget = new ActorContainerWidget(this);
     }
 
+    // Fired when the user selects an overworld actor from the dropdown in open-world GPose.
+    // EntityActorManager subscribes to handle attaching + pinning.
+    public event Action<ICharacter>? OverworldActorAddRequested;
+
     public bool IsManaged(ActorEntity actor) =>
         _managedActorIndices.Contains((ushort)actor.GameObject.ObjectIndex);
 
@@ -226,10 +230,8 @@ public class ActorContainerCapability : Capability
 
     public unsafe void AddOverworldActorToGPose(ICharacter character)
     {
-        // Mark as managed so the ambient-hide enforce loop skips it.
-        _managedActorIndices.Add((ushort)character.ObjectIndex);
-        // Restore visibility — enforce loop may have set alpha=0.
-        character.Native()->Alpha = 1f;
+        // Fire first (before position move) so EntityActorManager can capture original position via PinActor.
+        OverworldActorAddRequested?.Invoke(character);
 
         var localPlayer = _objectTable.LocalPlayer;
         if(localPlayer != null)

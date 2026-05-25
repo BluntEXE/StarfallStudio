@@ -59,7 +59,31 @@ public unsafe class EntityActorManager : IDisposable
     public void AttachContainer()
     {
         _entityManager.AttachEntity(_actorContainerEntity, null);
+        if(_actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap))
+            cap.OverworldActorAddRequested += OnOverworldActorAddRequested;
         PopulateExistingActors();
+    }
+
+    private void OnOverworldActorAddRequested(ICharacter character)
+    {
+        // Create + attach entity if it doesn't already exist.
+        if(!_entityManager.TryGetEntity(new EntityId(character), out var entity))
+        {
+            if(!character.Native()->IsCharacter()) return;
+            entity = ActivatorUtilities.CreateInstance<ActorEntity>(_serviceProvider, character);
+        }
+        entity.SetSpawnFlags(SpawnFlags.None);
+        _entityManager.AttachEntity(entity, _actorContainerEntity, true);
+        HandleCompanions(entity, true);
+
+        // Pin immediately so actor is visible + in managed set (enforce loop will skip it).
+        if(_actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap)
+            && entity is ActorEntity actorEntity)
+        {
+            cap.PinActor(actorEntity);
+        }
+        // Direct alpha write — SetCharacterAppearance is async; belt-and-suspenders.
+        character.Native()->Alpha = 1f;
     }
 
     private void PopulateExistingActors()
@@ -276,6 +300,8 @@ public unsafe class EntityActorManager : IDisposable
     public void Dispose()
     {
         RestoreOverworldActors();
+        if(_actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap))
+            cap.OverworldActorAddRequested -= OnOverworldActorAddRequested;
         _monitorService.CharacterInitialized -= OnCharacterInitialized;
         _monitorService.CharacterDestroyed -= OnCharacterDestroyed;
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
