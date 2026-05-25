@@ -216,8 +216,7 @@ public class ActorContainerCapability : Capability
                 o.IsValid()
                 && o is ICharacter
                 && o.ObjectIndex != 200
-                && _validOverworldKinds.Contains(o.ObjectKind)
-                && o.Native()->DrawObject != null)
+                && _validOverworldKinds.Contains(o.ObjectKind))
             .GroupBy(o => o.ObjectKind == ObjectKind.Pc ? o.Name.TextValue : o.Name.TextValue + "_" + o.ObjectIndex)
             .Select(g => g.OrderByDescending(o => o.ObjectIndex >= ActorTableHelpers.GPoseStart).First())
             .OfType<ICharacter>()
@@ -227,6 +226,11 @@ public class ActorContainerCapability : Capability
 
     public unsafe void AddOverworldActorToGPose(ICharacter character)
     {
+        // Mark as managed so the ambient-hide enforce loop skips it.
+        _managedActorIndices.Add((ushort)character.ObjectIndex);
+        // Restore visibility — enforce loop may have set alpha=0.
+        character.Native()->Alpha = 1f;
+
         var localPlayer = _objectTable.LocalPlayer;
         if(localPlayer != null)
         {

@@ -205,9 +205,12 @@ public unsafe class EntityActorManager : IDisposable
     }
 
     // Open world: ambient actors remain at indices 0-199. Hide all of them except the
-    // local player (identified by name match with IClientState.LocalPlayer).
+    // local player (identified by name match with IObjectTable.LocalPlayer) and any
+    // actors the user has explicitly pinned (managed).
     private void EnforceOverworldHide()
     {
+        _actorContainerEntity.TryGetCapability<ActorContainerCapability>(out var cap);
+
         var localPlayer = _objects.LocalPlayer;
         var localName = localPlayer?.Name.TextValue;
 
@@ -216,15 +219,17 @@ public unsafe class EntityActorManager : IDisposable
             if(!go.IsOverworld()) continue;
             if(go.ObjectKind == ObjectKind.Ornament) continue;
             if(go is not ICharacter chara) continue;
-
-            // Keep local player visible
             if(localName != null && go.Name.TextValue == localName) continue;
+
+            // Skip actors the user has explicitly added to the scene.
+            var idx = (ushort)go.ObjectIndex;
+            if(cap != null && cap.IsIndexManaged(idx)) continue;
 
             if(chara.Native()->Alpha != 0f)
             {
-                _hiddenOverworldIndices.Add((ushort)go.ObjectIndex);
-                StarfallStudio.Log.Information(
-                    $"[EntityActorManager] Open-world hide: {go.Name} idx={go.ObjectIndex} alpha={chara.Native()->Alpha}");
+                if(_hiddenOverworldIndices.Add(idx))
+                    StarfallStudio.Log.Information(
+                        $"[EntityActorManager] Open-world hide: {go.Name} idx={idx}");
                 chara.Native()->Alpha = 0f;
             }
         }
