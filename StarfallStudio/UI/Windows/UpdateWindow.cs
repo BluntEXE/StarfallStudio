@@ -261,28 +261,38 @@ public class UpdateWindow : Window
         ImGui.Separator();
         ImStarfallStudio.VerticalPadding(10);
 
-        ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Brio Contributors:");
-        ImStarfallStudio.VerticalPadding(4);
+        var colWidth = ImGui.GetContentRegionAvail().X / 2f - ImGui.GetStyle().ItemSpacing.X;
+        var colHeight = ImStarfallStudio.GetRemainingHeight();
 
-        foreach(var item in _contributors)
+        using(var left = ImRaii.Child("###about_brio", new Vector2(colWidth, colHeight)))
         {
-            ImGui.BulletText(item);
+            if(left.Success)
+            {
+                ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Brio Contributors:");
+                ImStarfallStudio.VerticalPadding(4);
+                foreach(var item in _contributors)
+                    ImGui.BulletText(item);
+            }
         }
 
-        ImStarfallStudio.VerticalPadding(10);
-        ImGui.Separator();
-        ImStarfallStudio.VerticalPadding(10);
+        ImGui.SameLine();
 
-        ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Ktisis Contributors:");
-        ImStarfallStudio.VerticalPadding(4);
-        ImGui.BulletText("Ashadow700");
-        ImGui.BulletText("BobTheBob9");
-        ImGui.BulletText("Fayti1703");
-        ImGui.BulletText("perchbirdd");
-        ImGui.BulletText("Emyka");
-        ImGui.BulletText("sudojunior");
-        ImGui.BulletText("hackmud-dtr");
-        ImGui.BulletText("Caraxi");
+        using(var right = ImRaii.Child("###about_ktisis", new Vector2(colWidth, colHeight)))
+        {
+            if(right.Success)
+            {
+                ImGui.TextColored(new Vector4(0.7f, 0.85f, 1.0f, 1.0f), "Original Ktisis Contributors:");
+                ImStarfallStudio.VerticalPadding(4);
+                ImGui.BulletText("Ashadow700");
+                ImGui.BulletText("BobTheBob9");
+                ImGui.BulletText("Fayti1703");
+                ImGui.BulletText("perchbirdd");
+                ImGui.BulletText("Emyka");
+                ImGui.BulletText("sudojunior");
+                ImGui.BulletText("hackmud-dtr");
+                ImGui.BulletText("Caraxi");
+            }
+        }
     }
 
     //
