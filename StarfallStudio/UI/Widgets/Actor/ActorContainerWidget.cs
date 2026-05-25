@@ -1,5 +1,6 @@
 ﻿using StarfallStudio.Capabilities.Actor;
 using StarfallStudio.Entities.Actor;
+using StarfallStudio.Game.Actor.Extensions;
 using StarfallStudio.UI.Controls.Stateless;
 using StarfallStudio.UI.Widgets.Core;
 using Dalamud.Bindings.ImGui;
@@ -64,9 +65,13 @@ public class ActorContainerWidget(ActorContainerCapability capability) : Widget<
 
             ImGui.SameLine();
 
-            if(ImStarfallStudio.FontIconButton("containerwidget_destroy", FontAwesomeIcon.Trash, "Destroy", hasSelection))
             {
-                Capability.DestroyCharacter(_selectedActor!);
+                bool isOverworld = hasSelection && _selectedActor!.GameObject.IsOverworld();
+                var destroyTooltip = isOverworld ? "Release (remove from scene)" : "Destroy";
+                if(ImStarfallStudio.FontIconButton("containerwidget_destroy", FontAwesomeIcon.Trash, destroyTooltip, hasSelection))
+                {
+                    Capability.DestroyCharacter(_selectedActor!);
+                }
             }
 
             ImGui.SameLine();

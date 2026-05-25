@@ -172,8 +172,18 @@ public class ActorContainerCapability : Capability
 
     public void DestroyCharacter(ActorEntity entity)
     {
-        _managedActorIndices.Remove((ushort)entity.GameObject.ObjectIndex);
-        _originalPositions.Remove((ushort)entity.GameObject.ObjectIndex);
+        var index = (ushort)entity.GameObject.ObjectIndex;
+        _managedActorIndices.Remove(index);
+        _originalPositions.Remove(index);
+
+        if(entity.GameObject.IsOverworld())
+        {
+            // Overworld actors are real game characters — cannot despawn them.
+            // Detach from hierarchy; enforce loop will hide them again next frame.
+            _entityManager.DetachEntity(entity, true);
+            return;
+        }
+
         _actorSpawnService.DestroyObject(entity.GameObject);
     }
 
@@ -243,7 +253,8 @@ public class ActorContainerCapability : Capability
             characterNative->Rotation = playerNative->Rotation;
             characterNative->DefaultRotation = playerNative->Rotation;
         }
-        _targetService.GPoseTarget = character;
+        // Do not set GPoseTarget — camera would snap to the actor.
+        // User can target manually via the bullseye button.
     }
 
     private void OnGPoseStateChanged(bool isGPosing)
