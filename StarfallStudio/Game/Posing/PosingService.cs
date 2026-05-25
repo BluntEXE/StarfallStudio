@@ -33,9 +33,8 @@ public class PosingService
         OverlayFilter.DisableCategory("clothing");
         OverlayFilter.DisableCategory("legacy");
 
-        DefaultImporterOptions = new PoseImporterOptions(new BoneFilter(this), TransformComponents.Rotation, false);
+        DefaultImporterOptions = new PoseImporterOptions(new BoneFilter(this), TransformComponents.Rotation | TransformComponents.Scale, false);
         DefaultImporterOptions.BoneFilter.DisableCategory("weapon");
-        DefaultImporterOptions.BoneFilter.DisableCategory("ex");
 
         DefaultIPCImporterOptions = new PoseImporterOptions(new BoneFilter(this), TransformComponents.All, false);
 
@@ -62,6 +61,8 @@ public class PosingService
         ExpressionOptions.BoneFilter.EnableCategory("eyes");
         ExpressionOptions.BoneFilter.EnableCategory("lips");
         ExpressionOptions.BoneFilter.EnableCategory("jaw");
+        ExpressionOptions.BoneFilter.EnableCategory("legacy");
+        ExpressionOptions.BoneFilter.EnableCategory("ex");
 
         ExpressionOptions2 = new PoseImporterOptions(new BoneFilter(this), TransformComponents.All, false);
         ExpressionOptions2.BoneFilter.DisableAll();

@@ -157,11 +157,16 @@ public class UIManager : IDisposable
 
     private void CheckForConflictingPlugins()
     {
-        bool brioActive = _pluginInterface.InstalledPlugins
-            .Any(p => p.InternalName == "Brio" && p.IsLoaded);
+        var loaded = _pluginInterface.InstalledPlugins
+            .Where(p => p.IsLoaded)
+            .Select(p => p.InternalName)
+            .ToHashSet();
 
-        if(brioActive)
+        if(loaded.Contains("Brio"))
             _toastGui.ShowError("Starfall Studio: Brio is also active. Please disable Brio to avoid conflicts.");
+
+        if(loaded.Contains("Ktisis"))
+            _toastGui.ShowError("Starfall Studio: Ktisis is also active. Please disable Ktisis to avoid conflicts.");
     }
 
     public void ToggleAppearanceWindow()
