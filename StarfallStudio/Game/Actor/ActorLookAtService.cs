@@ -59,43 +59,51 @@ public unsafe class ActorLookAtService : IDisposable
 
     public nint ActorLookAtDetour(ContainerInterface* args)
     {
-        if(_gPoseService.IsGPosing)
+        try
         {
-            var targetActor = _objectTable.CreateObjectReference((nint)args->OwnerObject);
-            if(targetActor is not null && targetActor.IsValid() && targetActor.IsGPose()
-                && _lookAtHandles.TryGetValue(targetActor.GameObjectId, out LookAtDataHolder lookAtDataHolder))
+            if(_gPoseService.IsGPosing)
             {
-                LookAtSource lookAt = lookAtDataHolder.Target;
-
-                if(lookAtDataHolder.TargetMode == LookAtTargetMode.Camera)
+                var targetActor = _objectTable.CreateObjectReference((nint)args->OwnerObject);
+                if(targetActor is not null && targetActor.IsValid() && targetActor.IsGPose()
+                    && _lookAtHandles.TryGetValue(targetActor.GameObjectId, out LookAtDataHolder lookAtDataHolder))
                 {
-                    var camera = _virtualCameraManager?.CurrentCamera;
+                    LookAtSource lookAt = lookAtDataHolder.Target;
 
-                    if(camera is null)
+                    if(lookAtDataHolder.TargetMode == LookAtTargetMode.Camera)
+                    {
+                        var camera = _virtualCameraManager?.CurrentCamera;
+
+                        if(camera is null)
+                            return _actorLookAtLoop.Original(args);
+
+                        if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes) && lookAtDataHolder.EyesTargetLock is false)
+                            lookAt.Eyes.LookAtTarget.Position = camera.RealPosition;
+                        if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body) && lookAtDataHolder.BodyTargetLock is false)
+                            lookAt.Body.LookAtTarget.Position = camera.RealPosition;
+                        if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head) && lookAtDataHolder.HeadTargetLock is false)
+                            lookAt.Head.LookAtTarget.Position = camera.RealPosition;
+                    }
+                    else if(lookAtDataHolder.TargetMode == LookAtTargetMode.None)
                         return _actorLookAtLoop.Original(args);
 
-                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes) && lookAtDataHolder.EyesTargetLock is false)
-                        lookAt.Eyes.LookAtTarget.Position = camera.RealPosition;
-                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body) && lookAtDataHolder.BodyTargetLock is false)
-                        lookAt.Body.LookAtTarget.Position = camera.RealPosition;
-                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head) && lookAtDataHolder.HeadTargetLock is false)
-                        lookAt.Head.LookAtTarget.Position = camera.RealPosition;
+                    var lookAtController = &((Character*)targetActor.Address)->LookAt.Controller;
+
+                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body))
+                        _updateLookAt(lookAtController, &lookAt.Body.LookAtTarget, 0, 0); // 0 == Body
+                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head))
+                        _updateLookAt(lookAtController, &lookAt.Head.LookAtTarget, 1, 0); // 1 == Head
+                    if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes))
+                        _updateLookAt(lookAtController, &lookAt.Eyes.LookAtTarget, 2, 0); // 2 == Eyes
                 }
-                else if(lookAtDataHolder.TargetMode == LookAtTargetMode.None)
-                    return _actorLookAtLoop.Original(args);
-
-                var lookAtController = &((Character*)targetActor.Address)->LookAt.Controller;
-
-                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Body))
-                    _updateLookAt(lookAtController, &lookAt.Body.LookAtTarget, 0, 0); // 0 == Body
-                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Head))
-                    _updateLookAt(lookAtController, &lookAt.Head.LookAtTarget, 1, 0); // 1 == Head
-                if(lookAtDataHolder.TargetType.HasFlag(LookAtTargetType.Eyes))
-                    _updateLookAt(lookAtController, &lookAt.Eyes.LookAtTarget, 2, 0); // 2 == Eyes
             }
-        }
 
-        return _actorLookAtLoop.Original(args);
+            return _actorLookAtLoop.Original(args);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(ActorLookAtDetour));
+            return _actorLookAtLoop.Original(args);
+        }
     }
 
     public void StopLookAt(IGameObject gameobj)

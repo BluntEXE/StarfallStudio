@@ -199,86 +199,102 @@ public class EnvironmentService : MediatorSubscriberBase
     public bool customParticlesEnabled = false;
     private unsafe nint UpdateEnvironmentDetour(EnvState* a1, EnvState* a2)
     {
-        EnvState? state = *a1;
-
-        var original = _updateEnvironmentHook.Original(a1, a2);
-
-        if(state != null)
+        try
         {
+            EnvState? state = *a1;
 
-            if(IsEnvironmentOverride)
+            var original = _updateEnvironmentHook.Original(a1, a2);
+
+            if(state != null)
             {
-                a1->SkyTextureID = state.Value.SkyTextureID;
-                a1->EnvironmentLighting = state.Value.EnvironmentLighting;
-                a1->Stars = state.Value.Stars;
-                a1->Fog = state.Value.Fog;
-                a1->Clouds = state.Value.Clouds;
-                a1->Rain = state.Value.Rain;
-                a1->Particles = state.Value.Particles;
-                a1->Wind = state.Value.Wind;
+                if(IsEnvironmentOverride)
+                {
+                    a1->SkyTextureID = state.Value.SkyTextureID;
+                    a1->EnvironmentLighting = state.Value.EnvironmentLighting;
+                    a1->Stars = state.Value.Stars;
+                    a1->Fog = state.Value.Fog;
+                    a1->Clouds = state.Value.Clouds;
+                    a1->Rain = state.Value.Rain;
+                    a1->Particles = state.Value.Particles;
+                    a1->Wind = state.Value.Wind;
 
-                return original;
+                    return original;
+                }
+
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.EnvironmentLighting))
+                    a1->EnvironmentLighting = state.Value.EnvironmentLighting;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Stars))
+                    a1->Stars = state.Value.Stars;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Fog))
+                    a1->Fog = state.Value.Fog;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Clouds))
+                    a1->Clouds = state.Value.Clouds;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Rain))
+                    a1->Rain = state.Value.Rain;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Particles))
+                    a1->Particles = state.Value.Particles;
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Wind))
+                    a1->Wind = state.Value.Wind;
+
+                if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Sky))
+                {
+                    a1->SkyTextureID = state.Value.SkyTextureID;
+                    a1->Fog.SunVisibility = state.Value.Fog.SunVisibility;
+                }
             }
 
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.EnvironmentLighting))
-                a1->EnvironmentLighting = state.Value.EnvironmentLighting;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Stars))
-                a1->Stars = state.Value.Stars;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Fog))
-                a1->Fog = state.Value.Fog;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Clouds))
-                a1->Clouds = state.Value.Clouds;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Rain))
-                a1->Rain = state.Value.Rain;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Particles))
-                a1->Particles = state.Value.Particles;
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Wind))
-                a1->Wind = state.Value.Wind;
-
-            if(EnvironmentOverrideState.HasFlag(EnvironmentOverrideState.Sky))
-            {
-                a1->SkyTextureID = state.Value.SkyTextureID;
-                a1->Fog.SunVisibility = state.Value.Fog.SunVisibility;
-            }
+            return original;
         }
-
-        return original;
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdateEnvironmentDetour));
+            return _updateEnvironmentHook.Original(a1, a2);
+        }
     }
 
     private unsafe void UpdateEnvDetour(nint a1, float long1, nint a2)
     {
-        byte* p = (byte*)a1;
+        try
+        {
+            byte* p = (byte*)a1;
 
-        byte flag300 = *(byte*)(p + 0x300); // This is the flag that tells us if the particle system is enabled
-        byte flag301 = *(byte*)(p + 0x301);
-        byte flag302 = *(byte*)(p + 0x302);
+            byte flag300 = *(byte*)(p + 0x300); // This is the flag that tells us if the particle system is enabled
+            byte flag301 = *(byte*)(p + 0x301);
+            byte flag302 = *(byte*)(p + 0x302);
 
-        isParticleSystemEnabled = flag300 != 0;
+            isParticleSystemEnabled = flag300 != 0;
 
-        _updateEnvironmentPartHook.Original(a1, long1, a2);
+            _updateEnvironmentPartHook.Original(a1, long1, a2);
 
-        // The code below crashes the game after some time. maybe I need to just reimplement the entire function?
-        // or just find out where the particle system is activated from weather changes.
+            // The code below crashes the game after some time. maybe I need to just reimplement the entire function?
+            // or just find out where the particle system is activated from weather changes.
 
-        //if(IsEnvironmentOverride && flag302 != 0 && a2 != 0)
-        //{
-        //    if(customParticlesEnabled)
-        //    {
+            //if(IsEnvironmentOverride && flag302 != 0 && a2 != 0)
+            //{
+            //    if(customParticlesEnabled)
+            //    {
 
-        //    }
-        //    else
-        //    {
+            //    }
+            //    else
+            //    {
 
-        //    }
+            //    }
 
-        //    //_updateEnvironmentActivate((EnvState*)(a1 + 0x28), (EnvState*)a1);
-        //}
-        //else
-        //{
-        //    // _updateEnvironmentPartHook.Original(a1, long1, a2);
-        //}
+            //    //_updateEnvironmentActivate((EnvState*)(a1 + 0x28), (EnvState*)a1);
+            //}
+            //else
+            //{
+            //    // _updateEnvironmentPartHook.Original(a1, long1, a2);
+            //}
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdateEnvDetour));
+            _updateEnvironmentPartHook.Original(a1, long1, a2);
+        }
     }
 
+    // Intentional no-op — suppresses weather territory updates to hold the override. Empty body; no try/catch needed.
     private unsafe void UpdateTerritoryWeatherDetour(WeatherManager* a1)
     {
         // DO NOTHING

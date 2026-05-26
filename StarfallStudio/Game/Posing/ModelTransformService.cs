@@ -66,23 +66,31 @@ public unsafe class ModelTransformService : IDisposable
 
     private void UpdatePositionDetour(StructsGameObject* gameObject, float x, float y, float z)
     {
-        if(_gPoseService.IsGPosing)
+        try
         {
-            if(_entityManager.TryGetEntity(gameObject, out var entity))
+            if(_gPoseService.IsGPosing)
             {
-                if(entity.TryGetCapability<ModelPosingCapability>(out var transformCapability))
+                if(_entityManager.TryGetEntity(gameObject, out var entity))
                 {
-                    if(transformCapability.OverrideTransform.HasValue)
+                    if(entity.TryGetCapability<ModelPosingCapability>(out var transformCapability))
                     {
-                        var transform = transformCapability.OverrideTransform.Value;
-                        SetTransform(gameObject, transform);
-                        return;
+                        if(transformCapability.OverrideTransform.HasValue)
+                        {
+                            var transform = transformCapability.OverrideTransform.Value;
+                            SetTransform(gameObject, transform);
+                            return;
+                        }
                     }
                 }
             }
-        }
 
-        _setPositionHook.Original(gameObject, x, y, z);
+            _setPositionHook.Original(gameObject, x, y, z);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdatePositionDetour));
+            _setPositionHook.Original(gameObject, x, y, z);
+        }
     }
 
     private void OnActorRedraw(IGameObject go, RedrawStage stage)

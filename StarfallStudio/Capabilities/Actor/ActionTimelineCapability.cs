@@ -223,6 +223,14 @@ public class ActionTimelineCapability : ActorCharacterCapability
 
     public override void Dispose()
     {
+        // Restore game timeline speed before clearing the override.
+        // SpeedMultiplierOverride being set means we wrote OverallSpeed to the native struct
+        // (e.g. 0 to freeze the actor). Nulling the C# field without writing native leaves
+        // OverallSpeed at 0 permanently — the detour can't find the entity after dispose.
+        if (SpeedMultiplierOverride.HasValue)
+        {
+            unsafe { Character.Native()->Timeline.OverallSpeed = 1f; }
+        }
         SpeedMultiplierOverride = null;
         _actionTimelineSlotSpeedOverrides.Clear();
         ResetBaseOverride();

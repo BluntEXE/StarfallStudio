@@ -87,15 +87,29 @@ public unsafe class GPoseService : IDisposable
 
     private void TargetNameDetour(nint args)
     {
-        if(_configService.Configuration.Posing.HideNameOnGPoseSettingsWindow)
+        try
         {
-            for(var i = 0; i < StarfallStudioHiddenName.Length; i++)
+            if(args == nint.Zero)
             {
-                *(char*)(args + 488 + i) = StarfallStudioHiddenName[i];
+                _targetNameDelegateHook.Original(args);
+                return;
             }
-        }
 
-        _targetNameDelegateHook.Original(args);
+            if(_configService.Configuration.Posing.HideNameOnGPoseSettingsWindow)
+            {
+                for(var i = 0; i < StarfallStudioHiddenName.Length; i++)
+                {
+                    *(char*)(args + 488 + i) = StarfallStudioHiddenName[i];
+                }
+            }
+
+            _targetNameDelegateHook.Original(args);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(TargetNameDetour));
+            _targetNameDelegateHook.Original(args);
+        }
     }
 
     public void TriggerGPoseChange()
@@ -122,28 +136,49 @@ public unsafe class GPoseService : IDisposable
 
     private void ExitingGPoseDetour(UIModule* uiModule)
     {
-        _exitGPoseHook.Original.Invoke(uiModule);
-
-        HandleGPoseStateChange(false);
-        _mediator.Publish(new GposeEndMessage());
+        try
+        {
+            _exitGPoseHook.Original.Invoke(uiModule);
+            HandleGPoseStateChange(false);
+            _mediator.Publish(new GposeEndMessage());
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(ExitingGPoseDetour));
+            _exitGPoseHook.Original.Invoke(uiModule);
+        }
     }
 
     private bool EnteringGPoseDetour(UIModule* uiModule)
     {
-        bool didEnter = _enterGPoseHook.Original.Invoke(uiModule);
-
-        HandleGPoseStateChange(didEnter);
-        _mediator.Publish(new GposeStartMessage());
-
-        return didEnter;
+        try
+        {
+            bool didEnter = _enterGPoseHook.Original.Invoke(uiModule);
+            HandleGPoseStateChange(didEnter);
+            _mediator.Publish(new GposeStartMessage());
+            return didEnter;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(EnteringGPoseDetour));
+            return _enterGPoseHook.Original.Invoke(uiModule);
+        }
     }
 
     private nint GPoseMouseEventDetour(nint a1, nint a2, nint a3)
     {
-        if(_configService.Configuration.Posing.DisableGPoseMouseSelect)
-            return 0;
+        try
+        {
+            if(_configService.Configuration.Posing.DisableGPoseMouseSelect)
+                return 0;
 
-        return _mouseHoverHook.Original(a1, a2, a3);
+            return _mouseHoverHook.Original(a1, a2, a3);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(GPoseMouseEventDetour));
+            return _mouseHoverHook.Original(a1, a2, a3);
+        }
     }
 
     private void OnFrameworkUpdate(IFramework framework)

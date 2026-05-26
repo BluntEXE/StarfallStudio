@@ -82,84 +82,91 @@ public class GameInputService : IDisposable
 
     public unsafe void HandleInputDetour(IntPtr arg1, IntPtr arg2, IntPtr arg3, MouseFrame* mouseFrame, KeyboardFrame* keyboardFrame)
     {
-        // This is a hot path, all of the games input flows through here 
-
-        _handleInputHook.Original(arg1, arg2, arg3, mouseFrame, keyboardFrame);
-
-        if(_gPoseService.IsGPosing is true && !RaptureAtkModule.Instance()->AtkModule.IsTextInputActive())
+        // This is a hot path, all of the games input flows through here
+        try
         {
-            bool ctrlPressed = keyboardFrame->KeyState[17] == 1;
-            bool shiftPressed = keyboardFrame->KeyState[16] == 1;
-            bool altPressed = keyboardFrame->KeyState[18] == 1;
+            _handleInputHook.Original(arg1, arg2, arg3, mouseFrame, keyboardFrame);
 
-            bool anyModPressed = ctrlPressed || shiftPressed || altPressed;
-
-            if(_configurationService.Configuration.InputManager.EnableConsumeAllInput)
+            if(_gPoseService.IsGPosing is true && !RaptureAtkModule.Instance()->AtkModule.IsTextInputActive())
             {
-                ConsumeAllInput(keyboardFrame);
-            }
+                bool ctrlPressed = keyboardFrame->KeyState[17] == 1;
+                bool shiftPressed = keyboardFrame->KeyState[16] == 1;
+                bool altPressed = keyboardFrame->KeyState[18] == 1;
 
-            if(_configurationService.Configuration.InputManager.Enable)
-            {
-                if(anyModPressed)
+                bool anyModPressed = ctrlPressed || shiftPressed || altPressed;
+
+                if(_configurationService.Configuration.InputManager.EnableConsumeAllInput)
                 {
-                    foreach(var binding in _configurationService.Configuration.InputManager.KeyBindings.Values)
-                    {
-                        if(binding.Key == Dalamud.Game.ClientState.Keys.VirtualKey.NO_KEY)
-                            continue;
-
-                        if(binding.RequireCtrl || binding.RequireShift || binding.RequireAlt)
-                        {
-                            keyboardFrame->KeyState[(int)binding.Key] = 0;
-                        }
-                    }
-                }
-
-                if(_virtualCameraService.CurrentCamera?.IsFreeCamera is true)
-                {
-                    _virtualCameraService.Update(mouseFrame);
-
-                    keyboardFrame->KeyState[_freeW] = 0;
-                    keyboardFrame->KeyState[_freeA] = 0;
-                    keyboardFrame->KeyState[_freeS] = 0;
-                    keyboardFrame->KeyState[_freeD] = 0;
-
-                    keyboardFrame->KeyState[32] = 0; // SPACE
-
-                    if(_virtualCameraService.CurrentCamera.FreeCamValues.IsMovementEnabled &&
-                        _configurationService.Configuration.InputManager.EnableKeyHandlingOnKeyMod)
-                    {
-                        keyboardFrame->KeyState[81] = 0; // VirtualKey.Q
-                        keyboardFrame->KeyState[69] = 0; // VirtualKey.E
-
-                        keyboardFrame->KeyState[32] = 0; // SPACE
-                        keyboardFrame->KeyState[16] = 0; // SHIFT
-                        keyboardFrame->KeyState[17] = 0; // Ctrl
-                        keyboardFrame->KeyState[18] = 0; // Alt
-                    }
-                }
-
-                // If cameras are locked, consume mouse movement and movement keys so
-                // no camera movement can occur.
-                if(_virtualCameraService.CamerasLocked)
-                {
-                    if(mouseFrame is not null)
-                    {
-                        // Prevent mouse movement from affecting the camera, but keep
-                        // button presses so game UI interactions still work.
-                        mouseFrame->DeltaX = 0;
-                        mouseFrame->DeltaY = 0;
-                        mouseFrame->ScrollValue = 0;
-                    }
-
                     ConsumeAllInput(keyboardFrame);
                 }
-            }
 
-            if(AllowEscape is false)
-            {
-                keyboardFrame->KeyState[27] = 0; // ESCAPE
+                if(_configurationService.Configuration.InputManager.Enable)
+                {
+                    if(anyModPressed)
+                    {
+                        foreach(var binding in _configurationService.Configuration.InputManager.KeyBindings.Values)
+                        {
+                            if(binding.Key == Dalamud.Game.ClientState.Keys.VirtualKey.NO_KEY)
+                                continue;
+
+                            if(binding.RequireCtrl || binding.RequireShift || binding.RequireAlt)
+                            {
+                                keyboardFrame->KeyState[(int)binding.Key] = 0;
+                            }
+                        }
+                    }
+
+                    if(_virtualCameraService.CurrentCamera?.IsFreeCamera is true)
+                    {
+                        _virtualCameraService.Update(mouseFrame);
+
+                        keyboardFrame->KeyState[_freeW] = 0;
+                        keyboardFrame->KeyState[_freeA] = 0;
+                        keyboardFrame->KeyState[_freeS] = 0;
+                        keyboardFrame->KeyState[_freeD] = 0;
+
+                        keyboardFrame->KeyState[32] = 0; // SPACE
+
+                        if(_virtualCameraService.CurrentCamera.FreeCamValues.IsMovementEnabled &&
+                            _configurationService.Configuration.InputManager.EnableKeyHandlingOnKeyMod)
+                        {
+                            keyboardFrame->KeyState[81] = 0; // VirtualKey.Q
+                            keyboardFrame->KeyState[69] = 0; // VirtualKey.E
+
+                            keyboardFrame->KeyState[32] = 0; // SPACE
+                            keyboardFrame->KeyState[16] = 0; // SHIFT
+                            keyboardFrame->KeyState[17] = 0; // Ctrl
+                            keyboardFrame->KeyState[18] = 0; // Alt
+                        }
+                    }
+
+                    // If cameras are locked, consume mouse movement and movement keys so
+                    // no camera movement can occur.
+                    if(_virtualCameraService.CamerasLocked)
+                    {
+                        if(mouseFrame is not null)
+                        {
+                            // Prevent mouse movement from affecting the camera, but keep
+                            // button presses so game UI interactions still work.
+                            mouseFrame->DeltaX = 0;
+                            mouseFrame->DeltaY = 0;
+                            mouseFrame->ScrollValue = 0;
+                        }
+
+                        ConsumeAllInput(keyboardFrame);
+                    }
+                }
+
+                if(AllowEscape is false)
+                {
+                    keyboardFrame->KeyState[27] = 0; // ESCAPE
+                }
             }
+        }
+        catch(Exception e)
+        {
+            // Original was already called — don't call again. Just log and let the game continue.
+            StarfallStudio.Log.Error(e, nameof(HandleInputDetour));
         }
     }
 

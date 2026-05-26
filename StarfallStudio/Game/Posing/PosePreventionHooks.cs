@@ -86,22 +86,74 @@ public unsafe class PosePreventionHooks : IDisposable
     // --- Detours ---
 
     private static ulong SetBoneModelSpaceFfxivDetour(nint partialSkeleton, ushort boneId, nint transform, bool enableSecondary, bool enablePropagate)
-        => boneId;
+    {
+        try
+        {
+            return boneId;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(SetBoneModelSpaceFfxivDetour));
+            return boneId;
+        }
+    }
 
     private static nint CalculateBoneModelSpaceDetour(ref hkaPose pose, int boneIdx)
-        => (nint)(pose.ModelPose.Data + boneIdx);
+    {
+        try
+        {
+            if(pose.ModelPose.Data == null) return nint.Zero;
+            return (nint)(pose.ModelPose.Data + boneIdx);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CalculateBoneModelSpaceDetour));
+            return nint.Zero;
+        }
+    }
 
+    // Intentional no-op — suppresses full model space rebuild so Brio bone transforms persist. Empty body; no try/catch needed.
     private static void SyncModelSpaceDetour(hkaPose* pose)
     { }
 
     private static byte* LookAtIKDetour(byte* a1, long* a2, long* a3, float a4, long* a5, long* a6)
-        => (byte*)nint.Zero;
+    {
+        try
+        {
+            return (byte*)nint.Zero;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(LookAtIKDetour));
+            return (byte*)nint.Zero;
+        }
+    }
 
     private static nint KineDriverDetour(nint a1, nint a2)
-        => nint.Zero;
+    {
+        try
+        {
+            return nint.Zero;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(KineDriverDetour));
+            return nint.Zero;
+        }
+    }
 
     private static byte AnimFrozenDetour(uint* a1, int a2)
-        => 1;
+    {
+        try
+        {
+            return 1;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(AnimFrozenDetour));
+            return 1;
+        }
+    }
 
     public void Dispose()
     {

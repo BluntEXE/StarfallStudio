@@ -324,29 +324,53 @@ public class ActorAppearanceService : IDisposable
 
     private byte EnforceKindRestrictionsDetour(nint a1, nint a2)
     {
-        if(_configurationService.Configuration.Appearance.ApplyNPCHack == ApplyNPCHack.Always)
-            return 0;
+        try
+        {
+            if(_configurationService.Configuration.Appearance.ApplyNPCHack == ApplyNPCHack.Always)
+                return 0;
 
-        if(_configurationService.Configuration.Appearance.ApplyNPCHack == ApplyNPCHack.InGPose && _gPoseService.IsGPosing)
-            return 0;
+            if(_configurationService.Configuration.Appearance.ApplyNPCHack == ApplyNPCHack.InGPose && _gPoseService.IsGPosing)
+                return 0;
 
-        return _enforceKindRestrictionsHook.Original(a1, a2);
+            return _enforceKindRestrictionsHook.Original(a1, a2);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(EnforceKindRestrictionsDetour));
+            return _enforceKindRestrictionsHook.Original(a1, a2);
+        }
     }
 
     private nint UpdateWetnessDetour(nint a1)
     {
-        if(_gPoseService.IsGPosing)
-            return 0;
+        try
+        {
+            if(_gPoseService.IsGPosing)
+                return 0;
 
-        return _updateWetnessHook.Original(a1);
+            return _updateWetnessHook.Original(a1);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdateWetnessDetour));
+            return _updateWetnessHook.Original(a1);
+        }
     }
 
     private nint UpdateTintDetour(nint charaBase, nint tint)
     {
-        if(_gPoseService.IsGPosing && CanTint)
-            return 0;
+        try
+        {
+            if(_gPoseService.IsGPosing && CanTint)
+                return 0;
 
-        return _updateTintHook.Original(charaBase, tint);
+            return _updateTintHook.Original(charaBase, tint);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdateTintDetour));
+            return _updateTintHook.Original(charaBase, tint);
+        }
     }
 
     public void Dispose()

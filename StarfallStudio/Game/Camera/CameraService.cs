@@ -67,89 +67,121 @@ public unsafe class CameraService : IDisposable
 
     private nint CameraUpdateDetour(StarfallStudioCamera* camera)
     {
-        var result = _cameraUpdateHook.Original(camera);
-
-        if(_gPoseService.IsGPosing)
+        try
         {
-            if(_virtualCameraService.CurrentCamera is not null)
+            var result = _cameraUpdateHook.Original(camera);
+
+            if(_gPoseService.IsGPosing)
             {
-                Vector3 currentPos = camera->Camera.CameraBase.SceneCamera.Object.Position;
-                var newPos = _virtualCameraService.CurrentCamera.PositionOffset + _virtualCameraService.CurrentCamera.TargetOffset + currentPos;
-                camera->Camera.CameraBase.SceneCamera.Object.Position = newPos;
+                if(_virtualCameraService.CurrentCamera is not null)
+                {
+                    Vector3 currentPos = camera->Camera.CameraBase.SceneCamera.Object.Position;
+                    var newPos = _virtualCameraService.CurrentCamera.PositionOffset + _virtualCameraService.CurrentCamera.TargetOffset + currentPos;
+                    camera->Camera.CameraBase.SceneCamera.Object.Position = newPos;
 
-                Vector3 currentLookAt = camera->Camera.CameraBase.SceneCamera.LookAtVector;
-                camera->Camera.CameraBase.SceneCamera.LookAtVector = currentLookAt + (newPos - currentPos);
+                    Vector3 currentLookAt = camera->Camera.CameraBase.SceneCamera.LookAtVector;
+                    camera->Camera.CameraBase.SceneCamera.LookAtVector = currentLookAt + (newPos - currentPos);
+                }
             }
-        }
 
-        return result;
+            return result;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CameraUpdateDetour));
+            return _cameraUpdateHook.Original(camera);
+        }
     }
 
     private unsafe Matrix4x4* ProjectionDetour(IntPtr ptr, float fov, float aspect, float nearPlane, float farPlane, float a6, float a7)
     {
-        if(_gPoseService.IsGPosing && _cutsceneManager.VirtualCamera.IsActiveCamera && _cutsceneManager.CameraSettings.EnableFOV)
-            fov = _cutsceneManager.VirtualCamera.FoV;
+        try
+        {
+            if(_gPoseService.IsGPosing && _cutsceneManager.VirtualCamera.IsActiveCamera && _cutsceneManager.CameraSettings.EnableFOV)
+                fov = _cutsceneManager.VirtualCamera.FoV;
 
-        return _projectionHook.Original(ptr, fov, aspect, nearPlane, farPlane, a6, a7);
+            return _projectionHook.Original(ptr, fov, aspect, nearPlane, farPlane, a6, a7);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(ProjectionDetour));
+            return _projectionHook.Original(ptr, fov, aspect, nearPlane, farPlane, a6, a7);
+        }
     }
 
     private nint CameraSceneUpdateDetour(StarfallStudioSceneCamera* gsc)
     {
-        var exec = _cameraSceneUpdateHook.Original(gsc);
-
-        if(_gPoseService.IsGPosing == false)
-            return exec;
-
-        // ha ha ha, this is bad
-
-        if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StopCutscene))
-            _cutsceneManager.StopPlayback();
-        if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StartAllActorsAnimations))
-            _cutsceneManager.StartAllActors();
-        if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StopAllActorsAnimations))
-            _cutsceneManager.StopAllActors();
-
-        if(_virtualCameraService.CurrentCamera is not null && _virtualCameraService.CurrentCamera.IsFreeCamera)
+        try
         {
-            gsc->ViewMatrix = _virtualCameraService.UpdateMatrix();
+            var exec = _cameraSceneUpdateHook.Original(gsc);
 
-            _cameraMatrixLoad(GetCurrentCamera()->Camera.CameraBase.SceneCamera.RenderCamera, (nint)(&gsc->ViewMatrix));
-        }
-        else if(_cutsceneManager.VirtualCamera.IsActiveCamera)
-        {
-            var camMatrix = _cutsceneManager.UpdateCamera();
-
-            if(camMatrix is null)
+            if(_gPoseService.IsGPosing == false)
                 return exec;
 
-            gsc->ViewMatrix = camMatrix.Value;
+            // ha ha ha, this is bad
 
-            _cameraMatrixLoad(GetCurrentCamera()->Camera.CameraBase.SceneCamera.RenderCamera, (nint)(&gsc->ViewMatrix));
+            if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StopCutscene))
+                _cutsceneManager.StopPlayback();
+            if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StartAllActorsAnimations))
+                _cutsceneManager.StartAllActors();
+            if(InputManagerService.ActionKeysPressedLastFrame(InputAction.Interface_StopAllActorsAnimations))
+                _cutsceneManager.StopAllActors();
+
+            if(_virtualCameraService.CurrentCamera is not null && _virtualCameraService.CurrentCamera.IsFreeCamera)
+            {
+                gsc->ViewMatrix = _virtualCameraService.UpdateMatrix();
+
+                _cameraMatrixLoad(GetCurrentCamera()->Camera.CameraBase.SceneCamera.RenderCamera, (nint)(&gsc->ViewMatrix));
+            }
+            else if(_cutsceneManager.VirtualCamera.IsActiveCamera)
+            {
+                var camMatrix = _cutsceneManager.UpdateCamera();
+
+                if(camMatrix is null)
+                    return exec;
+
+                gsc->ViewMatrix = camMatrix.Value;
+
+                _cameraMatrixLoad(GetCurrentCamera()->Camera.CameraBase.SceneCamera.RenderCamera, (nint)(&gsc->ViewMatrix));
+            }
+
+            return exec;
         }
-
-        return exec;
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CameraSceneUpdateDetour));
+            return _cameraSceneUpdateHook.Original(gsc);
+        }
     }
 
     private nint CameraCollisionDetour(StarfallStudioCamera* camera, Vector3* a2, Vector3* a3, float a4, nint a5, float a6)
     {
-        if(_gPoseService.IsGPosing)
+        try
         {
-            if(_entityManager.TryGetEntity<CameraContainerEntity>("cameras", out var cameraEntity))
+            if(_gPoseService.IsGPosing)
             {
-                if(cameraEntity.TryGetCapability<CameraContainerCapability>(out var cameraCapability))
+                if(_entityManager.TryGetEntity<CameraContainerEntity>("cameras", out var cameraEntity))
                 {
-                    if(cameraCapability.CurrentCamera is not null && cameraCapability.IsAllowed && cameraCapability.CurrentCamera.IsFreeCamera == false)
-                        if(cameraCapability.CurrentCamera.IsActiveCamera &&
-                           (cameraCapability.CurrentCamera.DisableCollision || cameraCapability.CurrentCamera.DelimitCamera))
-                        {
-                            camera->Collide = new Vector2(camera->Camera.MaxDistance);
-                            return 0;
-                        }
+                    if(cameraEntity.TryGetCapability<CameraContainerCapability>(out var cameraCapability))
+                    {
+                        if(cameraCapability.CurrentCamera is not null && cameraCapability.IsAllowed && cameraCapability.CurrentCamera.IsFreeCamera == false)
+                            if(cameraCapability.CurrentCamera.IsActiveCamera &&
+                               (cameraCapability.CurrentCamera.DisableCollision || cameraCapability.CurrentCamera.DelimitCamera))
+                            {
+                                camera->Collide = new Vector2(camera->Camera.MaxDistance);
+                                return 0;
+                            }
+                    }
                 }
             }
-        }
 
-        return _cameraCollisionHook.Original(camera, a2, a3, a4, a5, a6);
+            return _cameraCollisionHook.Original(camera, a2, a3, a4, a5, a6);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CameraCollisionDetour));
+            return _cameraCollisionHook.Original(camera, a2, a3, a4, a5, a6);
+        }
     }
 
     public StarfallStudioCamera* GetCurrentCamera()

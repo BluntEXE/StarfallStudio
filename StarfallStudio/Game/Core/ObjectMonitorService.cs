@@ -37,7 +37,7 @@ public unsafe class ObjectMonitorService : IDisposable
         _objectTable = objectTable;
 
         var charInitializeAddress = scanner.ScanText("E8 ?? ?? ?? ?? 8D 57 ?? C6 83");
-        _characterIntitializeHook = hooking.HookFromAddress<NativeCharacterEventDelegate>(charInitializeAddress, CharacterIntitializeDetour);
+        _characterIntitializeHook = hooking.HookFromAddress<NativeCharacterEventDelegate>(charInitializeAddress, CharacterInitializeDetour);
         _characterIntitializeHook.Enable();
 
         var charFinalizeAddress = scanner.ScanText("48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 48 8D 05 ?? ?? ?? ?? 48 8B D9 48 89 01 48 8D 05 ?? ?? ?? ?? 48 89 81 ?? ?? ?? ?? 48 81 C1");
@@ -53,34 +53,66 @@ public unsafe class ObjectMonitorService : IDisposable
         _characterBaseUpdateMaterialsHook.Enable();
     }
 
-    private nint CharacterIntitializeDetour(NativeCharacter* chara)
+    private nint CharacterInitializeDetour(NativeCharacter* chara)
     {
-        var result = _characterIntitializeHook.Original.Invoke(chara);
-        CharacterInitialized?.Invoke(chara);
-        return result;
+        try
+        {
+            var result = _characterIntitializeHook.Original.Invoke(chara);
+            CharacterInitialized?.Invoke(chara);
+            return result;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CharacterInitializeDetour));
+            return _characterIntitializeHook.Original.Invoke(chara);
+        }
     }
 
     private nint CharacterFinalizeDetour(NativeCharacter* chara)
     {
-        CharacterDestroyed?.Invoke(chara);
-        return _characterFinalizeHook.Original.Invoke(chara);
+        try
+        {
+            CharacterDestroyed?.Invoke(chara);
+            return _characterFinalizeHook.Original.Invoke(chara);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CharacterFinalizeDetour));
+            return _characterFinalizeHook.Original.Invoke(chara);
+        }
     }
 
     private nint CharacterBaseUpdateMaterialsDetour(StarfallStudioCharacterBase* charaBase)
     {
-        var result = _characterBaseUpdateMaterialsHook.Original(charaBase);
-        CharacterBaseMaterialsUpdated?.Invoke(charaBase);
-        return result;
+        try
+        {
+            var result = _characterBaseUpdateMaterialsHook.Original(charaBase);
+            CharacterBaseMaterialsUpdated?.Invoke(charaBase);
+            return result;
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CharacterBaseUpdateMaterialsDetour));
+            return _characterBaseUpdateMaterialsHook.Original(charaBase);
+        }
     }
 
     private nint CharacterBaseCleanupDetour(StarfallStudioCharacterBase* charaBase)
     {
-        if(charaBase != null)
+        try
         {
-            CharacterBaseDestroyed?.Invoke(charaBase);
-        }
+            if(charaBase != null)
+            {
+                CharacterBaseDestroyed?.Invoke(charaBase);
+            }
 
-        return _characterBaseCleanupHook.Original(charaBase);
+            return _characterBaseCleanupHook.Original(charaBase);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CharacterBaseCleanupDetour));
+            return _characterBaseCleanupHook.Original(charaBase);
+        }
     }
 
     public void Dispose()

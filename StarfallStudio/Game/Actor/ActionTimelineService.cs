@@ -47,44 +47,58 @@ public unsafe class ActionTimelineService : IDisposable
 
     private bool CalculateAndApplyOverallSpeedDetour(TimelineContainer* a1)
     {
-        bool result = _calculateAndApplyOverallSpeedHook.Original(a1);
-        if(_entityManager.TryGetEntity(a1->OwnerObject, out var entity))
+        try
         {
-            if(entity.TryGetCapability<ActionTimelineCapability>(out var atc))
+            bool result = _calculateAndApplyOverallSpeedHook.Original(a1);
+            if(_entityManager.TryGetEntity(a1->OwnerObject, out var entity))
             {
-                if(atc.SpeedMultiplierOverride.HasValue)
+                if(entity.TryGetCapability<ActionTimelineCapability>(out var atc))
                 {
-                    a1->OverallSpeed = atc.SpeedMultiplierOverride.Value;
-                    result |= true;
-                }
+                    if(atc.SpeedMultiplierOverride.HasValue)
+                    {
+                        a1->OverallSpeed = atc.SpeedMultiplierOverride.Value;
+                        result |= true;
+                    }
 
-                if(atc.CheckAndResetDirtySlots())
-                    result |= true;
+                    if(atc.CheckAndResetDirtySlots())
+                        result |= true;
+                }
             }
 
+            return result;
         }
-
-        return result;
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(CalculateAndApplyOverallSpeedDetour));
+            return _calculateAndApplyOverallSpeedHook.Original(a1);
+        }
     }
 
     private unsafe void SetSlotSpeedDetour(ActionTimelineSequencer* a1, ActionTimelineSlots slot, float speed)
     {
-        float finalSpeed = speed;
-
-        var owner = a1->Parent;
-
-        if(_entityManager.TryGetEntity(owner, out var entity))
+        try
         {
-            if(entity.TryGetCapability<ActionTimelineCapability>(out var atc))
+            float finalSpeed = speed;
+
+            var owner = a1->Parent;
+
+            if(_entityManager.TryGetEntity(owner, out var entity))
             {
-                if(atc.HasSlotSpeedOverride(slot))
+                if(entity.TryGetCapability<ActionTimelineCapability>(out var atc))
                 {
-                    finalSpeed = atc.GetSlotSpeed(slot);
+                    if(atc.HasSlotSpeedOverride(slot))
+                    {
+                        finalSpeed = atc.GetSlotSpeed(slot);
+                    }
                 }
             }
-
+            _setSpeedSlotHook.Original(a1, slot, finalSpeed);
         }
-        _setSpeedSlotHook.Original(a1, slot, finalSpeed);
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(SetSlotSpeedDetour));
+            _setSpeedSlotHook.Original(a1, slot, speed);
+        }
     }
 
     public void Dispose()
