@@ -1056,7 +1056,7 @@ public class LibraryWindow : Window
 
     private void DrawFooter()
     {
-        if(ImStarfallStudio.Button("Add new source", FontAwesomeIcon.None, new Vector2(100, 0)))
+        if(ImStarfallStudio.Button("Add new source", FontAwesomeIcon.None, new Vector2(0, 0)))
         {
             if(_isModal)
             {
