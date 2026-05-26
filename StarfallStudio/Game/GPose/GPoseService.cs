@@ -46,7 +46,7 @@ public unsafe class GPoseService : IDisposable
     private readonly Hook<MouseHoverDelegate> _mouseHoverHook = null!;
 
     internal delegate void TargetNameDelegate(nint args);
-    internal static Hook<TargetNameDelegate> _targetNameDelegateHook = null!;
+    private Hook<TargetNameDelegate> _targetNameDelegateHook = null!;
 
     private readonly IFramework _framework;
     private readonly IClientState _clientState;

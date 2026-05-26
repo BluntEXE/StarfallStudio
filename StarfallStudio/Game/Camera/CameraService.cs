@@ -33,7 +33,7 @@ public unsafe class CameraService : IDisposable
     private readonly Hook<CameraSceneUpdate> _cameraSceneUpdateHook = null!;
 
     private delegate Matrix4x4* ProjectionMatrix(IntPtr ptr, float fov, float aspect, float nearPlane, float farPlane, float a6, float a7);
-    private static Hook<ProjectionMatrix> _projectionHook = null!;
+    private Hook<ProjectionMatrix> _projectionHook = null!;
 
     private delegate void CameraMatrixLoadDelegate(StarfallStudioRenderCamera* camera, nint a1);
     private readonly CameraMatrixLoadDelegate _cameraMatrixLoad;
