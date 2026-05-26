@@ -22,6 +22,5 @@ public abstract class Capability(Entity parent) : IDisposable
     {
         OnEntityDeselected();
 
-        GC.SuppressFinalize(this);
     }
 }

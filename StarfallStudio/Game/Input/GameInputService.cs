@@ -190,6 +190,5 @@ public class GameInputService : IDisposable
 
         _configurationService.OnConfigurationChanged -= OnConfigurationChanged;
 
-        GC.SuppressFinalize(this);
     }
 }

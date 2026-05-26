@@ -90,7 +90,6 @@ public partial class PhysicsService : IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
 
         if(IsFreezeEnabled)
         {

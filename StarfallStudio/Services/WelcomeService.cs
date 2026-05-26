@@ -63,6 +63,5 @@ public class WelcomeService : IDisposable
     public void Dispose()
     {
         _gPoseService.OnGPoseStateChange -= GPoseService_OnGPoseStateChange;
-        GC.SuppressFinalize(this);
     }
 }

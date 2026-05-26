@@ -142,6 +142,5 @@ public class DalamudService : IDisposable
     {
         _framework.Update -= FrameworkOnUpdate;
 
-        GC.SuppressFinalize(this);
     }
 }

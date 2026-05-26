@@ -312,6 +312,5 @@ public class ActorAppearanceWindow : Window, IDisposable
     {
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
 
-        GC.SuppressFinalize(this);
     }
 }

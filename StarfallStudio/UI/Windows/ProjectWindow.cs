@@ -222,6 +222,5 @@ public class ProjectWindow : Window, IDisposable
     {
         _gPoseService.OnGPoseStateChange -= GPoseService_OnGPoseStateChange;
 
-        GC.SuppressFinalize(this);
     }
 }

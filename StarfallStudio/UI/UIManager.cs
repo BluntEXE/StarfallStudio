@@ -299,7 +299,6 @@ public class UIManager : IDisposable
 
         Instance = null!;
 
-        GC.SuppressFinalize(this);
     }
 
     public IDalamudTextureWrap LoadImage(byte[] data)

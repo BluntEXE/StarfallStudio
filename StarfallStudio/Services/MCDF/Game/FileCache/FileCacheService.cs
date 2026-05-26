@@ -250,6 +250,5 @@ public class FileCacheService : IDisposable
     {
         ClearTemp();
 
-        GC.SuppressFinalize(this);
     }
 }

@@ -1106,7 +1106,6 @@ public class PosingOverlayWindow : Window, IDisposable
     {
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
 
-        GC.SuppressFinalize(this);
     }
 
 

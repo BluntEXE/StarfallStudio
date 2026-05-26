@@ -228,6 +228,5 @@ public class MainWindow : Window, IDisposable
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
     }
 }

@@ -89,6 +89,5 @@ public class ImStarfallStudioText : IDisposable
     {
         UidFont.Dispose();
 
-        GC.SuppressFinalize(this);
     }
 }

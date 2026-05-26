@@ -152,6 +152,5 @@ public class InputManagerService : IDisposable
     {
         _framework.Update -= OnFrameworkUpdate;
 
-        GC.SuppressFinalize(this);
     }
 }

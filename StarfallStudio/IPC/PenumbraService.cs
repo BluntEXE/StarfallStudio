@@ -342,6 +342,5 @@ public class PenumbraService : StarfallStudioIPC
         _penumbraDisposedSubscriber.Dispose();
         _penumbraRedrawEvent.Dispose();
 
-        GC.SuppressFinalize(this);
     }
 }

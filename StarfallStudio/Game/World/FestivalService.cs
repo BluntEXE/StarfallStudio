@@ -249,7 +249,6 @@ public unsafe class FestivalService : IDisposable
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChanged;
         _clientState.TerritoryChanged -= OnTerritoryChanged;
 
-        GC.SuppressFinalize(this);
     }
 
     private class FestivalFileEntry

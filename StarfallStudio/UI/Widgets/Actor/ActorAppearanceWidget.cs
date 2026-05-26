@@ -283,7 +283,7 @@ public class ActorAppearanceWidget(ActorAppearanceCapability capability) : Widge
     {
         var toggele = Capability.IsHidden ? "Show" : "Hide";
         if(ImGui.MenuItem($"{toggele} {Capability.Actor.FriendlyName}###Appearance_popup_toggle"))
-            Capability.ToggleHide();
+            Capability.ToggleVisibility();
     }
 
     public override void DrawQuickIcons()

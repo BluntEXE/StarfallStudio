@@ -106,6 +106,5 @@ public class ResourceProvider : IDisposable
         _cachedImages?.Clear();
         _cachedDocuments?.Clear();
 
-        GC.SuppressFinalize(this);
     }
 }

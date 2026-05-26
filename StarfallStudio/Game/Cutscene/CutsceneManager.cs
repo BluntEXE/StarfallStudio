@@ -256,6 +256,5 @@ public class CutsceneManager : IDisposable
         if(IsRunning)
             StopPlayback();
 
-        GC.SuppressFinalize(this);
     }
 }

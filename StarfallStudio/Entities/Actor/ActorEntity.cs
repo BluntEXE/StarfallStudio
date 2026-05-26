@@ -90,7 +90,7 @@ public class ActorEntity(IGameObject gameObject, IServiceProvider provider) : En
             string toolTip = aac.IsHidden ? $"Show {aac.Actor.FriendlyName}" : $"Hide {aac.Actor.FriendlyName}";
             if(ImStarfallStudio.FontIconButtonRight($"###{Id}_hideActor", aac.IsHidden ? FontAwesomeIcon.EyeSlash : FontAwesomeIcon.Eye, 1f, toolTip, bordered: false))
             {
-                aac.ToggleHide();
+                aac.ToggleVisibility();
             }
         }
     }

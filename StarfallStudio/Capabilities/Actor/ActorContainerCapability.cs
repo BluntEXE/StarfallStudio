@@ -77,9 +77,8 @@ public class ActorContainerCapability : Capability
             return;
 
         StarfallStudio.Log.Debug($"[ActorContainerCapability] OnActorAttached: hiding ambient actor — {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
-        // All other ambient actors start hidden. Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac))
-            _ = aac.Show();
+            _ = aac.MakeInvisible();
         else
             StarfallStudio.Log.Warning($"[ActorContainerCapability] OnActorAttached: no ActorAppearanceCapability on {actor.GameObject.Name} idx={actor.GameObject.ObjectIndex}");
     }
@@ -132,9 +131,9 @@ public class ActorContainerCapability : Capability
         if(actor.GameObject.IsOverworld())
             return;
 
-        // Make visible. Hide() sets Transparency=1 (visible).
+        // Restore actor to visible.
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && aac.IsHidden)
-            _ = aac.Hide();
+            _ = aac.MakeVisible();
     }
 
     public unsafe void UnpinActor(ActorEntity actor)
@@ -162,9 +161,8 @@ public class ActorContainerCapability : Capability
         }
 
         // Spawned actors: hide in-place (stay in list, cheap to re-pin).
-        // Show() sets Transparency=0 (invisible).
         if(actor.TryGetCapability<ActorAppearanceCapability>(out var aac) && !aac.IsHidden)
-            _ = aac.Show();
+            _ = aac.MakeInvisible();
     }
 
     public void SelectActorInHierarchy(ActorEntity entity)

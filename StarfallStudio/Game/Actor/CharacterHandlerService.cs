@@ -108,6 +108,5 @@ public class CharacterHandlerService : IDisposable
 
         CharacterHandler.Clear();
 
-        GC.SuppressFinalize(this);
     }
 }

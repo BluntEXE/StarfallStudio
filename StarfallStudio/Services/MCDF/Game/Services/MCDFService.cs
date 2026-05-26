@@ -924,6 +924,5 @@ public class MCDFService : IDisposable
     {
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChange;
 
-        GC.SuppressFinalize(this);
     }
 }

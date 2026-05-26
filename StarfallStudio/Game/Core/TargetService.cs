@@ -101,6 +101,5 @@ public unsafe class TargetService : IDisposable
     {
         _framework.Update -= OnFrameworkUpdate;
 
-        GC.SuppressFinalize(this);
     }
 }

@@ -170,7 +170,6 @@ public class Mediator() : IDisposable
     public void Dispose()
     {
         StopAsync(CancellationToken.None).GetAwaiter().GetResult();
-        GC.SuppressFinalize(this);
     }
 
     private sealed class SubscriberAction
@@ -207,7 +206,6 @@ public abstract class MediatorSubscriberBase : IMediatorSubscriber
     public virtual void Dispose()
     {
         Mediator.UnsubscribeAll(this);
-        GC.SuppressFinalize(this);
     }
 }
 

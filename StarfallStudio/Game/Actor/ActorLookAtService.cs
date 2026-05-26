@@ -276,7 +276,6 @@ public unsafe class ActorLookAtService : IDisposable
 
         _gPoseService.OnGPoseStateChange -= OnGPoseStateChange;
 
-        GC.SuppressFinalize(this);
     }
 }
 

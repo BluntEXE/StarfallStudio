@@ -124,6 +124,5 @@ public class ComponentSet<T> : IEnumerable<T>, IDisposable
     {
         Clear();
 
-        GC.SuppressFinalize(this);
     }
 }

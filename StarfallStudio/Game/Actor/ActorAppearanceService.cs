@@ -379,6 +379,5 @@ public class ActorAppearanceService : IDisposable
         _updateWetnessHook.Dispose();
         _updateTintHook.Dispose();
 
-        GC.SuppressFinalize(this);
     }
 }

@@ -509,7 +509,6 @@ public unsafe class LightingService : IDisposable
 
         DestroyAllLights();
 
-        GC.SuppressFinalize(this);
     }
 }
 
@@ -604,7 +603,6 @@ public unsafe class Light : IGameLight, IDisposable
     {
         Destroy();
 
-        GC.SuppressFinalize(this);
     }
 }
 

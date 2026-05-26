@@ -271,6 +271,5 @@ public class GlamourerService : StarfallStudioIPC
 
         _glamourerInitializedSubscriber.Dispose();
 
-        GC.SuppressFinalize(this);
     }
 }

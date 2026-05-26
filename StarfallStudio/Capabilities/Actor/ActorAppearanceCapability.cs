@@ -79,6 +79,7 @@ public class ActorAppearanceCapability : ActorCharacterCapability
 
     public bool IsAnyMCDFLoading => _mCDFService.IsApplyingMCDF;
 
+    // True when the actor is invisible (Transparency == 0 means fully transparent/hidden).
     public bool IsHidden => CurrentAppearance.ExtendedAppearance.Transparency == 0;
 
     public ActorAppearanceCapability(ActorEntity parent, CharacterHandlerService characterHandlerService, EntityManager entityManager, MCDFService mCDFService, IFramework framework, ActorAppearanceService actorAppearanceService,
@@ -360,7 +361,9 @@ public class ActorAppearanceCapability : ActorCharacterCapability
         return SetAppearance(appearance, AppearanceImportOptions.Gear);
     }
 
-    public Task ToggleHide()
+    // Toggles actor visibility. When hidden (Transparency==0), restores to fully opaque (1f).
+    // When visible, zeroes transparency to hide the actor.
+    public Task ToggleVisibility()
     {
         var appearance = _actorAppearanceService.GetActorAppearance(Character);
 
@@ -376,17 +379,19 @@ public class ActorAppearanceCapability : ActorCharacterCapability
         return SetAppearance(appearance, AppearanceImportOptions.ExtendedAppearance);
     }
 
-    public Task Hide()
+    // Makes actor visible — sets Transparency to 1f (fully opaque).
+    public Task MakeVisible()
     {
         var appearance = _actorAppearanceService.GetActorAppearance(Character);
         appearance.ExtendedAppearance.Transparency = 1f;
         return SetAppearance(appearance, AppearanceImportOptions.ExtendedAppearance);
     }
 
-    public Task Show()
+    // Makes actor invisible — sets Transparency to 0f (fully transparent).
+    public Task MakeInvisible()
     {
         var appearance = _actorAppearanceService.GetActorAppearance(Character);
-        StarfallStudio.Log.Debug($"[ActorAppearanceCapability] Show(): actor {Character.ObjectIndex} currentTransparency={appearance.ExtendedAppearance.Transparency} → setting to 0");
+        StarfallStudio.Log.Debug($"[ActorAppearanceCapability] MakeInvisible(): actor {Character.ObjectIndex} currentTransparency={appearance.ExtendedAppearance.Transparency} → setting to 0");
         appearance.ExtendedAppearance.Transparency = 0f;
         return SetAppearance(appearance, AppearanceImportOptions.ExtendedAppearance);
     }
