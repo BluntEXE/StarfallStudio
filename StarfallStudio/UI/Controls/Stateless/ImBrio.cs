@@ -175,8 +175,10 @@ public static partial class ImStarfallStudio
     {
         bool clicked;
 
-        // for consistency, hard-code this
-        float iconWidth = 40;
+        bool hasIcon = icon != FontAwesomeIcon.None;
+
+        // iconWidth only contributes to layout when an icon is actually shown
+        float iconWidth = hasIcon ? 40 : 0;
         float textWidth = ImGui.CalcTextSize(label).X;
         float innerWidth = iconWidth + ImGui.GetStyle().ItemInnerSpacing.X + textWidth;
         float neededWidth = innerWidth + (ImGui.GetStyle().FramePadding.X * 2);
@@ -190,8 +192,12 @@ public static partial class ImStarfallStudio
             innerWidth = size.X - (ImGui.GetStyle().FramePadding.X * 2);
         }
 
-        float iconR = iconWidth + ImGui.GetStyle().ItemInnerSpacing.X;
-        float textOffset = iconR / innerWidth;
+        // ButtonTextAlign x positions text at: x * (innerWidth - textWidth) from the left.
+        // We want text to start at iconR pixels from left, so: iconR = x * (innerWidth - textWidth)
+        // => x = iconR / (innerWidth - textWidth)
+        float iconR = iconWidth + (hasIcon ? ImGui.GetStyle().ItemInnerSpacing.X : 0);
+        float available = innerWidth - textWidth;
+        float textOffset = available > 0 ? Math.Min(iconR / available, 1f) : 0f;
         using(ImRaii.PushStyle(ImGuiStyleVar.ButtonTextAlign, new Vector2(textOffset, 0.5f), centerTest == false))
         {
             Vector2 startPos = ImGui.GetCursorPos();
