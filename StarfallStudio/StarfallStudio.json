@@ -2,7 +2,7 @@
   "Author": "Ehno",
   "Name": "Starfall Studio",
   "InternalName": "StarfallStudio",
-  "AssemblyVersion": "0.2.28",
+  "AssemblyVersion": "0.2.29",
   "Description": "Starfall Studio - combined GPose toolkit for actor posing, animation control, camera editing, and scene building.\n- Actor list with click-to-select\n- World-space transform gizmo\n- Animation control and pause\n- Advanced appearance and wetness editing\n- Camera editor\n- Bone manipulation\n- MCDF actor import\n- NPC/overworld actor import\n- Pose import",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/BluntEXE/StarfallStudio",

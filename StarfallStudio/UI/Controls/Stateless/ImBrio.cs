@@ -177,8 +177,15 @@ public static partial class ImStarfallStudio
 
         bool hasIcon = icon != FontAwesomeIcon.None;
 
-        // iconWidth only contributes to layout when an icon is actually shown
-        float iconWidth = hasIcon ? 40 : 0;
+        // Measure actual icon glyph width using the icon font so the text offset is exact
+        float iconWidth = 0;
+        if(hasIcon)
+        {
+            ImGui.PushFont(UiBuilder.IconFont);
+            iconWidth = ImGui.CalcTextSize(icon.ToIconString()).X;
+            ImGui.PopFont();
+        }
+
         float textWidth = ImGui.CalcTextSize(label).X;
         float innerWidth = iconWidth + ImGui.GetStyle().ItemInnerSpacing.X + textWidth;
         float neededWidth = innerWidth + (ImGui.GetStyle().FramePadding.X * 2);
