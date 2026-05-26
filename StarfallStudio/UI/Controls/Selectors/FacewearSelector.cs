@@ -39,10 +39,10 @@ public class FacewearSelector(string id) : Selector<FacewearUnion>(id)
         return item.Match(
             (glasses) =>
             {
-                if(string.IsNullOrEmpty(glasses.Name.ToString()))
+                if(string.IsNullOrEmpty(glasses.Name.ExtractText()))
                     return false;
 
-                var searchText = $"{glasses.Name} {glasses.RowId}";
+                var searchText = $"{glasses.Name.ExtractText()} {glasses.RowId}";
 
                 if(searchText.Contains(search, System.StringComparison.InvariantCultureIgnoreCase))
                     return true;
@@ -64,12 +64,12 @@ public class FacewearSelector(string id) : Selector<FacewearUnion>(id)
 
         // Get name
         var textA = itemA.Match(
-            glasses => glasses.Name.ToString(),
+            glasses => glasses.Name.ExtractText(),
             none => ""
         );
 
         var textB = itemB.Match(
-            glasses => glasses.Name.ToString(),
+            glasses => glasses.Name.ExtractText(),
             none => ""
         );
 

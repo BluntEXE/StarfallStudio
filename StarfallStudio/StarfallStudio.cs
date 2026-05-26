@@ -46,6 +46,7 @@ public class StarfallStudio : IDalamudPlugin
     public const string Name = "Starfall Studio";
 
     private static ServiceProvider? _services = null;
+    private volatile bool _disposed;
 
     public static IPluginLog Log { get; private set; } = null!;
     public static IFramework Framework { get; private set; } = null!;
@@ -59,6 +60,8 @@ public class StarfallStudio : IDalamudPlugin
 
         dalamudServices.Framework.RunOnTick(() =>
         {
+            if(_disposed) return; // plugin unloaded before tick fired — skip init entirely
+
             var trace = new DiagnosticTrace();
             using(Diagnostics.MeasureTime(ref trace, logOnDispose: true, logLabel: "StartUp"))
             {
@@ -386,9 +389,8 @@ public class StarfallStudio : IDalamudPlugin
 
     public void Dispose()
     {
+        _disposed = true; // set before disposing so the RunOnTick guard sees it
         _services?.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 }
 

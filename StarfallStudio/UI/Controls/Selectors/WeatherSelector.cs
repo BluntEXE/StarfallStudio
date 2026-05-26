@@ -51,13 +51,13 @@ public class WeatherSelector(string id) : Selector<WeatherUnion>(id)
         return item.Match(
             (weatherRow) =>
             {
-                if(string.IsNullOrEmpty(weatherRow.Name.ToString()))
+                if(string.IsNullOrEmpty(weatherRow.Name.ExtractText()))
                     return false;
 
                 if(!_showInvalidWeathers && !_validWeathers.Contains(weatherRow))
                     return false;
 
-                var searchText = $"{weatherRow.Name} {weatherRow.RowId}";
+                var searchText = $"{weatherRow.Name.ExtractText()} {weatherRow.RowId}";
 
                 if(searchText.Contains(search, System.StringComparison.InvariantCultureIgnoreCase))
                     return true;

@@ -227,8 +227,6 @@ public unsafe class GPoseService : IDisposable
         _enterGPoseHook.Dispose();
         _exitGPoseHook.Dispose();
         _mouseHoverHook.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 }
 

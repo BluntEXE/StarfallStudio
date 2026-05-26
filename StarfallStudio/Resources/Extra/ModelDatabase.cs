@@ -23,12 +23,12 @@ public class ModelDatabase
             var slots = item.EquipSlotCategory.ValueNullable?.GetEquipSlots() ?? ActorEquipSlot.None;
             if(slots != ActorEquipSlot.None)
             {
-                var modelInfo = new ModelInfo(item.ModelMain, item.RowId, item.Name.ToString(), item.Icon, slots, item);
+                var modelInfo = new ModelInfo(item.ModelMain, item.RowId, item.Name.ExtractText(), item.Icon, slots, item);
                 AddModel(modelInfo);
 
                 if(item.ModelSub != 0)
                 {
-                    modelInfo = new ModelInfo(item.ModelSub, item.RowId, item.Name.ToString(), item.Icon, ActorEquipSlot.OffHand, item);
+                    modelInfo = new ModelInfo(item.ModelSub, item.RowId, item.Name.ExtractText(), item.Icon, ActorEquipSlot.OffHand, item);
                     AddModel(modelInfo);
                 }
             }

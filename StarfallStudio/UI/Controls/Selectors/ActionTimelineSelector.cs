@@ -138,7 +138,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
             if(emote.ActionTimeline[0].RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(emote.ActionTimeline[0].RowId, out timeline))
             {
                 AddItem(new ActionTimelineSelectorEntry(
-                    emote.Name.ToString(),
+                    emote.Name.ExtractText(),
                     (ushort)timeline.RowId,
                     emote.RowId,
                     timeline.Key.ToString(),
@@ -154,7 +154,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
             if(emote.ActionTimeline[1].RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(emote.ActionTimeline[1].RowId, out timeline))
             {
                 AddItem(new ActionTimelineSelectorEntry(
-                    emote.Name.ToString(),
+                    emote.Name.ExtractText(),
                     (ushort)timeline.RowId,
                     emote.RowId,
                     timeline.Key.ToString(),
@@ -170,7 +170,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
             if(emote.ActionTimeline[2].RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(emote.ActionTimeline[2].RowId, out timeline))
             {
                 AddItem(new ActionTimelineSelectorEntry(
-                    emote.Name.ToString(),
+                    emote.Name.ExtractText(),
                     (ushort)timeline.RowId,
                     emote.RowId,
                     timeline.Key.ToString(),
@@ -186,7 +186,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
             if(emote.ActionTimeline[3].RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(emote.ActionTimeline[3].RowId, out timeline))
             {
                 AddItem(new ActionTimelineSelectorEntry(
-                    emote.Name.ToString(),
+                    emote.Name.ExtractText(),
                     (ushort)timeline.RowId,
                     emote.RowId,
                     timeline.Key.ToString(),
@@ -202,7 +202,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
             if(emote.ActionTimeline[4].RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(emote.ActionTimeline[4].RowId, out timeline))
             {
                 AddItem(new ActionTimelineSelectorEntry(
-                    emote.Name.ToString(),
+                    emote.Name.ExtractText(),
                     (ushort)timeline.RowId,
                     emote.RowId,
                     timeline.Key.ToString(),
@@ -219,7 +219,7 @@ public class ActionTimelineSelector(string id) : Selector<ActionTimelineSelector
         {
             if(action.AnimationEnd.RowId != 0 && GameDataProvider.Instance.ActionTimelines.TryGetRow(action.AnimationEnd.RowId, out StarfallStudioActionTimeline timeline))
                 AddItem(new ActionTimelineSelectorEntry(
-                    action.Name.ToString(),
+                    action.Name.ExtractText(),
                     (ushort)action.AnimationEnd.RowId,
                     action.RowId,
                     action.AnimationEnd.Value.Key.ToString(),
