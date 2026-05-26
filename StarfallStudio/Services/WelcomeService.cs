@@ -40,7 +40,7 @@ public class WelcomeService : IDisposable
             StarfallStudio.Log.Warning($"Library sources have been re-established!");
         }
 
-        if(configService.Configuration.Version <= 2)
+        if(configService.Configuration.Version <= 3)
         {
             configService.Configuration.Version = Configuration.CurrentVersion;
         }

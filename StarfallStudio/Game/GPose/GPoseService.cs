@@ -97,6 +97,9 @@ public unsafe class GPoseService : IDisposable
 
             if(_configService.Configuration.Posing.HideNameOnGPoseSettingsWindow)
             {
+                // Offset 488 is the name buffer inside the GPose target-name args struct.
+                // Sourced from Ktisis GuiHooks.cs (same sig). If the game updates and names
+                // stop hiding, re-check this offset against the struct layout in ClientStructs.
                 for(var i = 0; i < StarfallStudioHiddenName.Length; i++)
                 {
                     *(char*)(args + 488 + i) = StarfallStudioHiddenName[i];

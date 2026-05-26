@@ -124,10 +124,10 @@ public unsafe class LightingService : IDisposable
         // This is because this only fires when you "click" the light toggle buttons in Gpose
         //
 
-        var result = _toggleLightHook.Original(state, index);
-
         try
         {
+            var result = _toggleLightHook.Original(state, index);
+
             var gposeLight = state->GetLight(index);
 
             if(gposeLight != null)
@@ -148,13 +148,14 @@ public unsafe class LightingService : IDisposable
                 if(lightToRemove is not null)
                     RemoveGposeLight(lightToRemove);
             }
+
+            return result;
         }
         catch(Exception ex)
         {
             StarfallStudio.Log.Error(ex, "An Exception while trying to handle a Gpose light toggle");
+            return _toggleLightHook.Original(state, index);
         }
-
-        return result;
     }
 
     //

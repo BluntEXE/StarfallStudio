@@ -38,16 +38,23 @@ public partial class PhysicsService : IDisposable
         // Found in AddressService.cs on line 159 - SkeletonFreezePhysics (1/2/3)
         var freezePhysicsAddress = "0F 11 48 10 41 0F 10 44 24 ?? 0F 11 40 20 48 8B 46 28";
         if(!scanner.TryScanText(freezePhysicsAddress, out this._freezePhysicsAddress))
+        {
             this._freezePhysicsAddress = 0;
-
-        _originalPhysicsBytes1 = MemoryHelper.ReadRaw(_freezePhysicsAddress, 4);
-        _originalPhysicsBytes2 = MemoryHelper.ReadRaw(_freezePhysicsAddress - 0x9, 3);
+            StarfallStudio.Log.Warning("PhysicsService: freeze physics sig not found — physics freeze unavailable");
+        }
+        else
+        {
+            // Read originals only when we have a valid address.
+            _originalPhysicsBytes1 = MemoryHelper.ReadRaw(_freezePhysicsAddress, 4);
+            _originalPhysicsBytes2 = MemoryHelper.ReadRaw(_freezePhysicsAddress - 0x9, 3);
+        }
     }
 
     public bool FreezeToggle() => IsFreezeEnabled ? FreezeRevert() : FreezeEnable();
 
     public bool FreezeRevert()
     {
+        if(_freezePhysicsAddress == 0) return IsFreezeEnabled = false;
         ReplaceRaw(_freezePhysicsAddress, _originalPhysicsBytes1);
         ReplaceRaw(_freezePhysicsAddress - 0x9, _originalPhysicsBytes2);
 
@@ -56,6 +63,7 @@ public partial class PhysicsService : IDisposable
 
     public bool FreezeEnable()
     {
+        if(_freezePhysicsAddress == 0) return false;
         _originalPhysicsBytes1 = ReplaceRaw(_freezePhysicsAddress, [0x90, 0x90, 0x90, 0x90]);
         _originalPhysicsBytes2 = ReplaceRaw(_freezePhysicsAddress - 0x9, [0x90, 0x90, 0x90]);
 
