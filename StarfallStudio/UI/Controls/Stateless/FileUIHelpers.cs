@@ -411,14 +411,14 @@ public class FileUIHelpers
 
     public static void ShowExportSceneModal(EntityManager entityManager, SceneService sceneService)
     {
-        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Scene File###export_scene_window", "StarfallStudio Scene File (*.brioscn){.brioscn}", "brioscn", "{.brioscn}",
+        UIManager.Instance.FileDialogManager.SaveFileDialog("Export Scene File###export_scene_window", "StarfallStudio Scene File (*.starscn){.starscn}", "starscn", "{.starscn}",
             (success, path) =>
             {
                 if(success)
                 {
                     StarfallStudio.Log.Info("Exporting scene...");
-                    if(!path.EndsWith(".brioscn"))
-                        path += ".brioscn";
+                    if(!path.EndsWith(".starscn"))
+                        path += ".starscn";
 
                     var directory = Path.GetDirectoryName(path);
                     if(directory is not null)
