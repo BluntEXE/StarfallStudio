@@ -255,7 +255,7 @@ public class MCDFService : IDisposable
         Dictionary<string, string> gamePathToFilePath = new(StringComparer.Ordinal);
         foreach(var fileData in charaFileHeader.CharaFileData.Files)
         {
-            var fileName = Path.Combine(_fileCacheService.CacheFolder, "brio_" + fileData.Hash + ".tmp");
+            var fileName = Path.Combine(_fileCacheService.CacheFolder, "starfall_" + fileData.Hash + ".tmp");
             extractedFiles.Add(fileName);
             var length = fileData.Length;
             var bufferSize = length;

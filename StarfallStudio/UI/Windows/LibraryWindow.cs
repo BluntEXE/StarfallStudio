@@ -101,9 +101,9 @@ public class LibraryWindow : Window
         PosingService posingService,
         IFramework frameworkService,
         SettingsWindow settingsWindow)
-        : base($"{StarfallStudio.Name} LIBRARY###brio_library_window")
+        : base($"{StarfallStudio.Name} LIBRARY###starfall_library_window")
     {
-        this.Namespace = "brio_library_namespace";
+        this.Namespace = "starfall_library_namespace";
 
         WindowSizeConstraints constraints = new()
         {
@@ -304,11 +304,11 @@ public class LibraryWindow : Window
         if(!this.IsOpen || !this._isModal || _modalFilter == null)
             return;
 
-        ImGui.OpenPopup($"Import {_modalFilter.Name}##brio_library_popup");
+        ImGui.OpenPopup($"Import {_modalFilter.Name}##starfall_library_popup");
 
         ImGui.SetNextWindowSizeConstraints(MinimumSize, ImGui.GetIO().DisplaySize);
 
-        using(var popup = ImRaii.PopupModal($"Import {_modalFilter.Name}##brio_library_popup"))
+        using(var popup = ImRaii.PopupModal($"Import {_modalFilter.Name}##starfall_library_popup"))
         {
             if(popup.Success)
             {
@@ -319,7 +319,7 @@ public class LibraryWindow : Window
 
     private void DrawLibrary()
     {
-        using(ImRaii.PushId("##brio_library"))
+        using(ImRaii.PushId("##starfall_library"))
         {
 
             DrawFilters();

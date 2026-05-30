@@ -43,12 +43,12 @@ public class RenameActorModal
         if(IsOpen == false)
             return;
 
-        ImGui.OpenPopup($"Rename##brio_renamemodal_popup");
+        ImGui.OpenPopup($"Rename##starfall_renamemodal_popup");
 
         ImGui.SetNextWindowSizeConstraints(MinimumSize, MinimumSize);
         ImGui.SetNextWindowPos(new Vector2((ImGui.GetIO().DisplaySize.X / 2) - (MinimumSize.X / 2), (ImGui.GetIO().DisplaySize.Y / 2) - (MinimumSize.Y / 2)));
 
-        using(var popup = ImRaii.PopupModal($"Rename##brio_renamemodal_popup", ref IsOpen, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDecoration))
+        using(var popup = ImRaii.PopupModal($"Rename##starfall_renamemodal_popup", ref IsOpen, ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDecoration))
         {
             if(popup.Success)
             {
@@ -56,7 +56,7 @@ public class RenameActorModal
                 {
                     ImGui.Text($"Renaming:  [ {currentActorEntity.FriendlyName} ]");
 
-                    ImGui.InputText("Actor Name###brio_renamemodal_popup_name", ref currentActorName, 20);
+                    ImGui.InputText("Actor Name###starfall_renamemodal_popup_name", ref currentActorName, 20);
 
                     float buttonW = (MinimumSize.X / 3) - 7;
 

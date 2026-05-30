@@ -23,9 +23,9 @@ public class CameraWindow : Window, IDisposable
     private readonly CutsceneManager _cutsceneManager;
     private readonly ConfigurationService _configService;
 
-    public CameraWindow(EntityManager entityManager, GPoseService gPoseService, CutsceneManager cutsceneManager, ConfigurationService configService, VirtualCameraManager virtualCameraService) : base($"★ {StarfallStudio.Name} - Camera###brio_camera_window")
+    public CameraWindow(EntityManager entityManager, GPoseService gPoseService, CutsceneManager cutsceneManager, ConfigurationService configService, VirtualCameraManager virtualCameraService) : base($"★ {StarfallStudio.Name} - Camera###starfall_camera_window")
     {
-        Namespace = "brio_camera_namespace";
+        Namespace = "starfall_camera_namespace";
 
         _entityManager = entityManager;
         _gPoseService = gPoseService;
@@ -121,16 +121,16 @@ public class CameraWindow : Window, IDisposable
         switch(camStarfallStudioCap.CameraEntity.CameraType)
         {
             case CameraType.Free:
-                WindowName = $"★ {StarfallStudio.Name} - Camera (Free)###brio_camera_window";
+                WindowName = $"★ {StarfallStudio.Name} - Camera (Free)###starfall_camera_window";
                 CameraEditor.DrawFreeCam("camera_widget_editor", camStarfallStudioCap);
                 break;
             case CameraType.Cutscene:
-                WindowName = $"★ {StarfallStudio.Name} - Camera (Cutscene)###brio_camera_window";
+                WindowName = $"★ {StarfallStudio.Name} - Camera (Cutscene)###starfall_camera_window";
                 CameraEditor.DrawStarfallStudioCutscene("camera_widget_editor", camStarfallStudioCap, _cutsceneManager, _configService);
                 break;
             case CameraType.Game:
             case CameraType.Default:
-                WindowName = $"★ {StarfallStudio.Name} - Camera (Game)###brio_camera_window";
+                WindowName = $"★ {StarfallStudio.Name} - Camera (Game)###starfall_camera_window";
                 CameraEditor.DrawStarfallStudioCam("camera_widget_editor", camStarfallStudioCap);
                 break;
         }

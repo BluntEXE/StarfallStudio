@@ -23,9 +23,9 @@ public class LightWindow : Window, IDisposable
     private readonly ConfigurationService _configService;
     private readonly LightingService _lightingService;
 
-    public LightWindow(EntityManager entityManager, LightingService lightingService, GPoseService gPoseService, ConfigurationService configService) : base($"{StarfallStudio.Name} - LIGHT###brio_light_window")
+    public LightWindow(EntityManager entityManager, LightingService lightingService, GPoseService gPoseService, ConfigurationService configService) : base($"{StarfallStudio.Name} - LIGHT###starfall_light_window")
     {
-        Namespace = "brio_light_namespace";
+        Namespace = "starfall_light_namespace";
 
         _entityManager = entityManager;
         _gPoseService = gPoseService;
@@ -67,7 +67,7 @@ public class LightWindow : Window, IDisposable
                 ImGui.EndCombo();
             }
             else
-                WindowName = $"{StarfallStudio.Name} - LIGHT###brio_light_window";
+                WindowName = $"{StarfallStudio.Name} - LIGHT###starfall_light_window";
 
         ImStarfallStudio.AttachToolTip("Current Light");
 
@@ -94,9 +94,9 @@ public class LightWindow : Window, IDisposable
 
         LightLifetimeCapability? light = null;
         if(!_lightingService.SelectedLightEntity?.TryGetCapability<LightLifetimeCapability>(out light) ?? false)
-            WindowName = $"{StarfallStudio.Name} - LIGHT###brio_light_window";
+            WindowName = $"{StarfallStudio.Name} - LIGHT###starfall_light_window";
         else
-            WindowName = $"{StarfallStudio.Name} - LIGHT - {light?.Entity.FriendlyName}###brio_light_window";
+            WindowName = $"{StarfallStudio.Name} - LIGHT - {light?.Entity.FriendlyName}###starfall_light_window";
 
         using(ImRaii.Disabled(_lightingService!.SelectedLightEntity is null))
         {

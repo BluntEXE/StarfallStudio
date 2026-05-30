@@ -51,12 +51,12 @@ public class PosingOverlayWindow : Window, IDisposable
     private List<(EntityId id, PosingCapability info, Transform model)>? _groupedPendingSnapshot = null;
 
     private const int _gizmoId = 142857;
-    private const string _boneSelectPopupName = "brio_bone_select_popup";
+    private const string _boneSelectPopupName = "starfall_bone_select_popup";
 
     public PosingOverlayWindow(EntityManager entityManager, IGameGui gameGui, CameraService cameraService, LightingService lightingService, HistoryService groupedUndoService, ConfigurationService configService, PosingService posingService, GPoseService gPoseService)
-        : base("##brio_posing_overlay_window", ImGuiWindowFlags.AlwaysAutoResize, true)
+        : base("##starfall_posing_overlay_window", ImGuiWindowFlags.AlwaysAutoResize, true)
     {
-        Namespace = "brio_posing_overlay_namespace";
+        Namespace = "starfall_posing_overlay_namespace";
 
         IsOpen = configService.Configuration.Posing.OverlayDefaultsOn;
 

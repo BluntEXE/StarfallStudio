@@ -30,9 +30,9 @@ public class ActorAppearanceWindow : Window, IDisposable
     private ActorAppearanceCapability _capability = null!;
     private AppearanceImportOptions _importOptions = AppearanceImportOptions.All;
 
-    public ActorAppearanceWindow(EntityManager entityManager, GPoseService gPoseService, MCDFService mCDFService) : base($"{StarfallStudio.Name} - APPEARANCE###brio_character_editor_window")
+    public ActorAppearanceWindow(EntityManager entityManager, GPoseService gPoseService, MCDFService mCDFService) : base($"{StarfallStudio.Name} - APPEARANCE###starfall_character_editor_window")
     {
-        Namespace = "brio_character_editor_namespace";
+        Namespace = "starfall_character_editor_namespace";
 
         _mCDFService = mCDFService;
         _entityManager = entityManager;
@@ -75,7 +75,7 @@ public class ActorAppearanceWindow : Window, IDisposable
 
         _capability = capability;
 
-        WindowName = $"{StarfallStudio.Name} - Appearance - {capability.Entity.FriendlyName}###brio_character_editor_window";
+        WindowName = $"{StarfallStudio.Name} - Appearance - {capability.Entity.FriendlyName}###starfall_character_editor_window";
 
         using(ImRaii.Disabled(capability.Entity.IsLoading))
         {

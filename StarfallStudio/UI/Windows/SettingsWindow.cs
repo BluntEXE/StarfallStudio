@@ -32,9 +32,9 @@ public class SettingsWindow : Window
         PenumbraService penumbraService,
         GlamourerService glamourerService,
         WebService webService,
-        CustomizePlusService customizePlusService) : base($"{StarfallStudio.Name} SETTINGS###brio_settings_window", ImGuiWindowFlags.NoResize)
+        CustomizePlusService customizePlusService) : base($"{StarfallStudio.Name} SETTINGS###starfall_settings_window", ImGuiWindowFlags.NoResize)
     {
-        Namespace = "brio_settings_namespace";
+        Namespace = "starfall_settings_namespace";
 
         _configurationService = configurationService;
         _penumbraService = penumbraService;
@@ -77,7 +77,7 @@ public class SettingsWindow : Window
     int selected;
     public override void Draw()
     {
-        using(ImRaii.PushId("brio_settings"))
+        using(ImRaii.PushId("starfall_settings"))
         {
             if(_isModal)
             {

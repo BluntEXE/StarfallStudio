@@ -23,9 +23,9 @@ public class ProjectWindow : Window, IDisposable
     static Project? selectedItem;
     private const float InfoPaneWidth = 200;
 
-    public ProjectWindow(ProjectSystem projectSystem, MCDFService mCDFService, GPoseService gPoseService) : base($"{StarfallStudio.Name} PROJECT BETA###brio_project_window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+    public ProjectWindow(ProjectSystem projectSystem, MCDFService mCDFService, GPoseService gPoseService) : base($"{StarfallStudio.Name} PROJECT BETA###starfall_project_window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
-        Namespace = "brio_project_namespace";
+        Namespace = "starfall_project_namespace";
 
         _projectSystem = projectSystem;
         _gPoseService = gPoseService;
@@ -70,8 +70,8 @@ public class ProjectWindow : Window, IDisposable
                 {
                     ImGui.Text($"Save New Project");
 
-                    ImGui.InputText("Project Name###brio_popup_name", ref currentActorName, 35);
-                    ImGui.InputText("Project Description###brio_popup_dis", ref currentActorDis, 35);
+                    ImGui.InputText("Project Name###starfall_popup_name", ref currentActorName, 35);
+                    ImGui.InputText("Project Description###starfall_popup_dis", ref currentActorDis, 35);
 
                     using(ImRaii.Disabled(string.IsNullOrEmpty(currentActorName)))
                     {

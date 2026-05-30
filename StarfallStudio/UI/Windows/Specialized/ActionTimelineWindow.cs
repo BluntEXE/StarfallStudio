@@ -19,9 +19,9 @@ public class ActionTimelineWindow : Window, IDisposable
     private readonly GPoseService _gPoseService;
     private readonly CutsceneManager _cutsceneManager;
 
-    public ActionTimelineWindow(EntityManager entityManager, CutsceneManager cutsceneManager, GPoseService gPoseService, PhysicsService physicsService, ConfigurationService configurationService) : base($"{StarfallStudio.Name} - ANIMATION CONTROL###brio_action_timelines_window")
+    public ActionTimelineWindow(EntityManager entityManager, CutsceneManager cutsceneManager, GPoseService gPoseService, PhysicsService physicsService, ConfigurationService configurationService) : base($"{StarfallStudio.Name} - ANIMATION CONTROL###starfall_action_timelines_window")
     {
-        Namespace = "brio_action_timelines_namespace";
+        Namespace = "starfall_action_timelines_namespace";
 
 
         _entityManager = entityManager;
@@ -61,7 +61,7 @@ public class ActionTimelineWindow : Window, IDisposable
             return;
         }
 
-        WindowName = $"{StarfallStudio.Name} - Animation Control - {capability.Entity.FriendlyName}###brio_action_timelines_window";
+        WindowName = $"{StarfallStudio.Name} - Animation Control - {capability.Entity.FriendlyName}###starfall_action_timelines_window";
 
         _editor.Draw(true, capability);
     }

@@ -30,9 +30,9 @@ public class PosingTransformWindow : Window
     private Matrix4x4? _trackingMatrix;
     private List<(EntityId id, PosingCapability capability, Transform transform)>? _groupedPendingSnapshot = null;
 
-    public PosingTransformWindow(EntityManager entityManager, CameraService cameraService, PosingService posingService, HistoryService historyService) : base($"{StarfallStudio.Name} - TRANSFORM###brio_transform_window", ImGuiWindowFlags.AlwaysVerticalScrollbar)
+    public PosingTransformWindow(EntityManager entityManager, CameraService cameraService, PosingService posingService, HistoryService historyService) : base($"{StarfallStudio.Name} - TRANSFORM###starfall_transform_window", ImGuiWindowFlags.AlwaysVerticalScrollbar)
     {
-        Namespace = "brio_transform_namespace";
+        Namespace = "starfall_transform_namespace";
 
         _entityManager = entityManager;
         _cameraService = cameraService;
@@ -61,7 +61,7 @@ public class PosingTransformWindow : Window
             return;
         }
 
-        WindowName = $"TRANSFORM - {posing.Entity.FriendlyName}###brio_transform_window";
+        WindowName = $"TRANSFORM - {posing.Entity.FriendlyName}###starfall_transform_window";
 
         PosingEditorCommon.DrawSelectionName(posing);
 

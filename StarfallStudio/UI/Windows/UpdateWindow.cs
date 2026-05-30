@@ -30,9 +30,9 @@ public class UpdateWindow : Window
     private readonly List<string> _contributors = [];
     private readonly ChangelogFile _changelogFile;
 
-    public UpdateWindow() : base($"★ {StarfallStudio.Name} - Changelog [{ConfigurationService.Instance.Version}]###brio_welcomewindow", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking)
+    public UpdateWindow() : base($"★ {StarfallStudio.Name} - Changelog [{ConfigurationService.Instance.Version}]###starfall_welcomewindow", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking)
     {
-        Namespace = "brio_welcomewindow_namespace";
+        Namespace = "starfall_welcomewindow_namespace";
 
         Size = new Vector2(710, 745);
 
@@ -154,12 +154,12 @@ public class UpdateWindow : Window
         ImStarfallStudio.VerticalPadding(10);
 
         // Selector
-        ImStarfallStudio.ButtonSelectorStrip("brio_changelog_selector", new Vector2(ImStarfallStudio.GetRemainingWidth(), ImStarfallStudio.GetLineHeight()), ref selected, [" Changelog ", " About "]);
+        ImStarfallStudio.ButtonSelectorStrip("starfall_changelog_selector", new Vector2(ImStarfallStudio.GetRemainingWidth(), ImStarfallStudio.GetLineHeight()), ref selected, [" Changelog ", " About "]);
 
         if(selected == 0)
         {
             using(ImRaii.PushColor(ImGuiCol.ChildBg, 0))
-            using(var c = ImRaii.Child("###brio_changelog", new Vector2(ImGui.GetWindowHeight() - 55 * ImGuiHelpers.GlobalScale, ImStarfallStudio.GetRemainingHeight() - 44), false,
+            using(var c = ImRaii.Child("###starfall_changelog", new Vector2(ImGui.GetWindowHeight() - 55 * ImGuiHelpers.GlobalScale, ImStarfallStudio.GetRemainingHeight() - 44), false,
                 Flags = ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse))
                 if(c.Success)
                 {
@@ -186,7 +186,7 @@ public class UpdateWindow : Window
         else
         {
             using(ImRaii.PushColor(ImGuiCol.ChildBg, 0))
-            using(var c = ImRaii.Child("###brio_about", new Vector2(ImGui.GetWindowHeight() - 55 * ImGuiHelpers.GlobalScale, ImStarfallStudio.GetRemainingHeight() - 44), false,
+            using(var c = ImRaii.Child("###starfall_about", new Vector2(ImGui.GetWindowHeight() - 55 * ImGuiHelpers.GlobalScale, ImStarfallStudio.GetRemainingHeight() - 44), false,
                 Flags = ImGuiWindowFlags.NoSavedSettings | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse))
                 if(c.Success)
                     DrawAbout();

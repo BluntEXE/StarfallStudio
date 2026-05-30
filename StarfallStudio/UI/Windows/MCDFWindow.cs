@@ -8,9 +8,9 @@ public class MCDFWindow : Window
 {
     private readonly ConfigurationService _configurationService;
 
-    public MCDFWindow(ConfigurationService configurationService) : base($"{StarfallStudio.Name} MCDF ###brio_mcdf_window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
+    public MCDFWindow(ConfigurationService configurationService) : base($"{StarfallStudio.Name} MCDF ###starfall_mcdf_window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse)
     {
-        Namespace = "brio_mcdf_window";
+        Namespace = "starfall_mcdf_window";
 
         this.AllowClickthrough = false;
         this.AllowPinning = false;

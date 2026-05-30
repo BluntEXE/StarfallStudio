@@ -52,9 +52,9 @@ public class PosingGraphicalWindow : Window, IDisposable
     int _selectedPane = 0;
     private bool _hideControlPane = false;
 
-    public PosingGraphicalWindow(EntityManager entityManager, HistoryService groupedUndoService, CameraService cameraService, PhysicsService physicsService, ConfigurationService configurationService, PosingService posingService, GPoseService gPoseService) : base($"{StarfallStudio.Name} - POSING###brio_posing_graphical_window")
+    public PosingGraphicalWindow(EntityManager entityManager, HistoryService groupedUndoService, CameraService cameraService, PhysicsService physicsService, ConfigurationService configurationService, PosingService posingService, GPoseService gPoseService) : base($"{StarfallStudio.Name} - POSING###starfall_posing_graphical_window")
     {
-        Namespace = "brio_posing_graphical_namespace";
+        Namespace = "starfall_posing_graphical_namespace";
 
         _entityManager = entityManager;
         _groupedUndoService = groupedUndoService;
@@ -129,7 +129,7 @@ public class PosingGraphicalWindow : Window, IDisposable
         posing.Hover = new None();
         _closestHover = float.MaxValue;
 
-        WindowName = $"{StarfallStudio.Name} - POSING - {posing.Entity.FriendlyName}###brio_posing_graphical_window";
+        WindowName = $"{StarfallStudio.Name} - POSING - {posing.Entity.FriendlyName}###starfall_posing_graphical_window";
 
         DrawGlobalButtons(posing);
 
