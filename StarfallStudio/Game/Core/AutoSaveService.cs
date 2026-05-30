@@ -102,7 +102,7 @@ public class AutoSaveService : IDisposable
                     Directory.CreateDirectory(path);
                 }
 
-                File.WriteAllBytes(Path.Combine(path, "SceneAutoSave.brioautosave"), bytes);
+                File.WriteAllBytes(Path.Combine(path, "SceneAutoSave.starautosave"), bytes);
 
                 if(ConfigurationService.Instance.Configuration.AutoSave.AutoSaveIndividualPoses)
                 {
@@ -140,7 +140,7 @@ public class AutoSaveService : IDisposable
         UIManager.Instance.FileDialogManager.CustomSideBarItems.Clear();
         UIManager.Instance.FileDialogManager.OpenFileDialog(
             "Load AutoSave",
-            ".brioautosave",
+            ".starautosave,.brioautosave",
             (success, paths) =>
             {
                 if(success && paths.Count == 1)
