@@ -1,11 +1,25 @@
-tagline: "Starfall Studio v0.2.25"
+tagline: "Starfall Studio v0.2.31"
 subline: "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin"
 changelog:
+
+  - name: "v0.2.31"
+    tagline: Starfall File Formats & Full Rebrand
+    date: "May 2026"
+    isCurrent: true
+    versions:
+      - number: "v0.2.31"
+        icon: ""
+        items:
+          - "Scene files now save as .starscn (old .brioscn files still load)"
+          - "Project files now save as .starproj (old .brioproj files still load)"
+          - "AutoSaves now use .starautosave (old .brioautosave files still load)"
+          - "All ImGui window IDs renamed starfall_* - fixes conflicts when Brio is loaded"
+          - "All remaining Brio-named source files renamed to Starfall equivalents"
 
   - name: "v0.2.18 - v0.2.25"
     tagline: Face Tracking & Pose Import Fixes
     date: "May 2026"
-    isCurrent: true
+    isCurrent: false
     versions:
       - number: "v0.2.18 - v0.2.25"
         icon: ""
