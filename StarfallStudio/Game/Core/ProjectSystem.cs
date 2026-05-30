@@ -43,7 +43,8 @@ public class ProjectSystem : IDisposable
     public bool IsEnabled = true;
 
     private string ProjectSaveFolder => Path.Combine(_pluginInterface.GetPluginConfigDirectory(), "Data", "Projects");
-    private string StarfallStudioDataPath => Path.Combine(ProjectSaveFolder, "brio.data");
+    private string StarfallStudioDataPath => Path.Combine(ProjectSaveFolder, "star.data");
+    private string LegacyBrioDataPath => Path.Combine(ProjectSaveFolder, "brio.data");
 
     public StarfallStudioProjects StarfallStudioProjects { get; set; } = new StarfallStudioProjects();
 
@@ -64,7 +65,7 @@ public class ProjectSystem : IDisposable
 
     public void NewProject(string projectName, string? Description)
     {
-        var path = Path.Combine(ProjectSaveFolder, $"{DateTime.Now:yyyy-MM-dd-hh-mm-ss}.brioproj");
+        var path = Path.Combine(ProjectSaveFolder, $"{DateTime.Now:yyyy-MM-dd-hh-mm-ss}.starproj");
 
         try
         {
@@ -105,10 +106,13 @@ public class ProjectSystem : IDisposable
 
     private void LoadProjectData()
     {
-        if(File.Exists(StarfallStudioDataPath))
-        {
-            var bytes = File.ReadAllBytes(StarfallStudioDataPath);
+        string pathToLoad = File.Exists(StarfallStudioDataPath)
+            ? StarfallStudioDataPath
+            : LegacyBrioDataPath;
 
+        if(File.Exists(pathToLoad))
+        {
+            var bytes = File.ReadAllBytes(pathToLoad);
             StarfallStudioProjects = MessagePackSerializer.Deserialize<StarfallStudioProjects>(bytes);
         }
     }
