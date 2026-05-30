@@ -11,4 +11,4 @@ obj/
 *.suo
 *.sdf
 *.opensdf
-*.pdb
+*.pdbgraphify-out/
