@@ -13,7 +13,7 @@ public class SceneFileInfo : JsonDocumentBaseFileInfo<SceneFile>
     public override string Name => "Scene File";
 
     public override IDalamudTextureWrap Icon => ResourceProvider.Instance.GetResourceImage("Images.FileIcon_Unknown.png");
-    public override string Extension => ".brioscn";
+    public override string Extension => ".starscn";
 
 }
 
