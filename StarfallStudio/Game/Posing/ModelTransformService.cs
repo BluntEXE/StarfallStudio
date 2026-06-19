@@ -18,6 +18,9 @@ public unsafe class ModelTransformService : IDisposable
     public delegate void SetPositionDelegate(StructsGameObject* gameObject, float x, float y, float z);
     private readonly Hook<SetPositionDelegate> _setPositionHook = null!;
 
+    public delegate void SetRotationDelegate(StructsGameObject* gameObject, float rotation);
+    private readonly Hook<SetRotationDelegate> _setRotationHook = null!;
+
     private readonly EntityManager _entityManager;
     private readonly GPoseService _gPoseService;
     private readonly ActorRedrawService _actorRedrawService;
@@ -30,6 +33,9 @@ public unsafe class ModelTransformService : IDisposable
 
         _setPositionHook = hooking.HookFromAddress<SetPositionDelegate>((nint)StructsGameObject.Addresses.SetPosition.Value, UpdatePositionDetour);
         _setPositionHook.Enable();
+
+        _setRotationHook = hooking.HookFromAddress<SetRotationDelegate>((nint)StructsGameObject.Addresses.SetRotation.Value, UpdateRotationDetour);
+        _setRotationHook.Enable();
 
         _actorRedrawService.ActorRedrawEvent += OnActorRedraw;
     }
@@ -93,6 +99,34 @@ public unsafe class ModelTransformService : IDisposable
         }
     }
 
+    private void UpdateRotationDetour(StructsGameObject* gameObject, float rotation)
+    {
+        try
+        {
+            if(_gPoseService.IsGPosing)
+            {
+                if(_entityManager.TryGetEntity(gameObject, out var entity))
+                {
+                    if(entity.TryGetCapability<ModelPosingCapability>(out var transformCapability))
+                    {
+                        if(transformCapability.OverrideTransform.HasValue)
+                        {
+                            SetTransform(gameObject, transformCapability.OverrideTransform.Value);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            _setRotationHook.Original(gameObject, rotation);
+        }
+        catch(Exception e)
+        {
+            StarfallStudio.Log.Error(e, nameof(UpdateRotationDetour));
+            _setRotationHook.Original(gameObject, rotation);
+        }
+    }
+
     private void OnActorRedraw(IGameObject go, RedrawStage stage)
     {
         if(go is not null)
@@ -104,6 +138,7 @@ public unsafe class ModelTransformService : IDisposable
     public void Dispose()
     {
         _setPositionHook.Dispose();
+        _setRotationHook.Dispose();
         _actorRedrawService.ActorRedrawEvent -= OnActorRedraw;
     }
 }
