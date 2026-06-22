@@ -103,6 +103,10 @@ public unsafe class ModelTransformService : IDisposable
     {
         try
         {
+            // Always call original first -- skipping it during EnableDraw corrupts
+            // the game's model matrix before DrawObject exists, causing an AV.
+            _setRotationHook.Original(gameObject, rotation);
+
             if(_gPoseService.IsGPosing)
             {
                 if(_entityManager.TryGetEntity(gameObject, out var entity))
@@ -112,18 +116,14 @@ public unsafe class ModelTransformService : IDisposable
                         if(transformCapability.OverrideTransform.HasValue)
                         {
                             SetTransform(gameObject, transformCapability.OverrideTransform.Value);
-                            return;
                         }
                     }
                 }
             }
-
-            _setRotationHook.Original(gameObject, rotation);
         }
         catch(Exception e)
         {
             StarfallStudio.Log.Error(e, nameof(UpdateRotationDetour));
-            _setRotationHook.Original(gameObject, rotation);
         }
     }
 
