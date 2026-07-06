@@ -223,13 +223,25 @@ public class ActorAppearanceService : IDisposable
 
                 // Weapon Visibility
                 if(existingAppearance.Runtime.IsMainHandHidden != appearance.Runtime.IsMainHandHidden)
-                    character.GetWeaponDrawObjectData(ActorEquipSlot.MainHand)->IsHidden = appearance.Runtime.IsMainHandHidden;
+                {
+                    var mainHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.MainHand);
+                    if(mainHandDraw != null)
+                        mainHandDraw->IsHidden = appearance.Runtime.IsMainHandHidden;
+                }
 
                 if(existingAppearance.Runtime.IsOffHandHidden != appearance.Runtime.IsOffHandHidden)
-                    character.GetWeaponDrawObjectData(ActorEquipSlot.OffHand)->IsHidden = appearance.Runtime.IsOffHandHidden;
+                {
+                    var offHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.OffHand);
+                    if(offHandDraw != null)
+                        offHandDraw->IsHidden = appearance.Runtime.IsOffHandHidden;
+                }
 
                 if(existingAppearance.Runtime.IsPropHandHidden != appearance.Runtime.IsPropHandHidden)
-                    character.GetWeaponDrawObjectData(ActorEquipSlot.Prop)->IsHidden = appearance.Runtime.IsPropHandHidden;
+                {
+                    var propHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.Prop);
+                    if(propHandDraw != null)
+                        propHandDraw->IsHidden = appearance.Runtime.IsPropHandHidden;
+                }
             }
         }
 

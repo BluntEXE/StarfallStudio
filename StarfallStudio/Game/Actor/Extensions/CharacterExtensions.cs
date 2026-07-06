@@ -95,7 +95,11 @@ public static class CharacterExtensions
         if(!weaponSlot.HasValue)
             return null;
 
-        var drawData = &go.Native()->DrawData;
+        var native = go.Native();
+        if(native == null)
+            return null;
+
+        var drawData = &native->DrawData;
 
         fixed(StructsDrawObjectData* drawObjData = &drawData->Weapon(weaponSlot.Value))
         {

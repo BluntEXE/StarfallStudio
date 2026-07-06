@@ -44,9 +44,17 @@ public struct ActorAppearance()
         actorAppearance.Runtime.IsVisorToggled = native->DrawData.IsVisorToggled;
         actorAppearance.Runtime.IsVieraEarsHidden = native->DrawData.VieraEarsHidden;
 
-        actorAppearance.Runtime.IsMainHandHidden = character.GetWeaponDrawObjectData(ActorEquipSlot.MainHand)->IsHidden;
-        actorAppearance.Runtime.IsOffHandHidden = character.GetWeaponDrawObjectData(ActorEquipSlot.OffHand)->IsHidden;
-        actorAppearance.Runtime.IsPropHandHidden = character.GetWeaponDrawObjectData(ActorEquipSlot.Prop)->IsHidden;
+        var mainHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.MainHand);
+        if(mainHandDraw != null)
+            actorAppearance.Runtime.IsMainHandHidden = mainHandDraw->IsHidden;
+
+        var offHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.OffHand);
+        if(offHandDraw != null)
+            actorAppearance.Runtime.IsOffHandHidden = offHandDraw->IsHidden;
+
+        var propHandDraw = character.GetWeaponDrawObjectData(ActorEquipSlot.Prop);
+        if(propHandDraw != null)
+            actorAppearance.Runtime.IsPropHandHidden = propHandDraw->IsHidden;
 
         actorAppearance.ExtendedAppearance.Transparency = native->Alpha;
 
