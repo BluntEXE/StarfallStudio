@@ -1,4 +1,5 @@
-﻿using StarfallStudio.Game.Actor.Extensions;
+﻿using System;
+using StarfallStudio.Game.Actor.Extensions;
 using StarfallStudio.Game.Actor.Interop;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using Lumina.Excel.Sheets;
@@ -19,6 +20,9 @@ public struct ActorAppearance()
     public unsafe static ActorAppearance FromCharacter(DalamudCharacter character)
     {
         var native = character.Native();
+        if(native == null)
+            throw new InvalidOperationException($"Cannot read appearance: character {character.ObjectIndex} has no valid native pointer (may be mid-redraw or destroyed).");
+
         ActorAppearance actorAppearance = new()
         {
             ModelCharaId = native->ModelContainer.ModelCharaId

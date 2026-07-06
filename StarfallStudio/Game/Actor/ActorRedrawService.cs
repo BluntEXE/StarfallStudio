@@ -118,8 +118,11 @@ public class ActorRedrawService(IFramework framework, IObjectTable objectTable)
         return _framework.RunUntilSatisfied(
            () =>
            {
+               var native = go.Native();
+               if(native == null)
+                   return false;
 
-               var drawObject = go.Native()->DrawObject;
+               var drawObject = native->DrawObject;
                if(drawObject == null)
                    return false;
 

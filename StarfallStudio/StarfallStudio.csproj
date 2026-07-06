@@ -10,7 +10,7 @@
 		<PackageProjectUrl>https://github.com/BluntEXE/StarfallStudio</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/BluntEXE/StarfallStudio</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Version>0.2.33</Version>
+		<Version>0.2.34</Version>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>

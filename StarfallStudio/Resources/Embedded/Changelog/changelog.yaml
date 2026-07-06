@@ -1,11 +1,24 @@
-tagline: "Starfall Studio v0.2.31"
+tagline: "Starfall Studio v0.2.34"
 subline: "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin"
 changelog:
+
+  - name: "v0.2.34"
+    tagline: Open World Stability Fixes
+    date: "July 2026"
+    isCurrent: true
+    versions:
+      - number: "v0.2.34"
+        icon: ""
+        items:
+          - "Fix actor spinning when moving in open world GPose"
+          - "Fix crash (AccessViolation) during EnableDraw when SetRotation hook fired on a stale actor"
+          - "Fix crash (AccessViolation) reading appearance from a character mid-redraw"
+          - "Fix crash (AccessViolation) polling draw state on a character mid-redraw"
 
   - name: "v0.2.31"
     tagline: Starfall File Formats & Full Rebrand
     date: "May 2026"
-    isCurrent: true
+    isCurrent: false
     versions:
       - number: "v0.2.31"
         icon: ""
