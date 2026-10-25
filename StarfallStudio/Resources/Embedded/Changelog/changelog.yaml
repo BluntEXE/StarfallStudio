@@ -1,11 +1,26 @@
-tagline: "Starfall Studio v0.2.34"
+tagline: "Starfall Studio v0.2.36"
 subline: "Combined GPose toolkit - posing, animation, camera, and scene tools in one plugin"
 changelog:
+
+  - name: "v0.2.36"
+    tagline: GPose Stability Fixes
+    date: "October 2026"
+    isCurrent: true
+    versions:
+      - number: "v0.2.36"
+        icon: ""
+        items:
+          - "Fix crash when an actor despawns while it is being redrawn"
+          - "Fix crash applying appearance to an actor that despawned mid-update"
+          - "Fix crashes from delayed actions running on actors that were already removed"
+          - "Fix crash when entering GPose while standing in water"
+          - "Fix overworld NPCs being redrawn needlessly when leaving GPose"
+          - "Fix temporary MCDF files not being cleaned up on unload"
 
   - name: "v0.2.34"
     tagline: Open World Stability Fixes
     date: "July 2026"
-    isCurrent: true
+    isCurrent: false
     versions:
       - number: "v0.2.34"
         icon: ""
