@@ -48,6 +48,10 @@ public unsafe class GPoseService : IDisposable
     internal delegate void TargetNameDelegate(nint args);
     private Hook<TargetNameDelegate> _targetNameDelegateHook = null!;
 
+    private delegate void HeightScaleUpdateDelegate(nint effectContainer, float targetY);
+    private readonly Hook<HeightScaleUpdateDelegate>? _heightScaleUpdateHook;
+    private bool _loggedNullEffectContainer;
+
     private readonly IFramework _framework;
     private readonly IClientState _clientState;
     private readonly ConfigurationService _configService;
@@ -80,9 +84,31 @@ public unsafe class GPoseService : IDisposable
         var targetNameAddr = "E8 ?? ?? ?? ?? 48 8D 8D ?? ?? ?? ?? 48 83 C4 28"; // sig from, Ktisis GuiHooks.cs line 43 (https://github.com/ktisis-tools/Ktisis/blob/main/Ktisis/Interop/Hooks/GuiHooks.cs)
         _targetNameDelegateHook = interopProvider.HookFromAddress<TargetNameDelegate>(scanner.ScanText(targetNameAddr), TargetNameDetour);
 
+        // Optional crash guard (see HeightScaleUpdateDetour): a missing signature after a game patch must not stop the plugin loading.
+        var heightScaleSig = "48 89 74 24 10 57 48 83 EC 60 48 8B F9 0F 29 74 24 50 48 8B 49 08";
+        if(scanner.TryScanText(heightScaleSig, out var heightScaleAddr))
+            _heightScaleUpdateHook = interopProvider.HookFromAddress<HeightScaleUpdateDelegate>(heightScaleAddr, HeightScaleUpdateDetour);
+        else
+            StarfallStudio.Log.Warning("HeightScaleUpdate signature not found; water GPose crash guard disabled.");
+
         _framework.Update += OnFrameworkUpdate;
 
         UpdateDynamicHooks();
+    }
+
+    private void HeightScaleUpdateDetour(nint effectContainer, float targetY)
+    {
+        if(!IsGPosing)
+        {
+            _heightScaleUpdateHook!.Original(effectContainer, targetY);
+            return;
+        }
+
+        if(effectContainer == nint.Zero && !_loggedNullEffectContainer)
+        {
+            _loggedNullEffectContainer = true;
+            StarfallStudio.Log.Warning($"HeightScaleUpdate called with null effectContainer in GPose (targetY={targetY}); skipped.");
+        }
     }
 
     private void TargetNameDetour(nint args)
@@ -211,7 +237,7 @@ public unsafe class GPoseService : IDisposable
                 _mouseHoverHook.Enable();
 
             _targetNameDelegateHook.Enable();
-
+            _heightScaleUpdateHook?.Enable();
         }
         else
         {
@@ -219,6 +245,7 @@ public unsafe class GPoseService : IDisposable
                 _mouseHoverHook.Disable();
 
             _targetNameDelegateHook.Disable();
+            _heightScaleUpdateHook?.Disable();
         }
     }
 
@@ -230,6 +257,7 @@ public unsafe class GPoseService : IDisposable
         _enterGPoseHook.Dispose();
         _exitGPoseHook.Dispose();
         _mouseHoverHook.Dispose();
+        _heightScaleUpdateHook?.Dispose();
     }
 }
 
