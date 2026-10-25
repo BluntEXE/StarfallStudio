@@ -34,7 +34,13 @@ public class ActorRedrawService(IFramework framework, IObjectTable objectTable)
             ActorRedrawEvent?.Invoke(go, RedrawStage.Before);
             await DrawWhenReady(go);
             await WaitForDrawing(go);
-            ActorRedrawEvent?.Invoke(go, RedrawStage.After);
+            var current = Resolve(go);
+            if(current is null)
+            {
+                StarfallStudio.Log.Warning($"StarfallStudio redraw aborted, gameobject {go.ObjectIndex} despawned mid-redraw.");
+                return RedrawResult.Failed;
+            }
+            ActorRedrawEvent?.Invoke(current, RedrawStage.After);
             StarfallStudio.Log.Debug($"StarfallStudio redraw complete on gameobject {go.ObjectIndex}.");
             return RedrawResult.Full;
         }
@@ -73,29 +79,39 @@ public class ActorRedrawService(IFramework framework, IObjectTable objectTable)
         }
     }
 
+    public IGameObject? Resolve(IGameObject go)
+    {
+        var current = _objectTable[go.ObjectIndex];
+        if(current == null || current.Address != go.Address || current.GameObjectId != go.GameObjectId)
+            return null;
+        return current;
+    }
+
     public unsafe bool IsDrawing(IGameObject go)
     {
-        var native = go.Native();
+        var current = Resolve(go);
+        if(current is null) return false;
+        var native = current.Native();
         if(native is null) return false;
         return native->RenderFlags == 0x00;
     }
 
     public unsafe void DisableDraw(IGameObject go)
     {
-        if(!go.IsValid())
+        var current = Resolve(go);
+        if(current == null || !current.IsValid())
             return;
 
-        var native = go.Native();
-        native->DisableDraw();
+        current.Native()->DisableDraw();
     }
 
     public unsafe void EnableDraw(IGameObject go)
     {
-        if(!go.IsValid())
+        var current = Resolve(go);
+        if(current == null || !current.IsValid())
             return;
 
-        var native = go.Native();
-        native->EnableDraw();
+        current.Native()->EnableDraw();
     }
 
     public unsafe Task DrawWhenReady(IGameObject go)
@@ -103,8 +119,9 @@ public class ActorRedrawService(IFramework framework, IObjectTable objectTable)
         return _framework.RunUntilSatisfied(
            () =>
            {
-               if(go.IsValid())
-                   return go.Native()->IsReadyToDraw();
+               var current = Resolve(go);
+               if(current != null && current.IsValid())
+                   return current.Native()->IsReadyToDraw();
                return false;
            },
            (_) => EnableDraw(go),
@@ -118,7 +135,11 @@ public class ActorRedrawService(IFramework framework, IObjectTable objectTable)
         return _framework.RunUntilSatisfied(
            () =>
            {
-               var native = go.Native();
+               var current = Resolve(go);
+               if(current == null)
+                   return false;
+
+               var native = current.Native();
                if(native == null)
                    return false;
 

@@ -121,6 +121,9 @@ public class ActionTimelineCapability : ActorCharacterCapability
         {
             unsafe
             {
+                if(!Character.IsValid())
+                    return;
+
                 var drawObj = Character.Native()->GameObject.DrawObject;
                 if(drawObj == null)
                     return;

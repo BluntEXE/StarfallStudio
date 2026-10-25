@@ -83,7 +83,7 @@ public class SceneService(EntityManager _entityManager, VirtualCameraManager _vi
                 var (actorId, actor) = actorCapability.CreateProp(false);
 
                 _framework.RunUntilSatisfied(
-                    () => actor.Native()->IsReadyToDraw(),
+                    () => actor.IsValid() && actor.Native()->IsReadyToDraw(),
                     (__) =>
                     {
                         _framework.RunOnTick(() =>
@@ -100,7 +100,7 @@ public class SceneService(EntityManager _entityManager, VirtualCameraManager _vi
                 var (actorId, actor) = actorCapability.CreateCharacter(actorFile.HasChild, false, forceSpawnActorWithoutCompanion: !actorFile.HasChild);
 
                 _framework.RunUntilSatisfied(
-                    () => actor.Native()->IsReadyToDraw(),
+                    () => actor.IsValid() && actor.Native()->IsReadyToDraw(),
                     (__) =>
                     {
                         _framework.RunOnTick(() =>

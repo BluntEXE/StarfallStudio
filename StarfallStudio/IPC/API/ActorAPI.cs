@@ -87,7 +87,7 @@ public unsafe class ActorAPI(ActorSpawnService actorSpawnService, MCDFService mC
             if(spawnFrozen)
             {
                 _framework.RunUntilSatisfied(
-                    () => character.Native()->IsReadyToDraw(),
+                    () => character.IsValid() && character.Native()->IsReadyToDraw(),
                     (__) =>
                     {
                         if(_entityManager.TryGetEntity(character.Native(), out var entity))

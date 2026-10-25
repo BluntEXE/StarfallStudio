@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using static StarfallStudio.Game.Actor.ActorRedrawService;
 using static FFXIVClientStructs.FFXIV.Client.Graphics.Scene.Human;
 using DrawDataContainer = FFXIVClientStructs.FFXIV.Client.Game.Character.DrawDataContainer;
+using DrawData = FFXIVClientStructs.FFXIV.Client.Graphics.Scene.Human.DrawData;
 
 namespace StarfallStudio.Game.Actor;
 
@@ -95,6 +96,9 @@ public class ActorAppearanceService : IDisposable
 
     public async Task<RedrawResult> SetCharacterAppearance(ICharacter character, ActorAppearance appearance, AppearanceImportOptions options, bool forceRedraw = false)
     {
+        if(_redrawService.Resolve(character) is null)
+            return RedrawResult.Failed;
+
         var existingAppearance = GetActorAppearance(character);
 
         AppearanceSanitizer.SanitizeAppearance(ref appearance, existingAppearance);
@@ -257,8 +261,14 @@ public class ActorAppearanceService : IDisposable
         if(needsRedraw)
             redrawResult = await _redrawService.Redraw(character);
 
+        if(redrawResult == RedrawResult.Failed)
+            return redrawResult;
+
         if(glamourerReset)
             await _glamourerService.RevertCharacter(character);
+
+        if(_redrawService.Resolve(character) is null)
+            return RedrawResult.Failed;
 
         unsafe
         {

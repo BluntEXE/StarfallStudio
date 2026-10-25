@@ -140,7 +140,7 @@ public class ActorSpawnService : MediatorSubscriberBase
             if(disableSpawnCompanion == false && hasCompanion)
             {
                 // We need to wait for the companion to be ready before we can draw it.
-                var companion = _objectTable.CreateObjectReference((nint)(targetNative->CompanionObject));
+                var companion = _objectTable.CreateObjectReference((nint)(targetNative->ChildObject));
                 if(companion != null)
                     _actorRedrawService.DrawWhenReady(companion);
             }
@@ -158,7 +158,7 @@ public class ActorSpawnService : MediatorSubscriberBase
         if(CreateCharacter(out ICharacter? chara, SpawnFlags.IsProp | SpawnFlags.CopyPosition, true))
         {
             _framework.RunUntilSatisfied(
-            () => chara.Native()->IsReadyToDraw(),
+            () => chara.IsValid() && chara.Native()->IsReadyToDraw(),
             (__) =>
             {
                 var entity = _entityManager.GetEntity(chara.Native());
@@ -219,7 +219,7 @@ public class ActorSpawnService : MediatorSubscriberBase
 
     public unsafe bool DestroyObject(IGameObject go)
     {
-        if(go is null)
+        if(go is null || go.IsOverworld())
             return false;
 
         CleanObject(go, false);
@@ -293,10 +293,14 @@ public class ActorSpawnService : MediatorSubscriberBase
         publicSetCompanion(character, container.Kind, (short)container.Id);
 
         // We need to wait for the companion to be ready before we can draw it.
-        var companionNative = &character.Native()->CompanionObject->Character.GameObject;
+        var companionNative = &character.Native()->ChildObject->GameObject;
         _framework.RunUntilSatisfied(
-            () => character.CalculateCompanionInfo(out var info) && info.Kind == container.Kind && info.Id == container.Id && companionNative->IsReadyToDraw(),
-            (_) => companionNative->EnableDraw(),
+            () => character.IsValid() && character.CalculateCompanionInfo(out var info) && info.Kind == container.Kind && info.Id == container.Id && companionNative->IsReadyToDraw(),
+            (ready) =>
+            {
+                if(ready)
+                    companionNative->EnableDraw();
+            },
             1000,
             dontStartFor: 1
         );

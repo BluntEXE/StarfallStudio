@@ -116,8 +116,13 @@ public class ActorLifetimeCapability : ActorCapability
         if(!CanDestroy)
             return;
 
-        if(Actor.Parent is ActorContainerEntity)
-            _actorSpawnService.DestroyObject(GameObject);
+        if(Actor.Parent is ActorContainerEntity container)
+        {
+            if(GameObject.IsOverworld() && container.TryGetCapability<ActorContainerCapability>(out var containerCapability))
+                containerCapability.DestroyCharacter(Actor);
+            else
+                _actorSpawnService.DestroyObject(GameObject);
+        }
         else if(Actor.Parent is ActorEntity actorEntity)
             _actorSpawnService.DestroyCompanion((ICharacter)((ActorEntity)Actor.Parent).GameObject);
     }

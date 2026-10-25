@@ -276,7 +276,7 @@ public class ActorContainerCapability : Capability
             .GroupBy(o => o.ObjectKind == ObjectKind.Pc ? o.Name.TextValue : o.Name.TextValue + "_" + o.ObjectIndex)
             .Select(g => g.OrderByDescending(o => o.ObjectIndex >= ActorTableHelpers.GPoseStart).First())
             .OfType<ICharacter>()
-            .OrderBy(o => o.YalmDistanceX * o.YalmDistanceX + o.YalmDistanceZ * o.YalmDistanceZ)
+            .OrderBy(o => o.CurrentDistance)
             .ToList();
     }
 

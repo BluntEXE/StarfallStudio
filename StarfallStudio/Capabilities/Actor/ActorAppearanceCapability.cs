@@ -437,7 +437,8 @@ public class ActorAppearanceCapability : ActorCharacterCapability
         {
             var oldAppearance = _originalAppearance.Value;
             _originalAppearance = null;
-            await _actorAppearanceService.SetCharacterAppearance(Character, oldAppearance, AppearanceImportOptions.All, true);
+            if(GameObject.IsOverworld())
+                await _actorAppearanceService.SetCharacterAppearance(Character, oldAppearance, AppearanceImportOptions.All, true);
         }
     }
 
@@ -445,6 +446,9 @@ public class ActorAppearanceCapability : ActorCharacterCapability
     {
         _framework.RunOnTick(() =>
         {
+            if(!Character.IsValid())
+                return;
+
             Character.Native()->Timeline.TimelineSequencer.PlayTimeline(5616);
         }, delayTicks: 5);
     }
