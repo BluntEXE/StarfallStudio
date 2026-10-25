@@ -314,7 +314,7 @@ public class MCDFService : IDisposable
             // the actor. RunOnTick is safe unlike Task.Delay - runs on the framework thread
             // so the native actor pointer stays valid.
             var glamourerReadyTcs = new System.Threading.Tasks.TaskCompletionSource();
-            _framework.RunOnTick(() => glamourerReadyTcs.TrySetResult(), delayTicks: 10);
+            _ = _framework.RunOnTick(() => glamourerReadyTcs.TrySetResult(), delayTicks: 10);
             await glamourerReadyTcs.Task.ConfigureAwait(false);
 
             DataApplicationProgress = "Applying Glamourer and redrawing Character";

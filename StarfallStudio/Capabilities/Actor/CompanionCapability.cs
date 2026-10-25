@@ -40,7 +40,7 @@ public unsafe class CompanionCapability : ActorCharacterCapability
     {
         if(Character.HasSpawnedCompanion())
         {
-            if(_entityManager.TryGetEntity(&Character.Native()->CompanionObject->Character.GameObject, out Entities.Core.Entity? actor))
+            if(_entityManager.TryGetEntity(&Character.Native()->ChildObject->GameObject, out Entities.Core.Entity? actor))
             {
                 return actor;
             }

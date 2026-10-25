@@ -24,7 +24,7 @@ public class SpawnActor(IDalamudPluginInterface pi) : FuncSubscriber<SpawnFlags,
         => base.Invoke(spawnFlags, false, spawnFrozen);
 
     /// <inheritdoc cref="IActor.Spawn"/>
-    public IGameObject? Invoke(SpawnFlags spawnFlags, bool selectInHierarchy, bool spawnFrozen)
+    public new IGameObject? Invoke(SpawnFlags spawnFlags, bool selectInHierarchy, bool spawnFrozen)
         => base.Invoke(spawnFlags, selectInHierarchy, spawnFrozen);
 
     public static FuncProvider<SpawnFlags, bool, bool, IGameObject?> Provider(IDalamudPluginInterface pi, IActor api)
